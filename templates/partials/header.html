@@ -51,7 +51,16 @@
               <div class="dropdown-menu account-panel">
                 <div class="account-panel-header">
                   <h6>أهلاً بك!</h6>
+                  {% if user.is_authenticated and user.is_staff %}
+                  <div class="admin-badge mb-2">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3">مسؤول النظام</span>
+                  </div>
+                  <a href="{% url 'settings:admin_dashboard' %}" class="btn btn-primary btn-sm w-100 mb-3 rounded-pill fw-bold">
+                    <i class="bi bi-speedometer2 me-1"></i> لوحة تحكم الإدارة
+                  </a>
+                  {% else %}
                   <p>قم بتسجيل الدخول للحصول على أفضل تجربة</p>
+                  {% endif %}
                 </div>
                 {% if not user.is_authenticated %}
                 <div class="account-panel-auth">

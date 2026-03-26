@@ -1,6 +1,12 @@
-from django.shortcuts import render
-from products.models import Product, Offer, Brand, Category
-from django.db.models import Count
+from django.shortcuts import render, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import TemplateView, ListView, UpdateView, CreateView
+from django.db.models import Count, Sum
+from products.models import Product, Offer, Brand, Category, Bundle
+from orders.models import Order
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 from .models import Banner, Company, Section
@@ -72,3 +78,43 @@ def tos(request):
 def return_policy(request):
     company = Company.objects.first()
     return render(request, 'return-policy.html', {'company': company})
+
+
+# Custom Admin Dashboard Views
+class StaffRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_staff
+
+class AdminDashboardView(StaffRequiredMixin, TemplateView):
+    template_name = 'admin/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_orders'] = Order.objects.count()
+        context['total_products'] = Product.objects.count()
+        context['total_customers'] = User.objects.count()
+        context['recent_orders'] = Order.objects.order_by('-created_at')[:5]
+        return context
+
+class AdminProductListView(StaffRequiredMixin, ListView):
+    model = Product
+    template_name = 'admin/product_list.html'
+    context_object_name = 'products'
+    paginate_by = 20
+
+class AdminOrderListView(StaffRequiredMixin, ListView):
+    model = Order
+    template_name = 'admin/order_list.html'
+    context_object_name = 'orders'
+    paginate_by = 20
+
+class AdminCustomerListView(StaffRequiredMixin, ListView):
+    model = User
+    template_name = 'admin/customer_list.html'
+    context_object_name = 'customers'
+    paginate_by = 20
+
+class AdminOfferListView(StaffRequiredMixin, ListView):
+    model = Offer
+    template_name = 'admin/offer_list.html'
+    context_object_name = 'offers'

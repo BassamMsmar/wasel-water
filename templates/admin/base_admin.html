@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}لوحة التحكم الإدارية{% endblock %} - واصل ووتر</title>
+    <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+    <style>
+        :root {
+            --admin-sidebar-width: 260px;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+        .admin-sidebar {
+            width: var(--admin-sidebar-width);
+            background: #002147; /* Navy */
+            color: #fff;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .admin-content {
+            flex: 1;
+            margin-right: var(--admin-sidebar-width);
+            padding: 30px;
+            transition: all 0.3s;
+        }
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        .sidebar-menu a {
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: 0.3s;
+            gap: 10px;
+        }
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+            border-right: 4px solid #d4af37; /* Gold */
+        }
+        .admin-nav {
+            background: #fff;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border-radius: 12px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        .btn-primary {
+            background-color: #002147;
+            border-color: #002147;
+        }
+        .btn-primary:hover {
+            background-color: #001630;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h4 class="mb-0 text-white fw-bold">إدارة واصل</h4>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="{% url 'settings:admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i> الرئيسية
+                </a>
+                <a href="{% url 'settings:admin_products' %}" class="{% if request.resolver_match.url_name == 'admin_products' %}active{% endif %}">
+                    <i class="bi bi-box-seam"></i> المنتجات
+                </a>
+                <a href="{% url 'settings:admin_orders' %}" class="{% if request.resolver_match.url_name == 'admin_orders' %}active{% endif %}">
+                    <i class="bi bi-cart-check"></i> الطلبات
+                </a>
+                <a href="{% url 'settings:admin_customers' %}" class="{% if request.resolver_match.url_name == 'admin_customers' %}active{% endif %}">
+                    <i class="bi bi-people"></i> العملاء
+                </a>
+                <a href="{% url 'settings:admin_offers' %}" class="{% if request.resolver_match.url_name == 'admin_offers' %}active{% endif %}">
+                    <i class="bi bi-megaphone"></i> العروض
+                </a>
+                <hr class="mx-3 opacity-25">
+                <a href="{% url 'home' %}">
+                    <i class="bi bi-globe"></i> زيارة الموقع
+                </a>
+                <a href="{% url 'logout' %}" class="text-danger">
+                    <i class="bi bi-box-arrow-right"></i> تسجيل الخروج
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+            <header class="admin-nav d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">{% block page_title %}لوحة التحكم{% endblock %}</h5>
+                <div class="user-info d-flex align-items-center gap-2">
+                    <span>مرحباً، <strong>{{ user.get_full_name|default:user.username }}</strong></span>
+                    <i class="bi bi-person-circle fs-4"></i>
+                </div>
+            </header>
+
+            {% block admin_content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

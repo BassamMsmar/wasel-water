@@ -189,14 +189,18 @@
         return;
       }
 
+      const zoomPane = document.querySelector('.image-zoom-container');
+      if (!zoomPane) return;
+
       const driftOptions = {
-        paneContainer: document.querySelector('.image-zoom-container'),
-        inlinePane: window.innerWidth < 768 ? true : false,
-        inlineOffsetY: -85,
+        paneContainer: zoomPane,
+        inlinePane: window.innerWidth < 992 ? true : false,
+        inlineOffsetY: -100,
         containInline: true,
-        hoverBoundingBox: false,
-        zoomFactor: 3,
-        handleTouch: false
+        hoverBoundingBox: true,
+        zoomFactor: 2.5,
+        handleTouch: true,
+        namespace: 'drift-zoom-pane'
       };
 
       // Initialize Drift on the main product image
