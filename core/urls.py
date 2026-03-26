@@ -1,9 +1,5 @@
 from django.urls import path
-from .views import (
-    home, about, contact, privacy, tos, return_policy,
-    AdminDashboardView, AdminProductListView, AdminOrderListView,
-    AdminCustomerListView, AdminOfferListView
-)
+from . import views
 
 
 app_name = 'settings'
