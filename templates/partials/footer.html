@@ -41,8 +41,9 @@
             <div class="footer-widget">
               <h4>الدعم</h4>
               <ul class="footer-links">
-                <li><a href="#">مركز المساعدة</a></li>
-                <li><a href="#">حالة الطلب</a></li>
+                <li><a href="{% url 'products:product_list' %}">المتجر</a></li>
+            <li><a href="{% url 'orders:track' %}">تتبع الطلب</a></li>
+            <li><a href="#">الأسئلة الشائعة</a></li>
                 <li><a href="#">معلومات الشحن</a></li>
                 <li><a href="{% url 'settings:return_policy' %}">الاسترجاع والاستبدال</a></li>
                 <li><a href="{% url 'settings:contact' %}">اتصل بنا</a></li>

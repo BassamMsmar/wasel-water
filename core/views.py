@@ -118,3 +118,11 @@ class AdminOfferListView(StaffRequiredMixin, ListView):
     model = Offer
     template_name = 'admin/offer_list.html'
     context_object_name = 'offers'
+
+class AdminStaffListView(StaffRequiredMixin, ListView):
+    model = User
+    template_name = 'admin/staff_list.html'
+    context_object_name = 'staff_members'
+
+    def get_queryset(self):
+        return User.objects.filter(is_staff=True)

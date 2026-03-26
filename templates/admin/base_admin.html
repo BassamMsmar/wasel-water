@@ -100,6 +100,9 @@
                 <a href="{% url 'settings:admin_customers' %}" class="{% if request.resolver_match.url_name == 'admin_customers' %}active{% endif %}">
                     <i class="bi bi-people"></i> العملاء
                 </a>
+                <a href="{% url 'settings:admin_staff' %}" class="{% if request.resolver_match.url_name == 'admin_staff' %}active{% endif %}">
+                    <i class="bi bi-person-badge"></i> الموظفين
+                </a>
                 <a href="{% url 'settings:admin_offers' %}" class="{% if request.resolver_match.url_name == 'admin_offers' %}active{% endif %}">
                     <i class="bi bi-megaphone"></i> العروض
                 </a>

@@ -13819,31 +13819,45 @@ section,
   bottom: 0;
 }
 
-.showcase-card .action-link {
-  width: 36px;
-  height: 36px;
+.showcase-card .action-link, .item-card .quick-actions button, .item-card .quick-actions a {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--accent-color);
   color: #fff !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 20px;
   transition: 0.3s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-.showcase-card .action-link:hover {
+.showcase-card .action-link:hover, .item-card .quick-actions button:hover, .item-card .quick-actions a:hover {
   background: #000;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.item-card .quick-actions {
+    opacity: 1 !important;
+    bottom: 15px !important;
+    right: 15px !important;
+    transform: none !important;
+}
+
+.item-card .quick-actions form {
+    margin: 0;
 }
 
 /*--------------------------------------------------------------
 # WhatsApp Floating Button
---------------------------------------------------------------*/
+-----------------------------------------------------------*/
 .whatsapp-float {
   position: fixed;
   bottom: 30px;
-  right: 30px;
+  left: 30px !important;
+  right: auto !important;
   width: 60px;
   height: 60px;
   background-color: #25d366;
@@ -13852,7 +13866,7 @@ section,
   text-align: center;
   font-size: 30px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+  z-index: 1050;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13867,9 +13881,58 @@ section,
 @media (max-width: 768px) {
   .whatsapp-float {
     bottom: 20px;
-    right: 20px;
+    left: 20px !important;
     width: 50px;
     height: 50px;
     font-size: 25px;
   }
+}
+
+/* Glassy Header */
+#header {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Prominent Cart Button */
+.cart-prominent-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    color: #fff !important;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cart-prominent-btn:hover {
+    background: #000;
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.item-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between !important;
+    gap: 15px;
+    padding: 0 5px;
+}
+
+[dir="rtl"] .item-bottom {
+    flex-direction: row;
+}
+
+.no-products-state {
+    padding: 80px 0;
+    background: #fdfdfd;
+    border-radius: 20px;
+    border: 2px dashed #eee;
 }

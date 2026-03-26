@@ -18,8 +18,8 @@ urlpatterns = [
     # Admin Dashboard
     path('admin/dashboard/', AdminDashboardView.as_view(), name='admin_dashboard'),
     path('admin/products/', AdminProductListView.as_view(), name='admin_products'),
-    path('admin/orders/', AdminOrderListView.as_view(), name='admin_orders'),
-    path('admin/customers/', AdminCustomerListView.as_view(), name='admin_customers'),
-    path('admin/offers/', AdminOfferListView.as_view(), name='admin_offers'),
+    path('admin/orders/', views.AdminOrderListView.as_view(), name='admin_orders'),
+    path('admin/customers/', views.AdminCustomerListView.as_view(), name='admin_customers'),
+    path('admin/staff/', views.AdminStaffListView.as_view(), name='admin_staff'),
+    path('admin/offers/', views.AdminOfferListView.as_view(), name='admin_offers'),
 ]
-

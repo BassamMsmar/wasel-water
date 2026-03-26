@@ -59,13 +59,13 @@ class BrandDetail(ListView):
 
 
     def get_queryset(self):
-        brand = Brand.objects.get(slug=self.kwargs['slug'])
+        brand = get_object_or_404(Brand, slug=self.kwargs['slug'])
         return super().get_queryset().filter(brand=brand) 
     
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["brand"] = Brand.objects.get(slug=self.kwargs['slug'])
+        context["brand"] = get_object_or_404(Brand, slug=self.kwargs['slug'])
         return context
 
 
@@ -80,12 +80,12 @@ class CategoryDetail(ListView):
     template_name = 'products/category_detail.html'
 
     def get_queryset(self):
-        category = Category.objects.get(slug=self.kwargs['slug'])
+        category = get_object_or_404(Category, slug=self.kwargs['slug'])
         return super().get_queryset().filter(category=category)  
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["category"] = Category.objects.get(slug=self.kwargs['slug'])
+        context["category"] = get_object_or_404(Category, slug=self.kwargs['slug'])
         return context
 
 
