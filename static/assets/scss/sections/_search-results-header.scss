@@ -1,0 +1,267 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Search Results Header Section
+--------------------------------------------------------------*/
+.search-results-header {
+  .search-panel {
+    background-color: color-mix(in srgb, var(--accent-color), transparent 92%);
+    border-radius: 16px;
+    padding: 40px 30px;
+    margin-bottom: 24px;
+  }
+
+  .search-bar {
+    .search-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background-color: var(--surface-color);
+      border: 2px solid color-mix(in srgb, var(--accent-color), transparent 60%);
+      border-radius: 12px;
+      padding: 6px 6px 6px 48px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+      &:focus-within {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-color), transparent 85%);
+      }
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      font-size: 1.1rem;
+      color: color-mix(in srgb, var(--default-color), transparent 50%);
+      pointer-events: none;
+    }
+
+    .form-control {
+      border: none;
+      background: transparent;
+      color: var(--default-color);
+      font-size: 1rem;
+      padding: 10px 12px;
+      box-shadow: none;
+
+      &:focus {
+        box-shadow: none;
+      }
+
+      &::placeholder {
+        color: color-mix(in srgb, var(--default-color), transparent 65%);
+      }
+    }
+
+    .submit-btn {
+      background-color: var(--accent-color);
+      color: var(--contrast-color);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 10px 28px;
+      border-radius: 8px;
+      border: none;
+      white-space: nowrap;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+
+      &:hover {
+        background-color: color-mix(in srgb, var(--accent-color), #000 15%);
+        transform: translateY(-1px);
+      }
+    }
+  }
+
+  .results-toolbar {
+    background-color: var(--surface-color);
+    border: 1px solid color-mix(in srgb, var(--default-color), transparent 88%);
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+
+  .result-summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .result-badge {
+    display: inline-block;
+    background-color: var(--accent-color);
+    color: var(--contrast-color);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 5px 14px;
+    border-radius: 6px;
+    letter-spacing: 0.3px;
+  }
+
+  .result-query {
+    font-size: 0.95rem;
+    color: color-mix(in srgb, var(--default-color), transparent 30%);
+
+    em {
+      color: var(--accent-color);
+      font-style: normal;
+      font-weight: 600;
+    }
+  }
+
+  .active-filters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    .active-filters-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--heading-color);
+      white-space: nowrap;
+
+      i {
+        margin-right: 3px;
+      }
+    }
+  }
+
+  .chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--heading-color);
+    background-color: var(--surface-color);
+    border: 1px solid color-mix(in srgb, var(--accent-color), transparent 50%);
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+
+    i:first-child {
+      color: var(--accent-color);
+      font-size: 0.8rem;
+    }
+
+    .chip-remove {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      padding: 0;
+      margin-left: 2px;
+      cursor: pointer;
+      color: color-mix(in srgb, var(--default-color), transparent 50%);
+      transition: color 0.3s ease;
+
+      i {
+        font-size: 0.65rem;
+      }
+
+      &:hover {
+        color: #dc3545;
+      }
+    }
+
+    &:hover {
+      border-color: var(--accent-color);
+      background-color: color-mix(in srgb, var(--accent-color), transparent 93%);
+    }
+  }
+
+  .sort-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .sort-icon {
+      color: var(--accent-color);
+      font-size: 1rem;
+    }
+
+    .form-select {
+      border: 1px solid color-mix(in srgb, var(--default-color), transparent 80%);
+      border-radius: 8px;
+      color: var(--default-color);
+      background-color: var(--surface-color);
+      font-size: 0.9rem;
+      padding: 8px 36px 8px 12px;
+      transition: all 0.3s ease;
+
+      &:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color), transparent 85%);
+      }
+    }
+  }
+
+  @media (max-width: 992px) {
+    .search-panel {
+      padding: 30px 20px;
+    }
+
+    .active-filters {
+      .active-filters-label {
+        width: 100%;
+      }
+    }
+
+    .sort-control {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .search-panel {
+      padding: 24px 16px;
+    }
+
+    .search-bar {
+      .search-input-wrap {
+        flex-wrap: wrap;
+        padding: 8px 8px 8px 44px;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px 8px;
+      }
+
+      .submit-btn {
+        width: 100%;
+        margin-top: 6px;
+        padding: 10px 20px;
+      }
+    }
+
+    .results-toolbar {
+      padding: 16px;
+    }
+
+    .result-summary {
+      justify-content: center;
+    }
+
+    .active-filters {
+      justify-content: center;
+
+      .active-filters-label {
+        text-align: center;
+      }
+    }
+
+    .chip-list {
+      justify-content: center;
+    }
+
+    .sort-control {
+      justify-content: center;
+    }
+  }
+}

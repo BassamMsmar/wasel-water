@@ -1,0 +1,350 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Call To Action Section
+--------------------------------------------------------------*/
+.call-to-action {
+  position: relative;
+
+  .promo-panel {
+    padding: 44px 36px;
+    background: linear-gradient(145deg, var(--accent-color), color-mix(in srgb, var(--accent-color), black 20%));
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--contrast-color), transparent 90%);
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: -30px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--contrast-color), transparent 93%);
+    }
+
+    @media (max-width: 992px) {
+      padding: 32px 24px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--contrast-color);
+      line-height: 1.15;
+      margin-bottom: 20px;
+      font-family: var(--heading-font);
+      position: relative;
+      z-index: 2;
+
+      @media (max-width: 992px) {
+        font-size: 2.4rem;
+      }
+
+      @media (max-width: 576px) {
+        font-size: 2rem;
+      }
+    }
+  }
+
+  .sale-ribbon {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: color-mix(in srgb, var(--contrast-color), transparent 85%);
+    padding: 8px 18px;
+    border-radius: 30px;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 2;
+
+    i {
+      color: #ffc107;
+      font-size: 16px;
+    }
+
+    span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--contrast-color);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+  }
+
+  .lead-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: color-mix(in srgb, var(--contrast-color), transparent 20%);
+    margin-bottom: 32px;
+    position: relative;
+    z-index: 2;
+
+    @media (max-width: 576px) {
+      font-size: 15px;
+    }
+  }
+
+  .timer-section {
+    margin-bottom: 32px;
+    position: relative;
+    z-index: 2;
+
+    .timer-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: color-mix(in srgb, var(--contrast-color), transparent 30%);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      i {
+        font-size: 16px;
+      }
+    }
+
+    .countdown {
+      gap: 12px;
+
+      @media (max-width: 576px) {
+        gap: 8px;
+      }
+
+      >div {
+        background: color-mix(in srgb, var(--contrast-color), transparent 88%);
+        border-radius: 12px;
+        padding: 14px 12px;
+        min-width: 68px;
+        text-align: center;
+
+        @media (max-width: 576px) {
+          padding: 10px 8px;
+          min-width: 56px;
+        }
+
+        h3 {
+          font-size: 1.8rem;
+          font-weight: 700;
+          color: var(--contrast-color);
+          margin-bottom: 4px;
+          font-family: var(--heading-font);
+
+          @media (max-width: 576px) {
+            font-size: 1.5rem;
+          }
+        }
+
+        h4 {
+          font-size: 11px;
+          font-weight: 500;
+          color: color-mix(in srgb, var(--contrast-color), transparent 35%);
+          text-transform: uppercase;
+          letter-spacing: 0.4px;
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  .cta-group {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
+
+    @media (max-width: 576px) {
+      flex-direction: column;
+    }
+
+    .btn-grab-deal {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: var(--contrast-color);
+      color: var(--accent-color);
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 24px color-mix(in srgb, black, transparent 80%);
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 32px color-mix(in srgb, black, transparent 70%);
+        color: var(--accent-color);
+      }
+
+      @media (max-width: 576px) {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .btn-browse {
+      display: inline-flex;
+      align-items: center;
+      padding: 14px 28px;
+      background: transparent;
+      color: var(--contrast-color);
+      text-decoration: none;
+      border: 2px solid color-mix(in srgb, var(--contrast-color), transparent 60%);
+      border-radius: 50px;
+      font-weight: 500;
+      font-size: 15px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: var(--contrast-color);
+        background: color-mix(in srgb, var(--contrast-color), transparent 90%);
+        color: var(--contrast-color);
+      }
+
+      @media (max-width: 576px) {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
+  .deal-card {
+    background: var(--surface-color);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px color-mix(in srgb, var(--default-color), transparent 92%);
+    transition: all 0.3s ease;
+    border: 1px solid color-mix(in srgb, var(--default-color), transparent 93%);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px color-mix(in srgb, var(--default-color), transparent 85%);
+
+      .deal-img img {
+        transform: scale(1.05);
+      }
+    }
+
+    .deal-img {
+      position: relative;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+
+        @media (max-width: 768px) {
+          height: 180px;
+        }
+      }
+
+      .savings-tag {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: var(--accent-color);
+        color: var(--contrast-color);
+        padding: 5px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+      }
+    }
+
+    .deal-info {
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+
+      .rating-row {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        margin-bottom: 10px;
+
+        i {
+          color: #ffc107;
+          font-size: 13px;
+        }
+
+        span {
+          font-size: 12px;
+          color: color-mix(in srgb, var(--default-color), transparent 45%);
+          margin-left: 6px;
+        }
+      }
+
+      h6 {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--heading-color);
+        margin-bottom: 12px;
+        line-height: 1.4;
+      }
+
+      .pricing {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin-bottom: 16px;
+
+        .was {
+          font-size: 14px;
+          color: color-mix(in srgb, var(--default-color), transparent 50%);
+          text-decoration: line-through;
+        }
+
+        .now {
+          font-size: 20px;
+          font-weight: 700;
+          color: var(--accent-color);
+        }
+      }
+
+      .add-to-cart {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 20px;
+        background: color-mix(in srgb, var(--accent-color), transparent 90%);
+        color: var(--accent-color);
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-top: auto;
+
+        &:hover {
+          background: var(--accent-color);
+          color: var(--contrast-color);
+        }
+      }
+    }
+  }
+}

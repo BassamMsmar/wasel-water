@@ -1,0 +1,458 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Privacy Section
+--------------------------------------------------------------*/
+.privacy {
+
+  // Overview Banner
+  .overview-banner {
+    border-left: 4px solid var(--accent-color);
+    padding: 30px 30px 30px 35px;
+
+    .revision-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--accent-color);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 18px;
+
+      i {
+        font-size: 0.9rem;
+      }
+    }
+
+    h2 {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    p {
+      font-size: 1.05rem;
+      color: color-mix(in srgb, var(--default-color), transparent 25%);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      h2 {
+        font-size: 1.8rem;
+      }
+    }
+  }
+
+  // Trust Indicators
+  .trust-indicators {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    max-width: 260px;
+
+    .indicator-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 20px;
+      background-color: var(--surface-color);
+      border: 1px solid color-mix(in srgb, var(--accent-color), transparent 85%);
+      border-radius: 12px;
+      transition: all 0.3s;
+
+      &:hover {
+        border-color: var(--accent-color);
+        transform: translateX(-4px);
+      }
+
+      i {
+        font-size: 1.4rem;
+        color: var(--accent-color);
+      }
+
+      span {
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  // Data Practices Tabs
+  .data-practices {
+    margin-bottom: 70px;
+
+    .practice-tabs {
+      border-bottom: 2px solid color-mix(in srgb, var(--default-color), transparent 90%);
+      gap: 5px;
+      margin-bottom: 0;
+
+      .nav-link {
+        border: none;
+        border-bottom: 3px solid transparent;
+        padding: 14px 24px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: color-mix(in srgb, var(--default-color), transparent 40%);
+        background: transparent;
+        border-radius: 0;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        i {
+          font-size: 1.1rem;
+        }
+
+        &:hover {
+          color: var(--accent-color);
+          border-bottom-color: color-mix(in srgb, var(--accent-color), transparent 60%);
+        }
+
+        &.active {
+          color: var(--accent-color);
+          border-bottom-color: var(--accent-color);
+          background: transparent;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .nav-link {
+          padding: 10px 14px;
+          font-size: 0.85rem;
+
+          i {
+            display: none;
+          }
+        }
+      }
+    }
+
+    .tab-content {
+      background-color: var(--surface-color);
+      border: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+      border-top: none;
+      border-radius: 0 0 16px 16px;
+      padding: 35px 30px;
+    }
+
+    .practice-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 0;
+        color: color-mix(in srgb, var(--default-color), transparent 15%);
+        font-size: 0.95rem;
+        border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 93%);
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        i {
+          color: var(--accent-color);
+          font-size: 1rem;
+          margin-top: 3px;
+          flex-shrink: 0;
+        }
+      }
+    }
+  }
+
+  // Protection Framework
+  .protection-framework {
+    margin-bottom: 70px;
+
+    .framework-title {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .framework-subtitle {
+      color: color-mix(in srgb, var(--default-color), transparent 35%);
+      font-size: 1.05rem;
+      margin: 0;
+    }
+
+    .framework-step {
+      position: relative;
+      background-color: var(--surface-color);
+      border: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+      border-radius: 16px;
+      padding: 35px 25px 30px;
+      text-align: center;
+      transition: all 0.3s;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background-color: color-mix(in srgb, var(--accent-color), transparent 70%);
+        transition: background-color 0.3s;
+      }
+
+      &:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 30px color-mix(in srgb, var(--default-color), transparent 90%);
+
+        &::before {
+          background-color: var(--accent-color);
+        }
+
+        .step-number {
+          color: var(--accent-color);
+        }
+
+        .step-icon i {
+          transform: scale(1.15);
+        }
+      }
+
+      .step-number {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: color-mix(in srgb, var(--default-color), transparent 85%);
+        font-family: var(--heading-font);
+        line-height: 1;
+        margin-bottom: 10px;
+        transition: color 0.3s;
+      }
+
+      .step-icon {
+        margin-bottom: 18px;
+
+        i {
+          font-size: 2rem;
+          color: var(--accent-color);
+          transition: transform 0.3s;
+        }
+      }
+
+      h4 {
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      p {
+        color: color-mix(in srgb, var(--default-color), transparent 30%);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin: 0;
+      }
+    }
+  }
+
+  // Individual Rights
+  .individual-rights {
+    margin-bottom: 70px;
+    background: linear-gradient(160deg,
+        color-mix(in srgb, var(--accent-color), transparent 96%) 0%,
+        color-mix(in srgb, var(--accent-color), transparent 99%) 100%);
+    border-radius: 24px;
+    padding: 50px 40px;
+
+    @media (max-width: 768px) {
+      padding: 30px 20px;
+    }
+
+    .rights-intro {
+      h3 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+        font-weight: 700;
+      }
+
+      p {
+        color: color-mix(in srgb, var(--default-color), transparent 25%);
+        font-size: 1rem;
+        line-height: 1.7;
+        margin-bottom: 25px;
+      }
+
+      .rights-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--accent-color);
+        transition: gap 0.3s;
+
+        &:hover {
+          gap: 12px;
+        }
+      }
+    }
+
+    .right-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 22px;
+      background-color: var(--surface-color);
+      border-radius: 14px;
+      transition: all 0.3s;
+      height: 100%;
+
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px color-mix(in srgb, var(--default-color), transparent 90%);
+      }
+
+      .right-icon {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background-color: color-mix(in srgb, var(--accent-color), transparent 88%);
+
+        i {
+          font-size: 1.2rem;
+          color: var(--accent-color);
+        }
+      }
+
+      .right-info {
+        h4 {
+          font-size: 1.05rem;
+          margin-bottom: 6px;
+          font-weight: 700;
+        }
+
+        p {
+          color: color-mix(in srgb, var(--default-color), transparent 35%);
+          font-size: 0.88rem;
+          line-height: 1.5;
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  // Supplementary Policies
+  .supplementary-policies {
+    margin-bottom: 70px;
+
+    .policy-block {
+      padding: 35px 28px;
+      background-color: var(--surface-color);
+      border-radius: 16px;
+      border-left: 4px solid var(--accent-color);
+      height: 100%;
+      transition: all 0.3s;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px color-mix(in srgb, var(--default-color), transparent 92%);
+      }
+
+      .policy-icon {
+        margin-bottom: 18px;
+
+        i {
+          font-size: 1.8rem;
+          color: var(--accent-color);
+        }
+      }
+
+      h4 {
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+        font-weight: 700;
+      }
+
+      p {
+        color: color-mix(in srgb, var(--default-color), transparent 30%);
+        font-size: 0.92rem;
+        line-height: 1.65;
+        margin: 0;
+      }
+    }
+  }
+
+  // Contact Banner
+  .contact-banner {
+    .banner-wrapper {
+      background-color: var(--accent-color);
+      border-radius: 20px;
+      padding: 50px 40px;
+
+      @media (max-width: 768px) {
+        padding: 35px 25px;
+      }
+
+      .banner-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background-color: color-mix(in srgb, var(--contrast-color), transparent 80%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 22px;
+
+        i {
+          font-size: 1.6rem;
+          color: var(--contrast-color);
+        }
+      }
+
+      h4 {
+        font-size: 1.6rem;
+        color: var(--contrast-color);
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      p {
+        color: color-mix(in srgb, var(--contrast-color), transparent 20%);
+        font-size: 1rem;
+        margin-bottom: 28px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
+      }
+
+      .banner-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 13px 34px;
+        background-color: var(--contrast-color);
+        color: var(--accent-color);
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: all 0.3s;
+
+        i {
+          font-size: 1.3rem;
+        }
+
+        &:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 20px color-mix(in srgb, var(--default-color), transparent 70%);
+        }
+      }
+    }
+  }
+}

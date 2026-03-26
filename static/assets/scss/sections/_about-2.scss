@@ -1,0 +1,169 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# About 2 Section
+--------------------------------------------------------------*/
+.about-2 {
+  .intro-content {
+    margin-bottom: 1rem;
+
+    .badge-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 1.2rem;
+      border: 1px solid color-mix(in srgb, var(--accent-color) 40%, transparent);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-color);
+      margin-bottom: 1.25rem;
+
+      i {
+        font-size: 0.9rem;
+      }
+    }
+
+    .main-heading {
+      font-size: 2.4rem;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 1.25rem;
+
+      @media (max-width: 768px) {
+        font-size: 1.75rem;
+      }
+    }
+
+    .lead-text {
+      color: color-mix(in srgb, var(--default-color) 70%, transparent);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+  }
+
+  .media-wrapper {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      display: block;
+    }
+
+    .media-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, color-mix(in srgb, var(--default-color) 40%, transparent), transparent 60%);
+      pointer-events: none;
+    }
+
+    .play-btn-circle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background-color: var(--accent-color);
+      color: var(--contrast-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      z-index: 2;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 24px color-mix(in srgb, var(--accent-color) 40%, transparent);
+
+      &:hover {
+        transform: translate(-50%, -50%) scale(1.12);
+        background-color: color-mix(in srgb, var(--accent-color) 85%, black);
+        color: var(--contrast-color);
+      }
+    }
+  }
+
+  .extra-text {
+    color: color-mix(in srgb, var(--default-color) 70%, transparent);
+    font-size: 0.9rem;
+    line-height: 1.65;
+    margin-bottom: 0;
+  }
+
+  .info-card {
+    display: flex;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    border-left: 3px solid var(--accent-color);
+    background-color: color-mix(in srgb, var(--accent-color) 4%, var(--surface-color));
+    border-radius: 0 10px 10px 0;
+    margin-bottom: 1.25rem;
+    position: relative;
+    transition: all 0.3s ease;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .icon-circle {
+      flex-shrink: 0;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: var(--accent-color);
+      color: var(--contrast-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      transition: all 0.3s ease;
+    }
+
+    .info-body {
+      h3 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+
+        a {
+          color: var(--heading-color);
+
+          &:hover {
+            color: var(--accent-color);
+          }
+        }
+      }
+
+      p {
+        color: color-mix(in srgb, var(--default-color) 75%, transparent);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 0;
+      }
+    }
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--accent-color) 8%, var(--surface-color));
+      transform: translateX(5px);
+
+      .icon-circle {
+        background-color: color-mix(in srgb, var(--accent-color) 85%, black);
+      }
+    }
+  }
+
+  @media (max-width: 992px) {
+    .media-wrapper {
+      .play-btn-circle {
+        width: 56px;
+        height: 56px;
+        font-size: 1.5rem;
+      }
+    }
+  }
+}
