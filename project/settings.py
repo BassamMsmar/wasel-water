@@ -11,16 +11,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from pathlib import Path
-<<<<<<< HEAD
 from dotenv import load_dotenv
 
 
 load_dotenv()
-=======
-import dotenv
-
-dotenv.load_dotenv()
->>>>>>> dev
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,21 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-<<<<<<< HEAD
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-%*0_r=0_4_^aks$j#ct-fwm(-1zx4=kwk90&oo@@8g8*2b!1i$')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', True)
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(',')
-=======
-SECRET_KEY = os.getenv('SECRET_KEY')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', False)
-
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
->>>>>>> dev
 
 INTERNAL_IPS = [
     '127.0.0.1',
@@ -121,10 +106,6 @@ WSGI_APPLICATION = 'project.wsgi.application'
 #     }
 # }
 
-<<<<<<< HEAD
-=======
-# postgresql
->>>>>>> dev
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
