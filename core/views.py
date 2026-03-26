@@ -47,3 +47,13 @@ def home(request):
     }
     
     return render(request, 'home.html', context)
+
+
+def about(request):
+    company = Company.objects.first()
+    return render(request, 'about.html', {'company': company})
+
+
+def contact(request):
+    company = Company.objects.first()
+    return render(request, 'contact.html', {'company': company})

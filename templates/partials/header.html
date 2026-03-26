@@ -1,0 +1,164 @@
+{% load static %}
+<header id="header" class="header position-relative">
+    <!-- Header Bar -->
+    <div class="header-bar">
+      <div class="container-fluid container-xl">
+        <div class="d-flex align-items-center justify-content-between">
+
+          <!-- Logo -->
+          <a href="{% url 'home' %}" class="logo d-flex align-items-center">
+            <!-- Uncomment the line below if you also wish to use an image logo -->
+            <!-- <img src="{% static 'assets/img/logo.webp' %}" alt=""> -->
+            <h1 class="sitename">SmartStore</h1>
+          </a>
+
+          <!-- Search -->
+          <form class="header-search d-none d-lg-flex">
+            <input type="text" class="search-input" placeholder="Search products, categories, brands...">
+            <button class="search-btn" type="submit">
+              <i class="bi bi-search"></i>
+              <span class="d-none d-xl-inline">Search</span>
+            </button>
+          </form>
+
+          <!-- Quick Links -->
+          <div class="quick-links d-none d-xl-flex align-items-center">
+            <a href="#" class="quick-link">
+              <i class="bi bi-geo-alt"></i>
+              <span>Stores</span>
+            </a>
+            <a href="#" class="quick-link">
+              <i class="bi bi-question-circle"></i>
+              <span>Help</span>
+            </a>
+          </div>
+
+          <!-- Header Actions -->
+          <div class="header-actions d-flex align-items-center">
+
+            <!-- Mobile Search Toggle -->
+            <button class="action-icon mobile-search-toggle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSearch" aria-expanded="false" aria-controls="mobileSearch">
+              <i class="bi bi-search"></i>
+            </button>
+
+            <!-- Account -->
+            <div class="dropdown account-dropdown">
+              <button class="action-icon" data-bs-toggle="dropdown" aria-label="Account">
+                <i class="bi bi-person"></i>
+                <span class="action-label d-none d-md-inline">Account</span>
+              </button>
+              <div class="dropdown-menu account-panel">
+                <div class="account-panel-header">
+                  <h6>Welcome!</h6>
+                  <p>Sign in for the best experience</p>
+                </div>
+                <div class="account-panel-auth">
+                  <a href="#" class="btn btn-signin">Sign In</a>
+                  <a href="#" class="btn btn-register">Create Account</a>
+                </div>
+                <div class="account-panel-links">
+                  <a href="#">
+                    <i class="bi bi-box-seam"></i>
+                    <span>My Orders</span>
+                  </a>
+                  <a href="#">
+                    <i class="bi bi-arrow-return-left"></i>
+                    <span>Returns &amp; Refunds</span>
+                  </a>
+                  <a href="#">
+                    <i class="bi bi-question-circle"></i>
+                    <span>Help Center</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cart -->
+            <div class="dropdown cart-dropdown">
+              <button class="action-icon" data-bs-toggle="dropdown" aria-label="Cart">
+                <i class="bi bi-cart3"></i>
+                <span class="action-label d-none d-md-inline">Cart</span>
+                <span class="count-dot">0</span>
+              </button>
+              <div class="dropdown-menu cart-panel">
+                <div class="cart-panel-header">
+                  <h6>Shopping Cart</h6>
+                  <span class="item-count">0 items</span>
+                </div>
+                <div class="cart-panel-body">
+                   <p class="text-center p-3">Your cart is empty</p>
+                </div>
+                <div class="cart-panel-footer">
+                  <div class="cart-subtotal">
+                    <span>Subtotal</span>
+                    <span class="cart-subtotal-price">$0.00</span>
+                  </div>
+                  <a href="#" class="btn btn-checkout">Checkout</a>
+                  <a href="#" class="btn-viewcart">View full cart →</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mobile Navigation Toggle -->
+            <i class="mobile-nav-toggle d-xl-none bi bi-list me-0"></i>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="header-nav">
+      <div class="container-fluid container-xl position-relative">
+        <nav id="navmenu" class="navmenu">
+          <ul>
+            <li><a href="{% url 'home' %}" class="active">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Category</a></li>
+            <li><a href="#">Product Details</a></li>
+            <li><a href="#">Cart</a></li>
+            <li><a href="#">Checkout</a></li>
+            <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+              <ul>
+                <li><a href="#">Dropdown 1</a></li>
+                <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                  <ul>
+                    <li><a href="#">Deep Dropdown 1</a></li>
+                    <li><a href="#">Deep Dropdown 2</a></li>
+                    <li><a href="#">Deep Dropdown 3</a></li>
+                    <li><a href="#">Deep Dropdown 4</a></li>
+                    <li><a href="#">Deep Dropdown 5</a></li>
+                  </ul>
+                </li>
+                <li><a href="#">Dropdown 2</a></li>
+                <li><a href="#">Dropdown 3</a></li>
+                <li><a href="#">Dropdown 4</a></li>
+              </ul>
+            </li>
+            <li class="products-megamenu-1"><a href="#"><span>Megamenu 1</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+               <!-- Megamenu content omitted for brevity in partial if needed, but I'll include it for completeness as in original template -->
+               <!-- Simplified for now, can be filled back if user specifically needs the mega menu items linked to DB -->
+               <ul class="mobile-megamenu">
+                  <li><a href="#">Featured Products</a></li>
+                  <li><a href="#">New Arrivals</a></li>
+               </ul>
+            </li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Mobile Search Form -->
+    <div class="collapse" id="mobileSearch">
+      <div class="container-fluid container-xl">
+        <form class="mobile-search-form">
+          <div class="search-wrap">
+            <i class="bi bi-search"></i>
+            <input type="text" class="form-control" placeholder="Search products...">
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </header>

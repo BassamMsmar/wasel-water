@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home - SmartStore{% endblock %}
+
+{% block body_class %}index-page{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <section id="hero" class="hero section">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row justify-content-center text-center">
+          <div class="col-lg-8">
+            <div class="headline-block" data-aos="zoom-in" data-aos-delay="100">
+              <span class="tagline">{{ company.title|default:"Premium Collection" }}</span>
+              <h1 class="main-heading">{{ company.name|default:"Elevate Your Everyday Style" }}</h1>
+              <p class="lead-text">{{ company.description|default:"Curabitur aliquet quam id dui posuere blandit..." }}</p>
+              <div class="cta-group" data-aos="fade-up" data-aos-delay="200">
+                <a href="#products" class="btn-explore">Explore Collection</a>
+                <a href="#categories" class="btn-outline-explore"><i class="bi bi-grid me-2"></i>View Categories</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4 justify-content-center mt-4">
+          {% for product in latest_products|slice:":3" %}
+          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:1 }}00">
+            <div class="showcase-card {% if forloop.counter == 2 %}elevated{% endif %}">
+              <div class="card-visual">
+                <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
+                <span class="label {% if product.flag == 'sale' %}hot{% endif %}">{{ product.get_flag_display|default:product.flag }}</span>
+              </div>
+              <div class="card-details">
+                <h4>{{ product.name }}</h4>
+                <div class="pricing">
+                  <span class="now">${{ product.new_price }}</span>
+                  {% if product.old_price > product.new_price %}
+                  <span class="was">${{ product.old_price }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div><!-- End Showcase Card -->
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="row mt-5">
+          <div class="col-12" data-aos="fade-up" data-aos-delay="500">
+            <div class="perks-strip">
+              <div class="row g-3 justify-content-center">
+                <div class="col-lg-3 col-md-6 col-6">
+                  <div class="perk">
+                    <i class="bi bi-truck"></i>
+                    <span>Complimentary Delivery</span>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-6">
+                  <div class="perk">
+                    <i class="bi bi-shield-check"></i>
+                    <span>Certified Quality</span>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-6">
+                  <div class="perk">
+                    <i class="bi bi-chat-dots"></i>
+                    <span>Always-On Assistance</span>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-6">
+                  <div class="perk">
+                    <i class="bi bi-arrow-return-left"></i>
+                    <span>Hassle-Free Returns</span>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End Perks Strip -->
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /Hero Section -->
+
+    <!-- Promo Cards Section -->
+    <section id="promo-cards" class="promo-cards section">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        {% if banners %}
+        <div class="row mb-4">
+          <div class="col-12">
+            {% with banner=banners|first %}
+            <div class="featured-banner" data-aos="zoom-in" data-aos-delay="150">
+              <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="img-fluid">
+              <div class="banner-content">
+                <span class="badge-label">{{ banner.get_type_display|default:banner.type }}</span>
+                <h2>{{ banner.title }}</h2>
+                <p>{{ banner.description }}</p>
+                <a href="{{ banner.link }}" class="btn-explore">Browse Collection <i class="bi bi-arrow-right"></i></a>
+              </div>
+            </div>
+            {% endwith %}
+          </div>
+        </div><!-- End Featured Banner -->
+        {% endif %}
+
+        <div class="row g-4" id="categories">
+          {% for category in categories|slice:":4" %}
+          <div class="col-lg-3 col-md-6">
+            <div class="collection-tile" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:1 }}00">
+              <img src="{{ category.image.url }}" alt="{{ category.name }}" loading="lazy" class="img-fluid">
+              <div class="tile-content">
+                <h4>{{ category.name }}</h4>
+                <span class="item-count">{{ category.product_category.count }} items</span>
+                <a href="#" class="tile-link">Browse <i class="bi bi-chevron-right"></i></a>
+              </div>
+            </div>
+          </div><!-- End Collection Tile -->
+          {% endfor %}
+        </div>
+
+      </div>
+
+    </section><!-- /Promo Cards Section -->
+
+
+    {% for section in sections %}
+    <!-- Dynamic Section: {{ section.title }} -->
+    <section id="section-{{ section.id }}" class="section {% if forloop.counter|divisibleby:2 %}light-background{% endif %}">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>{{ section.title }}</h2>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row g-4">
+          {% for product in section.items %}
+          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
+            <div class="item-card">
+              <div class="item-img">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" loading="lazy">
+                {% if product.flag %}
+                <span class="tag tag-{{ product.flag }}">{{ product.get_flag_display|default:product.flag }}</span>
+                {% endif %}
+                <div class="quick-actions">
+                  <a href="#"><i class="bi bi-heart"></i></a>
+                  <a href="#"><i class="bi bi-bag-plus"></i></a>
+                </div>
+              </div>
+              <div class="item-details">
+                <h4><a href="#">{{ product.name }}</a></h4>
+                <div class="stars">
+                   <!-- Static stars for now, could be dynamic with Review model count -->
+                  <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i>
+                </div>
+                <div class="pricing">
+                  <span class="price">${{ product.new_price }}</span>
+                  {% if product.old_price > product.new_price %}
+                  <span class="was-price">${{ product.old_price }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div><!-- End Product Item -->
+          {% endfor %}
+        </div>
+
+      </div>
+
+    </section><!-- /Dynamic Section -->
+    {% endfor %}
+
+
+    <!-- Call To Action Section -->
+    <section id="call-to-action" class="call-to-action section light-background">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4 align-items-center">
+          <div class="col-lg-5" data-aos="fade-right" data-aos-delay="150">
+            <div class="promo-panel">
+              <div class="sale-ribbon" data-aos="fade-down" data-aos-delay="200">
+                <i class="bi bi-lightning-charge-fill"></i>
+                <span>Mega Clearance — Up to 60% Off</span>
+              </div>
+
+              <h2 data-aos="fade-up" data-aos-delay="250">Unbeatable Deals Await You</h2>
+
+              <p class="lead-text" data-aos="fade-up" data-aos-delay="300">Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae. Grab these limited-time offers before the countdown hits zero.</p>
+
+              <div class="timer-section" data-aos="fade-up" data-aos-delay="350">
+                <h5 class="timer-label"><i class="bi bi-clock"></i> Offer Expires In:</h5>
+                <div class="countdown d-flex" data-count="2026/12/31">
+                  <div>
+                    <h3 class="count-days"></h3>
+                    <h4>Days</h4>
+                  </div>
+                  <div>
+                    <h3 class="count-hours"></h3>
+                    <h4>Hours</h4>
+                  </div>
+                  <div>
+                    <h3 class="count-minutes"></h3>
+                    <h4>Minutes</h4>
+                  </div>
+                  <div>
+                    <h3 class="count-seconds"></h3>
+                    <h4>Seconds</h4>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cta-group" data-aos="fade-up" data-aos-delay="400">
+                <a href="#" class="btn-grab-deal">Grab the Deal <i class="bi bi-arrow-right"></i></a>
+                <a href="#" class="btn-browse">Browse Collection</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-7" data-aos="fade-left" data-aos-delay="200">
+            <div class="row gy-4">
+              <div class="col-md-6" data-aos="zoom-in" data-aos-delay="200">
+                <div class="deal-card">
+                  <div class="deal-img">
+                    <img src="{% static 'assets/img/product/product-3.webp' %}" alt="Featured Deal" class="img-fluid">
+                    <span class="savings-tag">Save 40%</span>
+                  </div>
+                  <div class="deal-info">
+                    <div class="rating-row">
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-half"></i>
+                      <span>(287)</span>
+                    </div>
+                    <h6>Ultra Noise-Cancelling Earbuds</h6>
+                    <div class="pricing">
+                      <span class="was">$149</span>
+                      <span class="now">$89</span>
+                    </div>
+                    <a href="#" class="add-to-cart"><i class="bi bi-bag-plus"></i> Add to Cart</a>
+                  </div>
+                </div>
+              </div><!-- End Deal Card -->
+
+              <div class="col-md-6" data-aos="zoom-in" data-aos-delay="250">
+                <div class="deal-card">
+                  <div class="deal-img">
+                    <img src="{% static 'assets/img/product/product-9.webp' %}" alt="Featured Deal" class="img-fluid">
+                    <span class="savings-tag">Save 55%</span>
+                  </div>
+                  <div class="deal-info">
+                    <div class="rating-row">
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <span>(412)</span>
+                    </div>
+                    <h6>Advanced Activity Band</h6>
+                    <div class="pricing">
+                      <span class="was">$99</span>
+                      <span class="now">$45</span>
+                    </div>
+                    <a href="#" class="add-to-cart"><i class="bi bi-bag-plus"></i> Add to Cart</a>
+                  </div>
+                </div>
+              </div><!-- End Deal Card -->
+
+              <div class="col-md-6" data-aos="zoom-in" data-aos-delay="300">
+                <div class="deal-card">
+                  <div class="deal-img">
+                    <img src="{% static 'assets/img/product/product-4.webp' %}" alt="Featured Deal" class="img-fluid">
+                    <span class="savings-tag">Save 30%</span>
+                  </div>
+                  <div class="deal-info">
+                    <div class="rating-row">
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star"></i>
+                      <span>(156)</span>
+                    </div>
+                    <h6>Ergonomic Daypack Pro</h6>
+                    <div class="pricing">
+                      <span class="was">$189</span>
+                      <span class="now">$132</span>
+                    </div>
+                    <a href="#" class="add-to-cart"><i class="bi bi-bag-plus"></i> Add to Cart</a>
+                  </div>
+                </div>
+              </div><!-- End Deal Card -->
+
+              <div class="col-md-6" data-aos="zoom-in" data-aos-delay="350">
+                <div class="deal-card">
+                  <div class="deal-img">
+                    <img src="{% static 'assets/img/product/product-8.webp' %}" alt="Featured Deal" class="img-fluid">
+                    <span class="savings-tag">Save 50%</span>
+                  </div>
+                  <div class="deal-info">
+                    <div class="rating-row">
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <i class="bi bi-star-fill"></i>
+                      <span>(203)</span>
+                    </div>
+                    <h6>Handcrafted Ceramic Set</h6>
+                    <div class="pricing">
+                      <span class="was">$85</span>
+                      <span class="now">$42</span>
+                    </div>
+                    <a href="#" class="add-to-cart"><i class="bi bi-bag-plus"></i> Add to Cart</a>
+                  </div>
+                </div>
+              </div><!-- End Deal Card -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /Call To Action Section -->
+{% endblock %}
