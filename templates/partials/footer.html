@@ -6,34 +6,31 @@
           <div class="col-lg-4 col-md-6">
             <div class="footer-widget footer-about">
               <a href="{% url 'home' %}" class="logo">
-                <span class="sitename">SmartStore</span>
+                <span class="sitename">{{ company.name|default:"Wasel Water" }}</span>
               </a>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in nibh vehicula, facilisis magna ut, consectetur lorem. Proin eget tortor risus.</p>
+              <p>{{ company.description|default:"Your trusted source for premium water and lifestyle products." }}</p>
 
               <div class="social-links mt-4">
                 <h5>Connect With Us</h5>
                 <div class="social-icons">
-                  <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-                  <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-                  <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
-                  <a href="#" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
-                  <a href="#" aria-label="Pinterest"><i class="bi bi-pinterest"></i></a>
-                  <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                  {% if company.facebook %}<a href="{{ company.facebook }}" aria-label="Facebook"><i class="bi bi-facebook"></i></a>{% endif %}
+                  {% if company.instagram %}<a href="{{ company.instagram }}" aria-label="Instagram"><i class="bi bi-instagram"></i></a>{% endif %}
+                  {% if company.twitter %}<a href="{{ company.twitter }}" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>{% endif %}
+                  {% if company.tiktok %}<a href="{{ company.tiktok }}" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>{% endif %}
+                  {% if company.whatsapp %}<a href="https://wa.me/{{ company.whatsapp }}" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>{% endif %}
                 </div>
               </div>
             </div>
           </div>
 
+
           <div class="col-lg-2 col-md-6 col-sm-6">
             <div class="footer-widget">
               <h4>Shop</h4>
               <ul class="footer-links">
-                <li><a href="#">New Arrivals</a></li>
-                <li><a href="#">Bestsellers</a></li>
-                <li><a href="#">Women's Clothing</a></li>
-                <li><a href="#">Men's Clothing</a></li>
-                <li><a href="#">Accessories</a></li>
-                <li><a href="#">Sale</a></li>
+                {% for category in categories|slice:":6" %}
+                <li><a href="#">{{ category.name }}</a></li>
+                {% endfor %}
               </ul>
             </div>
           </div>
@@ -58,31 +55,20 @@
               <div class="footer-contact">
                 <div class="contact-item">
                   <i class="bi bi-geo-alt"></i>
-                  <span>123 Fashion Street, New York, NY 10001</span>
+                  <span>{{ company.address }}</span>
                 </div>
                 <div class="contact-item">
                   <i class="bi bi-telephone"></i>
-                  <span>+1 (555) 123-4567</span>
+                  <span>{{ company.phone }}</span>
                 </div>
                 <div class="contact-item">
                   <i class="bi bi-envelope"></i>
-                  <span>hello@example.com</span>
+                  <span>{{ company.email }}</span>
                 </div>
                 <div class="contact-item">
                   <i class="bi bi-clock"></i>
-                  <span>Monday-Friday: 9am-6pm<br>Saturday: 10am-4pm<br>Sunday: Closed</span>
+                  <span>Monday-Saturday: 11am-11pm<br>Sunday: Closed</span>
                 </div>
-              </div>
-
-              <div class="app-buttons mt-4">
-                <a href="#" class="app-btn">
-                  <i class="bi bi-apple"></i>
-                  <span>App Store</span>
-                </a>
-                <a href="#" class="app-btn">
-                  <i class="bi bi-google-play"></i>
-                  <span>Google Play</span>
-                </a>
               </div>
             </div>
           </div>

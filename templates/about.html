@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}About - SmartStore{% endblock %}
+{% block title %}{{ company.name|default:"SmartStore" }} - About Us{% endblock %}
 
 {% block body_class %}about-page{% endblock %}
 
@@ -27,9 +27,9 @@
         <div class="row gy-4 align-items-center justify-content-between">
 
           <div class="col-xl-5" data-aos="fade-up" data-aos-delay="200">
-            <span class="about-meta">Established 2026</span>
-            <h2 class="about-title">Providing the best shopping experience since day one</h2>
-            <p class="about-description">Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <span class="about-meta">Established {% if company.established_year %}{{ company.established_year }}{% else %}2026{% endif %}</span>
+            <h2 class="about-title">{{ company.about_title|default:"Providing the best shopping experience since day one" }}</h2>
+            <p class="about-description">{{ company.description|default:"Your trusted source for premium water and lifestyle products." }}</p>
 
             <div class="row gy-4">
               <div class="col-md-6">

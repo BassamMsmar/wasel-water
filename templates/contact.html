@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Contact - SmartStore{% endblock %}
+{% block title %}{{ company.name|default:"SmartStore" }} - Contact Us{% endblock %}
 
 {% block body_class %}contact-page{% endblock %}
 
@@ -33,7 +33,7 @@
                 <i class="bi bi-geo-alt flex-shrink-0"></i>
                 <div>
                   <h3>Location</h3>
-                  <p>A108 Adam Street, New York, NY 535022</p>
+                  <p>{{ company.address }}</p>
                 </div>
               </div><!-- End Info Item -->
 
@@ -41,7 +41,7 @@
                 <i class="bi bi-telephone flex-shrink-0"></i>
                 <div>
                   <h3>Call Us</h3>
-                  <p>+1 5589 55488 55</p>
+                  <p>{{ company.phone }}</p>
                 </div>
               </div><!-- End Info Item -->
 
@@ -49,7 +49,7 @@
                 <i class="bi bi-envelope flex-shrink-0"></i>
                 <div>
                   <h3>Email Us</h3>
-                  <p>info@example.com</p>
+                  <p>{{ company.email }}</p>
                 </div>
               </div><!-- End Info Item -->
 

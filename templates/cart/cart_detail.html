@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Your Cart - {{ company.name|default:"SmartStore" }}{% endblock %}
+
+{% block content %}
+    <!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">Shopping Cart</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li class="current">Cart</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
+
+    <!-- Cart Section -->
+    <section id="cart" class="cart section">
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4">
+          <div class="col-lg-8">
+            <div class="items-list">
+              {% for item in cart %}
+              <div class="cart-item" data-item-id="{{ item.product.id }}" data-item-type="{{ item.item_type }}">
+                <button class="dismiss-btn remove-item-btn" type="button">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+                <div class="row g-0 align-items-center">
+                  <div class="col-md-2 col-3">
+                    <div class="item-thumb px-2">
+                        {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid rounded" loading="lazy">
+                        {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center rounded" style="aspect-ratio: 1/1;">
+                            <i class="bi bi-image text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                  </div>
+                  <div class="col-md-10 col-9">
+                    <div class="item-body">
+                      <h6 class="item-name">
+                          {% if item.item_type == 'bundle' %}
+                          <a href="{% url 'products:bundle_list' %}">{{ item.product.name }}</a>
+                          {% else %}
+                          <a href="{% url 'products:product_detail' item.product.slug %}">{{ item.product.name }}</a>
+                          {% endif %}
+                      </h6>
+                      <div class="item-attributes">
+                        <span class="attribute-badge">{{ item.item_type|capfirst }}</span>
+                      </div>
+                      <div class="item-bottom">
+                        <div class="item-pricing">
+                          <span class="unit-price">${{ item.price }}</span>
+                        </div>
+                        <div class="quantity-selector">
+                          <button class="quantity-btn decrease update-qty" data-action="decrease"><i class="bi bi-dash"></i></button>
+                          <input type="number" class="quantity-input" value="{{ item.quantity }}" min="1">
+                          <button class="quantity-btn increase update-qty" data-action="increase"><i class="bi bi-plus"></i></button>
+                        </div>
+                        <div class="line-total">${{ item.total_price }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% empty %}
+              <div class="text-center py-5">
+                <i class="bi bi-cart-x fs-1 text-muted mb-3 d-block"></i>
+                <h3>Your cart is empty</h3>
+                <p>Looks like you haven't added anything to your cart yet.</p>
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary">Start Shopping</a>
+              </div>
+              {% endfor %}
+            </div>
+
+            {% if cart %}
+            <div class="cart-toolbar mt-4">
+              <a href="{% url 'products:product_list' %}" class="toolbar-link">
+                <i class="bi bi-arrow-left"></i> Continue Shopping
+              </a>
+            </div>
+            {% endif %}
+          </div>
+
+          {% if cart %}
+          <div class="col-lg-4">
+            <div class="order-panel sticky-top" style="top: 100px;">
+              <div class="panel-header">
+                <i class="bi bi-bag-check"></i>
+                <h4>Order Summary</h4>
+              </div>
+
+              <div class="panel-body">
+                <div class="cost-breakdown">
+                  <div class="cost-row">
+                    <span class="cost-label">Subtotal ({{ cart|length }} items)</span>
+                    <span class="cost-amount cart-total-price">${{ cart.get_total_price }}</span>
+                  </div>
+                  <div class="cost-row">
+                    <span class="cost-label">Shipping</span>
+                    <span class="text-success">Calculated at checkout</span>
+                  </div>
+                </div>
+
+                <div class="grand-total">
+                  <span>Estimated Total</span>
+                  <span class="total-amount cart-total-price">${{ cart.get_total_price }}</span>
+                </div>
+
+                <a href="{% url 'cart:cart_checkout' %}" class="btn checkout-btn w-100 mt-3">
+                  Proceed to Checkout <i class="bi bi-arrow-right"></i>
+                </a>
+
+                <div class="secure-badges mt-4">
+                  <p class="badges-label">Secure Payments</p>
+                  <div class="badges-row d-flex gap-3 justify-content-center">
+                    <i class="bi bi-credit-card fs-4"></i>
+                    <i class="bi bi-paypal fs-4"></i>
+                    <i class="bi bi-shield-lock fs-4"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // CSRF Token helper
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    // Update Quantity
+    $('.update-qty').on('click', function() {
+        const row = $(this).closest('.cart-item');
+        const productId = row.data('item-id');
+        const itemType = row.data('item-type');
+        const input = row.find('.quantity-input');
+        let qty = parseInt(input.val());
+        const action = $(this).data('action');
+
+        if (action === 'increase') qty++;
+        else if (action === 'decrease' && qty > 1) qty--;
+        else return;
+
+        $.ajax({
+            url: "{% url 'cart:cart_update' %}",
+            method: "POST",
+            data: {
+                'product_id': productId,
+                'item_type': itemType,
+                'quantity': qty,
+                'csrfmiddlewaretoken': csrftoken
+            },
+            success: function(response) {
+                input.val(qty);
+                row.find('.line-total').text('$' + response.item_total);
+                $('.cart-total-price').text('$' + response.total_price);
+            }
+        });
+    });
+
+    // Remove Item
+    $('.remove-item-btn').on('click', function() {
+        const row = $(this).closest('.cart-item');
+        const productId = row.data('item-id');
+        const itemType = row.data('item-type');
+
+        $.ajax({
+            url: "{% url 'cart:cart_remove' %}",
+            method: "POST",
+            data: {
+                'product_id': productId,
+                'item_type': itemType,
+                'csrfmiddlewaretoken': csrftoken
+            },
+            success: function(response) {
+                row.fadeOut(300, function() {
+                    $(this).remove();
+                    if ($('.cart-item').length === 0) {
+                        location.reload();
+                    } else {
+                        $('.cart-total-price').text('$' + response.cart_total);
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

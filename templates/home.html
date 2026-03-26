@@ -176,158 +176,74 @@
     {% endfor %}
 
 
-    <!-- Call To Action Section -->
-    <section id="call-to-action" class="call-to-action section light-background">
-
+    <!-- Offers & Deals Section -->
+    {% if offers %}
+    <section id="offers" class="offers section light-background">
       <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="section-title">
+          <h2>Exclusive Offers</h2>
+          <p>Don't miss out on our limited-time deals</p>
+        </div>
 
-        <div class="row gy-4 align-items-center">
-          <div class="col-lg-5" data-aos="fade-right" data-aos-delay="150">
-            <div class="promo-panel">
-              <div class="sale-ribbon" data-aos="fade-down" data-aos-delay="200">
-                <i class="bi bi-lightning-charge-fill"></i>
-                <span>Mega Clearance — Up to 60% Off</span>
-              </div>
-
-              <h2 data-aos="fade-up" data-aos-delay="250">Unbeatable Deals Await You</h2>
-
-              <p class="lead-text" data-aos="fade-up" data-aos-delay="300">Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae. Grab these limited-time offers before the countdown hits zero.</p>
-
-              <div class="timer-section" data-aos="fade-up" data-aos-delay="350">
-                <h5 class="timer-label"><i class="bi bi-clock"></i> Offer Expires In:</h5>
-                <div class="countdown d-flex" data-count="2026/12/31">
-                  <div>
-                    <h3 class="count-days"></h3>
-                    <h4>Days</h4>
-                  </div>
-                  <div>
-                    <h3 class="count-hours"></h3>
-                    <h4>Hours</h4>
-                  </div>
-                  <div>
-                    <h3 class="count-minutes"></h3>
-                    <h4>Minutes</h4>
-                  </div>
-                  <div>
-                    <h3 class="count-seconds"></h3>
-                    <h4>Seconds</h4>
-                  </div>
+        <div class="row gy-4">
+          {% for offer in offers %}
+          <div class="col-lg-6" data-aos="zoom-in" data-aos-delay="{{ forloop.counter }}00">
+            <div class="offer-card">
+              <div class="offer-img">
+                <img src="{{ offer.image.url }}" alt="{{ offer.title }}" class="img-fluid">
+                <div class="offer-overlay">
+                  <span class="offer-badge">Limited Time</span>
                 </div>
               </div>
-
-              <div class="cta-group" data-aos="fade-up" data-aos-delay="400">
-                <a href="#" class="btn-grab-deal">Grab the Deal <i class="bi bi-arrow-right"></i></a>
-                <a href="#" class="btn-browse">Browse Collection</a>
+              <div class="offer-content">
+                <h3>{{ offer.title }}</h3>
+                <p>{{ offer.description|truncatewords:20 }}</p>
+                {% if offer.products %}
+                <div class="offer-product">
+                  <span class="price">${{ offer.products.new_price }}</span>
+                  {% if offer.products.old_price > offer.products.new_price %}
+                  <span class="old-price">${{ offer.products.old_price }}</span>
+                  {% endif %}
+                </div>
+                {% endif %}
+                <a href="{% if offer.products %}/products/{{ offer.products.slug }}/{% else %}#{% endif %}" class="btn-primary">Claim Offer <i class="bi bi-arrow-right"></i></a>
               </div>
             </div>
           </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+    {% endif %}
 
-          <div class="col-lg-7" data-aos="fade-left" data-aos-delay="200">
-            <div class="row gy-4">
-              <div class="col-md-6" data-aos="zoom-in" data-aos-delay="200">
-                <div class="deal-card">
-                  <div class="deal-img">
-                    <img src="{% static 'assets/img/product/product-3.webp' %}" alt="Featured Deal" class="img-fluid">
-                    <span class="savings-tag">Save 40%</span>
-                  </div>
-                  <div class="deal-info">
-                    <div class="rating-row">
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-half"></i>
-                      <span>(287)</span>
-                    </div>
-                    <h6>Ultra Noise-Cancelling Earbuds</h6>
-                    <div class="pricing">
-                      <span class="was">$149</span>
-                      <span class="now">$89</span>
-                    </div>
-                    <a href="#" class="add-to-cart"><i class="bi bi-bag-plus"></i> Add to Cart</a>
-                  </div>
+    <!-- Newsletter / App Section (Replacement for generic CTA) -->
+    <section id="cta-premium" class="cta-premium section dark-background">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 text-center" data-aos="zoom-in">
+            <div class="cta-content">
+              <span class="subtitle">Join the SmartStore Family</span>
+              <h2>Stay Ahead of the Trends</h2>
+              <p>Subscribe to our newsletter and get 10% off your first order. Plus, be the first to know about new arrivals and exclusive sales.</p>
+              
+              <form class="newsletter-form mt-4">
+                <div class="input-group">
+                  <input type="email" class="form-control" placeholder="Enter your email address" required>
+                  <button class="btn btn-subscribe" type="submit">Subscribe Now</button>
                 </div>
-              </div><!-- End Deal Card -->
+              </form>
 
-              <div class="col-md-6" data-aos="zoom-in" data-aos-delay="250">
-                <div class="deal-card">
-                  <div class="deal-img">
-                    <img src="{% static 'assets/img/product/product-9.webp' %}" alt="Featured Deal" class="img-fluid">
-                    <span class="savings-tag">Save 55%</span>
-                  </div>
-                  <div class="deal-info">
-                    <div class="rating-row">
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <span>(412)</span>
-                    </div>
-                    <h6>Advanced Activity Band</h6>
-                    <div class="pricing">
-                      <span class="was">$99</span>
-                      <span class="now">$45</span>
-                    </div>
-                    <a href="#" class="add-to-cart"><i class="bi bi-bag-plus"></i> Add to Cart</a>
-                  </div>
+              <div class="app-downloads mt-5">
+                <p>Download our mobile app for a better shopping experience</p>
+                <div class="d-flex justify-content-center gap-3">
+                  <a href="#" class="app-link"><img src="{% static 'assets/img/app-store.png' %}" alt="App Store" style="height: 40px;"></a>
+                  <a href="#" class="app-link"><img src="{% static 'assets/img/play-store.png' %}" alt="Play Store" style="height: 40px;"></a>
                 </div>
-              </div><!-- End Deal Card -->
-
-              <div class="col-md-6" data-aos="zoom-in" data-aos-delay="300">
-                <div class="deal-card">
-                  <div class="deal-img">
-                    <img src="{% static 'assets/img/product/product-4.webp' %}" alt="Featured Deal" class="img-fluid">
-                    <span class="savings-tag">Save 30%</span>
-                  </div>
-                  <div class="deal-info">
-                    <div class="rating-row">
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star"></i>
-                      <span>(156)</span>
-                    </div>
-                    <h6>Ergonomic Daypack Pro</h6>
-                    <div class="pricing">
-                      <span class="was">$189</span>
-                      <span class="now">$132</span>
-                    </div>
-                    <a href="#" class="add-to-cart"><i class="bi bi-bag-plus"></i> Add to Cart</a>
-                  </div>
-                </div>
-              </div><!-- End Deal Card -->
-
-              <div class="col-md-6" data-aos="zoom-in" data-aos-delay="350">
-                <div class="deal-card">
-                  <div class="deal-img">
-                    <img src="{% static 'assets/img/product/product-8.webp' %}" alt="Featured Deal" class="img-fluid">
-                    <span class="savings-tag">Save 50%</span>
-                  </div>
-                  <div class="deal-info">
-                    <div class="rating-row">
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <i class="bi bi-star-fill"></i>
-                      <span>(203)</span>
-                    </div>
-                    <h6>Handcrafted Ceramic Set</h6>
-                    <div class="pricing">
-                      <span class="was">$85</span>
-                      <span class="now">$42</span>
-                    </div>
-                    <a href="#" class="add-to-cart"><i class="bi bi-bag-plus"></i> Add to Cart</a>
-                  </div>
-                </div>
-              </div><!-- End Deal Card -->
+              </div>
             </div>
           </div>
         </div>
-
       </div>
+    </section>
 
-    </section><!-- /Call To Action Section -->
 {% endblock %}
