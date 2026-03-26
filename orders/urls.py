@@ -4,7 +4,7 @@ from .views import OrderListView, PendingOrderListView, OrderDetailView, Payment
 app_name = 'orders'
 
 urlpatterns = [
-    path('', OrderListView.as_view(), name='list'),
+    path('', OrderListView.as_view(), name='order_list'),
     path('pending/', PendingOrderListView.as_view(), name='pending_list'),
     path('<int:pk>/', OrderDetailView.as_view(), name='detail'),
     path('<int:pk>/payment/', PaymentSelectionView.as_view(), name='payment_selection'),

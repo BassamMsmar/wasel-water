@@ -7,19 +7,18 @@
 
           <!-- Logo -->
           <a href="{% url 'home' %}" class="logo d-flex align-items-center">
-            <!-- Uncomment the line below if you also wish to use an image logo -->
             {% if company.logo %}
             <img src="{{ company.logo.url }}" alt="{{ company.name }}">
             {% endif %}
-            <h1 class="sitename">{{ company.name|default:"Wasel Water" }}</h1>
+            <h1 class="sitename">{{ company.name|default:"واصل ووتر" }}</h1>
           </a>
 
           <!-- Search -->
-          <form class="header-search d-none d-lg-flex">
-            <input type="text" class="search-input" placeholder="Search products, categories, brands...">
+          <form class="header-search d-none d-lg-flex" action="{% url 'products:product_list' %}" method="GET">
+            <input type="text" name="q" class="search-input" placeholder="ابحث عن المنتجات، الأصناف، العلامات التجارية...">
             <button class="search-btn" type="submit">
               <i class="bi bi-search"></i>
-              <span class="d-none d-xl-inline">Search</span>
+              <span class="d-none d-xl-inline">بحث</span>
             </button>
           </form>
 
@@ -27,11 +26,11 @@
           <div class="quick-links d-none d-xl-flex align-items-center">
             <a href="{% url 'settings:about' %}" class="quick-link">
               <i class="bi bi-info-circle"></i>
-              <span>About Us</span>
+              <span>من نحن</span>
             </a>
             <a href="{% url 'settings:contact' %}" class="quick-link">
               <i class="bi bi-envelope"></i>
-              <span>Contact</span>
+              <span>اتصل بنا</span>
             </a>
           </div>
 
@@ -45,59 +44,47 @@
 
             <!-- Account -->
             <div class="dropdown account-dropdown">
-              <button class="action-icon" data-bs-toggle="dropdown" aria-label="Account">
+              <button class="action-icon" data-bs-toggle="dropdown" aria-label="الحساب">
                 <i class="bi bi-person"></i>
-                <span class="action-label d-none d-md-inline">Account</span>
+                <span class="action-label d-none d-md-inline">حسابي</span>
               </button>
               <div class="dropdown-menu account-panel">
                 <div class="account-panel-header">
-                  <h6>Welcome!</h6>
-                  <p>Sign in for the best experience</p>
+                  <h6>أهلاً بك!</h6>
+                  <p>قم بتسجيل الدخول للحصول على أفضل تجربة</p>
                 </div>
+                {% if not user.is_authenticated %}
                 <div class="account-panel-auth">
-                  <a href="#" class="btn btn-signin">Sign In</a>
-                  <a href="#" class="btn btn-register">Create Account</a>
+                  <a href="{% url 'login' %}" class="btn btn-signin">تسجيل الدخول</a>
+                  <a href="{% url 'accounts:signup' %}" class="btn btn-register">إنشاء حساب</a>
                 </div>
+                {% else %}
                 <div class="account-panel-links">
-                  <a href="#">
+                  <a href="{% url 'orders:order_list' %}">
                     <i class="bi bi-box-seam"></i>
-                    <span>My Orders</span>
+                    <span>طلباتي</span>
                   </a>
-                  <a href="#">
-                    <i class="bi bi-arrow-return-left"></i>
-                    <span>Returns &amp; Refunds</span>
-                  </a>
-                  <a href="#">
-                    <i class="bi bi-question-circle"></i>
-                    <span>Help Center</span>
-                  </a>
+                  <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="dropdown-item p-0 border-0 bg-transparent text-muted" style="font-size: 14px;">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        <span>تسجيل الخروج</span>
+                    </button>
+                  </form>
                 </div>
+                {% endif %}
               </div>
             </div>
 
             <!-- Cart -->
             <div class="dropdown cart-dropdown">
-              <button class="action-icon" data-bs-toggle="dropdown" aria-label="Cart">
+              <button class="action-icon shadow-none" data-bs-toggle="dropdown" aria-label="السلة">
                 <i class="bi bi-cart3"></i>
-                <span class="action-label d-none d-md-inline">Cart</span>
-                <span class="count-dot">0</span>
+                <span class="action-label d-none d-md-inline">السلة</span>
+                <span class="count-dot">{{ cart|length }}</span>
               </button>
               <div class="dropdown-menu cart-panel">
-                <div class="cart-panel-header">
-                  <h6>Shopping Cart</h6>
-                  <span class="item-count">0 items</span>
-                </div>
-                <div class="cart-panel-body">
-                   <p class="text-center p-3">Your cart is empty</p>
-                </div>
-                <div class="cart-panel-footer">
-                  <div class="cart-subtotal">
-                    <span>Subtotal</span>
-                    <span class="cart-subtotal-price">$0.00</span>
-                  </div>
-                  <a href="#" class="btn btn-checkout">Checkout</a>
-                  <a href="#" class="btn-viewcart">View full cart →</a>
-                </div>
+                {% include "cart/partials/sidebar_cart.html" %}
               </div>
             </div>
 
@@ -113,32 +100,33 @@
     <div class="header-nav">
       <div class="container-fluid container-xl position-relative">
         <nav id="navmenu" class="navmenu">
-          <ul>
-            <li><a href="{% url 'home' %}" class="active">Home</a></li>
-            <li><a href="{% url 'settings:about' %}">About</a></li>
-            <li class="dropdown"><a href="#"><span>Categories</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <ul class="d-flex justify-content-center">
+            <li><a href="{% url 'home' %}">الرئيسية</a></li>
+            <li><a href="{% url 'products:product_list' %}">المتجر</a></li>
+            <li class="dropdown"><a href="#"><span>الأصناف</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
               <ul>
                 {% for category in categories %}
-                <li><a href="#">{{ category.name }}</a></li>
+                  {% if category.slug %}
+                  <li><a href="{% url 'products:category_detail' category.slug %}">{{ category.name }}</a></li>
+                  {% endif %}
                 {% endfor %}
               </ul>
             </li>
-            <li><a href="#">Carts</a></li>
-            <li><a href="#">Orders</a></li>
-            <li><a href="{% url 'settings:contact' %}">Contact</a></li>
+            <li><a href="{% url 'products:bundle_list' %}">الباقات</a></li>
+            <li><a href="{% url 'settings:about' %}">عن الشركة</a></li>
+            <li><a href="{% url 'settings:contact' %}">اتصل بنا</a></li>
           </ul>
         </nav>
       </div>
     </div>
 
-
     <!-- Mobile Search Form -->
     <div class="collapse" id="mobileSearch">
       <div class="container-fluid container-xl">
-        <form class="mobile-search-form">
+        <form class="mobile-search-form" action="{% url 'products:product_list' %}" method="GET">
           <div class="search-wrap">
             <i class="bi bi-search"></i>
-            <input type="text" class="form-control" placeholder="Search products...">
+            <input type="text" name="q" class="form-control" placeholder="ابحث عن المنتجات...">
           </div>
         </form>
       </div>

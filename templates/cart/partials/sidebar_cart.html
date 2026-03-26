@@ -1,7 +1,7 @@
 {% if cart %}
 <div class="cart-panel-header">
-  <h6>Shopping Cart</h6>
-  <span class="item-count">{{ cart|length }} items</span>
+  <h6>سلة التسوق</h6>
+  <span class="item-count">{{ cart|length }} منتجات</span>
 </div>
 <div class="cart-panel-body">
   {% for item in cart %}
@@ -20,13 +20,13 @@
           <a href="{% url 'products:product_detail' item.product.slug %}">{{ item.product.name }}</a>
           {% endif %}
       </h6>
-      <span class="cart-item-variant">{{ item.item_type|capfirst }}</span>
+      <span class="cart-item-variant">{% if item.item_type == 'bundle' %}باقة{% else %}منتج{% endif %}</span>
       <div class="cart-item-meta">
-        <span class="cart-item-price">${{ item.price }}</span>
-        <span class="cart-item-qty">Qty: {{ item.quantity }}</span>
+        <span class="cart-item-price">{{ item.price }}</span>
+        <span class="cart-item-qty">الكمية: {{ item.quantity }}</span>
       </div>
     </div>
-    <button class="cart-item-remove-sidebar" aria-label="Remove item" data-item-id="{{ item.product.id }}" data-item-type="{{ item.item_type }}">
+    <button class="cart-item-remove-sidebar" aria-label="إزالة" data-item-id="{{ item.product.id }}" data-item-type="{{ item.item_type }}">
       <i class="bi bi-x-lg"></i>
     </button>
   </div><!-- End Cart Item -->
@@ -34,16 +34,16 @@
 </div>
 <div class="cart-panel-footer">
   <div class="cart-subtotal">
-    <span>Subtotal</span>
-    <span class="cart-subtotal-price">${{ cart.get_total_price }}</span>
+    <span>المجموع الفرعي</span>
+    <span class="cart-subtotal-price">{{ cart.get_total_price }}</span>
   </div>
-  <a href="{% url 'cart:cart_checkout' %}" class="btn btn-checkout">Checkout</a>
-  <a href="{% url 'cart:cart_detail' %}" class="btn-viewcart">View full cart →</a>
+  <a href="{% url 'cart:checkout' %}" class="btn btn-checkout">إتمام الشراء</a>
+  <a href="{% url 'cart:cart_detail' %}" class="btn-viewcart">عرض السلة بالكامل ←</a>
 </div>
 {% else %}
 <div class="cart-panel-body text-center py-4">
     <i class="bi bi-cart-x fs-2 text-muted mb-2 d-block"></i>
-    <p>Your cart is empty</p>
-    <a href="{% url 'products:product_list' %}" class="btn btn-sm btn-outline-primary mt-2">Shop Now</a>
+    <p>سلة التسوق فارغة</p>
+    <a href="{% url 'products:product_list' %}" class="btn btn-sm btn-outline-primary mt-2">تسوق الآن</a>
 </div>
 {% endif %}

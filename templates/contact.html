@@ -1,21 +1,19 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ company.name|default:"SmartStore" }} - Contact Us{% endblock %}
-
-{% block body_class %}contact-page{% endblock %}
+{% block title %}اتصل بنا - {{ company.name|default:"واصل ووتر" }}{% endblock %}
 
 {% block content %}
     <!-- Page Title -->
-    <div class="page-title">
-      <div class="container-fluid container-xl">
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">اتصل بنا</h1>
         <nav class="breadcrumbs">
           <ol>
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li class="current">Contact</li>
+            <li><a href="{% url 'home' %}">الرئيسية</a></li>
+            <li class="current">اتصل بنا</li>
           </ol>
         </nav>
-        <h1>Contact Us</h1>
       </div>
     </div><!-- End Page Title -->
 
@@ -28,78 +26,83 @@
 
           <div class="col-lg-5">
 
-            <div class="info-wrap" data-aos="fade-up" data-aos-delay="200">
-              <div class="info-item d-flex">
-                <i class="bi bi-geo-alt flex-shrink-0"></i>
+            <div class="info-wrap p-4 bg-white shadow-sm rounded-4" data-aos="fade-up" data-aos-delay="200">
+              <div class="info-item d-flex mb-4">
+                <i class="bi bi-geo-alt flex-shrink-0 fs-4 text-primary me-3"></i>
                 <div>
-                  <h3>Location</h3>
-                  <p>{{ company.address }}</p>
+                  <h3 class="fs-5 fw-bold mb-1">الموقع</h3>
+                  <p class="mb-0 text-muted">{{ company.address|default:"جدة، المملكة العربية السعودية" }}</p>
                 </div>
               </div><!-- End Info Item -->
 
-              <div class="info-item d-flex">
-                <i class="bi bi-telephone flex-shrink-0"></i>
+              <div class="info-item d-flex mb-4">
+                <i class="bi bi-telephone flex-shrink-0 fs-4 text-primary me-3"></i>
                 <div>
-                  <h3>Call Us</h3>
-                  <p>{{ company.phone }}</p>
+                  <h3 class="fs-5 fw-bold mb-1">اتصل بنا</h3>
+                  <p class="mb-0 text-muted" dir="ltr">{{ company.phone|default:"+966XXXXXXXXX" }}</p>
                 </div>
               </div><!-- End Info Item -->
 
-              <div class="info-item d-flex">
-                <i class="bi bi-envelope flex-shrink-0"></i>
+              <div class="info-item d-flex mb-4">
+                <i class="bi bi-envelope flex-shrink-0 fs-4 text-primary me-3"></i>
                 <div>
-                  <h3>Email Us</h3>
-                  <p>{{ company.email }}</p>
+                  <h3 class="fs-5 fw-bold mb-1">البريد الإلكتروني</h3>
+                  <p class="mb-0 text-muted">{{ company.email|default:"info@waselwater.com" }}</p>
                 </div>
               </div><!-- End Info Item -->
 
-              <div class="info-item d-flex">
-                <i class="bi bi-clock flex-shrink-0"></i>
+              <div class="info-item d-flex mb-4">
+                <i class="bi bi-clock flex-shrink-0 fs-4 text-primary me-3"></i>
                 <div>
-                  <h3>Open Hours</h3>
-                  <p>Mon-Sat: 11AM - 11PM</p>
+                  <h3 class="fs-5 fw-bold mb-1">ساعات العمل</h3>
+                  <p class="mb-0 text-muted">الأحد - الخميس: 8 صباحاً - 5 مساءً</p>
                 </div>
               </div><!-- End Info Item -->
 
-              <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d48389.78314118045!2d-74.006138!3d40.710059!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sDowntown%20Conference%20Center!5e0!3m2!1sen!2sus!4v1676961268712!5m2!1sen!2sus" frameborder="0" style="border:0; width: 100%; height: 270px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <div class="rounded-4 overflow-hidden mt-4">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14844.246473489844!2d39.1916369!3d21.5414594!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x15c3d01fb1137e59%3A0xe059579737b118db!2z2KzYr9ip!5e0!3m2!1sar!2ssa!4v1711469123456!5m2!1sar!2ssa" frameborder="0" style="border:0; width: 100%; height: 270px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              </div>
             </div>
 
           </div>
 
           <div class="col-lg-7">
-            <form action="{% static 'forms/contact.php' %}" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="300">
-              <div class="row gy-4">
-
-                <div class="col-md-6">
-                  <label for="name-field" class="pb-2">Your Name</label>
-                  <input type="text" name="name" id="name-field" class="form-control" required="">
-                </div>
-
-                <div class="col-md-6">
-                  <label for="email-field" class="pb-2">Your Email</label>
-                  <input type="email" class="form-control" name="email" id="email-field" required="">
-                </div>
-
-                <div class="col-md-12">
-                  <label for="subject-field" class="pb-2">Subject</label>
-                  <input type="text" class="form-control" name="subject" id="subject-field" required="">
-                </div>
-
-                <div class="col-md-12">
-                  <label for="message-field" class="pb-2">Message</label>
-                  <textarea class="form-control" name="message" rows="10" id="message-field" required=""></textarea>
-                </div>
-
-                <div class="col-md-12 text-center">
-                  <div class="loading">Loading</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
-
-                  <button type="submit">Send Message</button>
-                </div>
-
-              </div>
-            </form>
+            <div class="contact-form-wrap p-4 p-md-5 bg-white shadow-sm rounded-4">
+                <h4 class="fw-bold mb-4">أرسل لنا رسالة</h4>
+                <form action="#" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="300">
+                  <div class="row gy-4">
+    
+                    <div class="col-md-6">
+                      <label for="name-field" class="form-label text-secondary small">الاسم</label>
+                      <input type="text" name="name" id="name-field" class="form-control" required="">
+                    </div>
+    
+                    <div class="col-md-6">
+                      <label for="email-field" class="form-label text-secondary small">البريد الإلكتروني</label>
+                      <input type="email" class="form-control" name="email" id="email-field" required="">
+                    </div>
+    
+                    <div class="col-md-12">
+                      <label for="subject-field" class="form-label text-secondary small">الموضوع</label>
+                      <input type="text" class="form-control" name="subject" id="subject-field" required="">
+                    </div>
+    
+                    <div class="col-md-12">
+                      <label for="message-field" class="form-label text-secondary small">الرسالة</label>
+                      <textarea class="form-control" name="message" rows="6" id="message-field" required=""></textarea>
+                    </div>
+    
+                    <div class="col-md-12 text-center mt-4">
+                      <div class="loading d-none">جاري الإرسال...</div>
+                      <div class="error-message d-none">حدث خطأ أثناء الإرسال.</div>
+                      <div class="sent-message d-none">تم إرسال رسالتك بنجاح. شكراً لك!</div>
+    
+                      <button type="submit" class="btn btn-primary px-5 py-3 fw-bold rounded-pill shadow-sm">إرسال الرسالة</button>
+                    </div>
+    
+                  </div>
+                </form>
+            </div>
           </div><!-- End Contact Form -->
 
         </div>

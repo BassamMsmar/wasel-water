@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}اختيار طريقة الدفع - طلب رقم {{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="page-title light-background">
+  <div class="container d-lg-flex justify-content-between align-items-center">
+    <h1 class="mb-2 mb-lg-0">إكمال عملية الدفع</h1>
+    <nav class="breadcrumbs">
+      <ol>
+        <li><a href="{% url 'home' %}">الرئيسية</a></li>
+        <li><a href="{% url 'orders:order_list' %}">طلباتي</a></li>
+        <li class="current">الدفع</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="bg-white p-4 p-md-5 shadow-sm rounded-4">
+                    <div class="text-center mb-5">
+                        <div class="mb-3 text-primary">
+                            <i class="bi bi-wallet2" style="font-size: 3rem;"></i>
+                        </div>
+                        <h2 class="fw-bold">اختر طريقة الدفع المناسبة</h2>
+                        <p class="text-muted">طلب رقم: #{{ order.id }} | المبلغ الإجمالي: {{ order.total_price }}</p>
+                    </div>
+
+                    <form action="{% url 'orders:complete_payment' order.pk %}" method="POST">
+                        {% csrf_token %}
+                        <div class="payment-options">
+                            <!-- Cash on Delivery -->
+                            <div class="payment-option-card mb-3">
+                                <input type="radio" name="payment_method" id="cod" value="cod" class="btn-check" checked autocomplete="off">
+                                <label class="btn btn-outline-primary d-flex align-items-center justify-content-between p-4 rounded-4 w-100 text-start" for="cod">
+                                    <div class="d-flex align-items-center">
+                                        <div class="option-icon me-3 bg-primary-light p-3 rounded-circle">
+                                            <i class="bi bi-cash-stack fs-3"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-bold fs-5 d-block">الدفع عند الاستلام</span>
+                                            <small class="text-muted">ادفع نقداً عند وصول مندوبنا إليك</small>
+                                        </div>
+                                    </div>
+                                    <i class="bi bi-check-circle-fill check-icon"></i>
+                                </label>
+                            </div>
+
+                            <!-- Online Payment (Placeholder) -->
+                            <div class="payment-option-card mb-3 opacity-50">
+                                <input type="radio" name="payment_method" id="online" value="online" class="btn-check" disabled autocomplete="off">
+                                <label class="btn btn-outline-secondary d-flex align-items-center justify-content-between p-4 rounded-4 w-100 text-start" for="online">
+                                    <div class="d-flex align-items-center">
+                                        <div class="option-icon me-3 bg-light p-3 rounded-circle">
+                                            <i class="bi bi-credit-card fs-3"></i>
+                                        </div>
+                                        <div>
+                                            <span class="fw-bold fs-5 d-block">الدفع ببطاقة الصراف / فيزا (قريباً)</span>
+                                            <small class="text-muted">خدمة الدفع الإلكتروني ستتوفر قريباً</small>
+                                        </div>
+                                    </div>
+                                    <i class="bi bi-lock-fill"></i>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+                                تأكيد الطلب والدفع <i class="bi bi-arrow-left ms-2"></i>
+                            </button>
+                            <div class="mt-3">
+                                <a href="{% url 'orders:detail' order.pk %}" class="text-decoration-none text-muted">
+                                    <small>إلغاء والعودة لتفاصيل الطلب</small>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .bg-primary-light { background-color: rgba(13, 110, 253, 0.1); }
+    .payment-option-card .btn-check:checked + .btn {
+        background-color: #f8f9ff;
+        border-color: #0d6efd;
+        border-width: 2px;
+    }
+    .payment-option-card .check-icon { display: none; }
+    .payment-option-card .btn-check:checked + .btn .check-icon { display: block; }
+    .payment-option-card .btn-outline-primary:hover {
+        background-color: #f8f9ff;
+    }
+</style>
+{% endblock %}

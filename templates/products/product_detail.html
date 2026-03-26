@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ product.name }} - {{ company.name|default:"SmartStore" }}{% endblock %}
+{% block title %}{{ product.name }} - {{ company.name|default:"واصل ووتر" }}{% endblock %}
 
 {% block content %}
     <!-- Page Title -->
     <div class="page-title light-background">
       <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">Product Details</h1>
+        <h1 class="mb-2 mb-lg-0">تفاصيل المنتج</h1>
         <nav class="breadcrumbs">
           <ol>
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="{% url 'products:product_list' %}">Shop</a></li>
-            {% if product.category %}
+            <li><a href="{% url 'home' %}">الرئيسية</a></li>
+            <li><a href="{% url 'products:product_list' %}">المتجر</a></li>
+            {% if product.category and product.category.slug %}
             <li><a href="{% url 'products:category_detail' product.category.slug %}">{{ product.category.name }}</a></li>
             {% endif %}
             <li class="current">{{ product.name }}</li>
@@ -27,7 +27,7 @@
         <div class="row g-5 align-items-start">
           
           <!-- Product Gallery -->
-          <div class="col-lg-6" data-aos="fade-right" data-aos-delay="150">
+          <div class="col-lg-6" data-aos="fade-left" data-aos-delay="150">
             <div class="gallery-wrapper">
               <div class="gallery-thumbs">
                 <div class="thumb-item thumbnail-item active" data-image="{{ product.image.url }}">
@@ -53,74 +53,68 @@
           </div>
 
           <!-- Product Info -->
-          <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+          <div class="col-lg-6" data-aos="fade-right" data-aos-delay="200">
             <div class="product-info">
-              <span class="category-tag">{{ product.category.name|default:"General" }}</span>
+              <span class="category-tag">{{ product.category.name|default:"عام" }}</span>
               <h1 class="item-title">{{ product.name }}</h1>
 
-              <div class="rating-row">
-                <div class="star-group">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-half"></i>
-                </div>
-                <span class="rating-label">4.6</span>
-                <a href="#product-details-tab-feedback" class="review-link">({{ reviews.count }} reviews)</a>
-              </div>
+              <!-- Ratings removed per user request -->
 
               <div class="price-block">
-                <span class="current-price">${{ product.new_price }}</span>
+                <span class="current-price">{{ product.new_price }}</span>
                 {% if product.old_price > product.new_price %}
-                <span class="original-price">${{ product.old_price }}</span>
-                <span class="savings-pill">Save ${{ product.old_price|add:"-product.new_price"|default:"50" }}</span>
+                <span class="original-price">{{ product.old_price }}</span>
+                <span class="savings-pill">وفر {{ product.old_price|add:"-product.new_price"|default:"0" }}</span>
                 {% endif %}
               </div>
 
+              {% if product.subtitle %}
               <div class="subtitle-text mb-3">
                   <strong>{{ product.subtitle }}</strong>
               </div>
+              {% endif %}
 
               <div class="description-text">
                 <p>{{ product.descriptions|safe|truncatewords:40 }}</p>
               </div>
 
               <div class="availability-row">
-                <span class="in-stock"><i class="bi bi-patch-check-fill"></i> In Stock</span>
+                <span class="in-stock"><i class="bi bi-patch-check-fill"></i> متوفر في المخزن</span>
                 <span class="remaining">SKU: {{ product.sku|default:"N/A" }}</span>
               </div>
 
               <div class="purchase-controls">
-                <form action="#" method="POST" class="d-flex align-items-center gap-3">
+                <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-flex align-items-center gap-3">
                   {% csrf_token %}
+                  <input type="hidden" name="product_id" value="{{ product.id }}">
+                  <input type="hidden" name="item_type" value="product">
                   <div class="quantity-selector">
                     <button class="quantity-btn decrease" type="button"><i class="bi bi-dash"></i></button>
                     <input type="number" name="quantity" class="quantity-input" value="1" min="1">
                     <button class="quantity-btn increase" type="button"><i class="bi bi-plus"></i></button>
                   </div>
                   <button type="submit" class="btn add-cart-btn flex-grow-1">
-                    <i class="bi bi-bag-plus"></i> Add to Cart
+                    <i class="bi bi-bag-plus"></i> إضافة إلى السلة
                   </button>
                 </form>
               </div>
 
-              <div class="perks-grid">
+              <div class="perks-grid mt-4">
                 <div class="perk-card">
                   <i class="bi bi-truck"></i>
-                  <span>Free shipping $75+</span>
+                  <span>توصيل سريع</span>
                 </div>
                 <div class="perk-card">
                   <i class="bi bi-arrow-counterclockwise"></i>
-                  <span>45-day returns</span>
+                  <span>إرجاع خالٍ من المتاعب</span>
                 </div>
                 <div class="perk-card">
                   <i class="bi bi-shield-check"></i>
-                  <span>Secure Payment</span>
+                  <span>دفع آمن</span>
                 </div>
                 <div class="perk-card">
                   <i class="bi bi-headset"></i>
-                  <span>24/7 support</span>
+                  <span>دعم 24/7</span>
                 </div>
               </div>
             </div>
@@ -132,52 +126,16 @@
           <div class="col-12">
             <div class="detail-tabs">
               <ul class="tab-links nav" role="tablist">
-                <li><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#product-details-tab-desc" type="button">Description</button></li>
-                <li><button class="nav-link" data-bs-toggle="tab" data-bs-target="#product-details-tab-feedback" type="button">Feedback ({{ reviews.count }})</button></li>
+                <li><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#product-details-tab-desc" type="button">وصف المنتج</button></li>
               </ul>
 
               <div class="tab-content px-0">
                 <!-- Description Tab -->
                 <div class="tab-pane fade show active" id="product-details-tab-desc">
                   <div class="desc-body py-4">
-                    <h3>About This Product</h3>
+                    <h3>عن هذا المنتج</h3>
                     <div class="content">
                         {{ product.descriptions|safe }}
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Feedback Tab -->
-                <div class="tab-pane fade" id="product-details-tab-feedback">
-                  <div class="feedback-body py-4">
-                    <div class="feedback-list">
-                      {% for review in reviews %}
-                      <article class="feedback-card mb-4">
-                        <div class="feedback-header d-flex align-items-center mb-3">
-                          <div class="reviewer-avatar me-3">
-                              <i class="bi bi-person-circle fs-2 text-primary"></i>
-                          </div>
-                          <div class="reviewer-info">
-                            <strong>{{ review.user.username }}</strong>
-                            <div class="review-meta">
-                              <span class="stars text-warning">
-                                {% for i in "12345" %}
-                                  {% if forloop.counter <= review.rate %}
-                                  <i class="bi bi-star-fill"></i>
-                                  {% else %}
-                                  <i class="bi bi-star"></i>
-                                  {% endif %}
-                                {% endfor %}
-                              </span>
-                              <span class="date ms-2">{{ review.created_at|date:"M d, Y" }}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <p>{{ review.review }}</p>
-                      </article>
-                      {% empty %}
-                      <p>No reviews yet. Be the first to review this product!</p>
-                      {% endfor %}
                     </div>
                   </div>
                 </div>
@@ -189,7 +147,7 @@
         <!-- Related Products -->
         {% if related_products %}
         <div class="related-products mt-5" data-aos="fade-up">
-            <h3 class="mb-4">Related Products</h3>
+            <h3 class="mb-4">منتجات ذات صلة</h3>
             <div class="row g-4">
                 {% for rel_product in related_products|slice:":4" %}
                 <div class="col-md-3 col-6">
@@ -197,12 +155,12 @@
                         <div class="item-media">
                             <img src="{{ rel_product.image.url }}" class="img-fluid" alt="{{ rel_product.name }}">
                             <div class="quick-add">
-                                <a href="{% url 'products:product_detail' rel_product.slug %}" class="quick-add-btn">View</a>
+                                <a href="{% url 'products:product_detail' rel_product.slug %}" class="quick-add-btn">عرض</a>
                             </div>
                         </div>
-                        <div class="item-info">
+                        <div class="item-info text-center mt-2">
                             <h4 class="item-name"><a href="{% url 'products:product_detail' rel_product.slug %}">{{ rel_product.name }}</a></h4>
-                            <span class="item-cost">${{ rel_product.new_price }}</span>
+                            <span class="item-cost">{{ rel_product.new_price }}</span>
                         </div>
                     </article>
                 </div>

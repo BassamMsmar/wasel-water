@@ -2,22 +2,22 @@
 {% load static %}
 
 {% block title %}
-  {% if category %}{{ category.name }}{% elif brand %}{{ brand.name }}{% else %}All Products{% endif %} - {{ company.name|default:"SmartStore" }}
+  {% if category %}{{ category.name }}{% elif brand %}{{ brand.name }}{% else %}جميع المنتجات{% endif %} - {{ company.name|default:"واصل ووتر" }}
 {% endblock %}
 
 {% block content %}
     <!-- Page Title -->
     <div class="page-title light-background">
       <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">{% if category %}{{ category.name }}{% elif brand %}{{ brand.name }}{% else %}Shop{% endif %}</h1>
+        <h1 class="mb-2 mb-lg-0">{% if category %}{{ category.name }}{% elif brand %}{{ brand.name }}{% else %}المتجر{% endif %}</h1>
         <nav class="breadcrumbs">
           <ol>
-            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'home' %}">الرئيسية</a></li>
             {% if category %}
-            <li><a href="{% url 'products:product_list' %}">Shop</a></li>
+            <li><a href="{% url 'products:product_list' %}">المتجر</a></li>
             <li class="current">{{ category.name }}</li>
             {% else %}
-            <li class="current">Shop</li>
+            <li class="current">المتجر</li>
             {% endif %}
           </ol>
         </nav>
@@ -33,51 +33,39 @@
             
             <!-- Categories Widget -->
             <div class="product-categories-widget widget-item">
-              <h3 class="widget-title">Categories</h3>
+              <h3 class="widget-title">الأصناف</h3>
               <ul class="category-tree list-unstyled mb-0">
                 {% for cat in categories %}
+                {% if cat.slug %}
                 <li class="category-item">
                   <div class="d-flex justify-content-between align-items-center category-header">
                     <a href="{% url 'products:category_detail' cat.slug %}" class="category-link {% if cat == category %}active{% endif %}">{{ cat.name }}</a>
                     <span class="category-count">({{ cat.product_category.count }})</span>
                   </div>
                 </li>
+                {% endif %}
                 {% endfor %}
               </ul>
             </div>
 
-            <!-- Price Range Widget (Static UI for now) -->
+            <!-- Price Range Widget -->
             <div class="pricing-range-widget widget-item">
-              <h3 class="widget-title">Price Range</h3>
+              <h3 class="widget-title">تصفية حسب السعر</h3>
               <div class="price-range-container">
                 <form method="GET">
                   <div class="price-inputs mt-3">
                     <div class="row g-2">
                       <div class="col-6">
-                        <input type="number" name="min_price" class="form-control" placeholder="Min">
+                        <input type="number" name="min_price" class="form-control" placeholder="الأقل">
                       </div>
                       <div class="col-6">
-                        <input type="number" name="max_price" class="form-control" placeholder="Max">
+                        <input type="number" name="max_price" class="form-control" placeholder="الأعلى">
                       </div>
                     </div>
                   </div>
-                  <button type="submit" class="btn btn-primary w-100 mt-3">Apply Filter</button>
+                  <button type="submit" class="btn btn-primary w-100 mt-3">تطبيق التصفية</button>
                 </form>
               </div>
-            </div>
-
-            <!-- Brands Widget -->
-            <div class="filter-widget widget-item">
-              <h3 class="widget-title">Filter by Brand</h3>
-              <ul class="list-unstyled mt-3">
-                {% for b in brands %}
-                <li>
-                  <a href="{% url 'products:brand_detail' b.slug %}" class="brand-link {% if b == brand %}active{% endif %}">
-                    {{ b.name }} <span class="text-muted small">({{ b.product_brand.count }})</span>
-                  </a>
-                </li>
-                {% endfor %}
-              </ul>
             </div>
 
           </div>
@@ -86,15 +74,15 @@
         <!-- Product Grid Area -->
         <div class="col-lg-9">
           <div class="shop-toolbar d-flex justify-content-between align-items-center mb-4">
-            <p class="mb-0">Showing <strong>{{ page_obj.start_index }}–{{ page_obj.end_index }}</strong> of <strong>{{ paginator.count }}</strong> products</p>
+            <p class="mb-0">عرض <strong>{{ page_obj.start_index }}–{{ page_obj.end_index }}</strong> من أصل <strong>{{ paginator.count }}</strong> منتج</p>
             <div class="sorting d-flex align-items-center">
-              <span class="me-2">Sort by:</span>
+              <span class="ms-2">ترتيب حسب:</span>
               <select class="form-select form-select-sm" style="width: auto;">
-                <option value="default">Default Sorting</option>
-                <option value="popularity">Popularity</option>
-                <option value="newness">Newness</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
+                <option value="default">الافتراضي</option>
+                <option value="popularity">الأكثر شعبية</option>
+                <option value="newness">الأحدث</option>
+                <option value="price-low">السعر: من الأقل للأعلى</option>
+                <option value="price-high">السعر: من الأعلى للأقل</option>
               </select>
             </div>
           </div>
@@ -105,36 +93,38 @@
               <article class="item-card">
                 <div class="item-media">
                   <img src="{{ product.image.url }}" class="primary-img img-fluid" alt="{{ product.name }}" loading="lazy">
-                  <button type="button" class="wishlist-toggle" aria-label="Add to wishlist">
-                    <i class="bi bi-heart"></i>
-                  </button>
                   <div class="quick-add">
                     <a href="{% url 'products:product_detail' product.slug %}" class="quick-add-btn">
-                      <i class="bi bi-eye me-1"></i> View Details
+                      <i class="bi bi-eye me-1"></i> التفاصيل
                     </a>
                   </div>
                 </div>
-                <div class="item-info">
-                  <span class="item-tag">{{ product.brand.name|default:"General" }}</span>
+                <div class="item-info text-center">
+                  <span class="item-tag">{{ product.brand.name|default:"عام" }}</span>
                   <h4 class="item-name"><a href="{% url 'products:product_detail' product.slug %}">{{ product.name }}</a></h4>
-                  <div class="item-bottom">
+                  <div class="item-bottom justify-content-center">
                     <div class="pricing">
-                        <span class="item-cost">${{ product.new_price }}</span>
+                        <span class="item-cost">{{ product.new_price }}</span>
                         {% if product.old_price > product.new_price %}
-                        <del class="was-price text-muted ms-2">${{ product.old_price }}</del>
+                        <del class="was-price text-muted ms-2">{{ product.old_price }}</del>
                         {% endif %}
                     </div>
-                    <button type="button" class="cart-icon-btn" aria-label="Add to cart">
-                      <i class="bi bi-cart3"></i>
-                    </button>
+                    <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <input type="hidden" name="item_type" value="product">
+                        <button type="submit" class="cart-icon-btn border-0 py-0 px-2" aria-label="Add to cart">
+                            <i class="bi bi-cart3"></i>
+                        </button>
+                    </form>
                   </div>
                 </div>
               </article>
             </div>
             {% empty %}
             <div class="col-12 text-center py-5">
-              <h3>No products found.</h3>
-              <p>Try adjusting your filters or search query.</p>
+              <h3>لم يتم العثور على منتجات.</h3>
+              <p>حاول تعديل خيارات التصفية أو البحث.</p>
             </div>
             {% endfor %}
           </div>
@@ -145,7 +135,7 @@
             <nav aria-label="Page navigation">
               <ul class="pagination justify-content-center">
                 {% if page_obj.has_previous %}
-                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}"><i class="bi bi-chevron-left"></i></a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}"><i class="bi bi-chevron-right"></i></a></li>
                 {% endif %}
 
                 {% for num in paginator.page_range %}
@@ -157,7 +147,7 @@
                 {% endfor %}
 
                 {% if page_obj.has_next %}
-                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}"><i class="bi bi-chevron-right"></i></a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}"><i class="bi bi-chevron-left"></i></a></li>
                 {% endif %}
               </ul>
             </nav>

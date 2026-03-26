@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}لوحة التحكم - {{ company.name|default:"واصل ووتر" }}{% endblock %}
+
+{% block content %}
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">حسابي</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'home' %}">الرئيسية</a></li>
+            <li class="current">لوحة التحكم</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <section id="account-dashboard" class="account-dashboard section">
+        <div class="container">
+            <div class="row g-4">
+                
+                <!-- Sidebar Navigation -->
+                <div class="col-lg-3">
+                    <div class="account-sidebar p-4 bg-white shadow-sm rounded-4">
+                        <div class="user-brief text-center mb-4">
+                            <div class="avatar mb-2">
+                                <i class="bi bi-person-circle fs-1 text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold mb-0">{{ user.get_full_name|default:user.username }}</h5>
+                            <span class="text-muted small">{{ user.email }}</span>
+                        </div>
+                        <nav id="account-nav" class="account-nav">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><a href="{% url 'accounts:dashboard' %}" class="nav-link active py-2 px-3 rounded-3 d-flex align-items-center gap-2"><i class="bi bi-speedometer2"></i> لوحة التحكم</a></li>
+                                <li class="mb-2"><a href="{% url 'orders:order_list' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-bag-check"></i> طلباتي</a></li>
+                                <li class="mb-2"><a href="{% url 'accounts:address_list' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-geo-alt"></i> عناويني</a></li>
+                                <li class="mb-2"><a href="{% url 'accounts:profile_detail' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-person-gear"></i> تفاصيل الحساب</a></li>
+                                <hr>
+                                <li><a href="{% url 'logout' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-danger"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Dashboard Content -->
+                <div class="col-lg-9">
+                    <div class="dashboard-content">
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <div class="stat-card p-4 bg-white shadow-sm rounded-4 border-start border-4 border-primary">
+                                    <h6 class="text-muted mb-2">إجمالي الطلبات</h6>
+                                    <h2 class="fw-bold mb-0">{{ user.orders.count }}</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-card p-4 bg-white shadow-sm rounded-4 border-start border-4 border-success">
+                                    <h6 class="text-muted mb-2">الطلبات النشطة</h6>
+                                    <h2 class="fw-bold mb-0">{{ user.orders.filter.count }}</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-card p-4 bg-white shadow-sm rounded-4 border-start border-4 border-info">
+                                    <h6 class="text-muted mb-2">العناوين المسجلة</h6>
+                                    <h2 class="fw-bold mb-0">{{ user.addresses.count }}</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Orders Table -->
+                        <div class="recent-orders p-4 bg-white shadow-sm rounded-4 mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="fw-bold mb-0">آخر الطلبات</h4>
+                                <a href="{% url 'orders:order_list' %}" class="btn btn-sm btn-outline-primary">عرض الكل</a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>الطلب #</th>
+                                            <th>التاريخ</th>
+                                            <th>الحالة</th>
+                                            <th>الإجمالي</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in recent_orders %}
+                                        <tr>
+                                            <td><strong>#{{ order.id }}</strong></td>
+                                            <td>{{ order.created_at|date:"Y-m-d" }}</td>
+                                            <td>
+                                                <span class="badge rounded-pill {% if order.status == 'delivered' %}bg-success-subtle text-success{% elif order.status == 'cancelled' %}bg-danger-subtle text-danger{% else %}bg-warning-subtle text-warning{% endif %}">
+                                                    {{ order.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>{{ order.total_price }}</td>
+                                            <td class="text-end">
+                                                <a href="{% url 'orders:detail' order.id %}" class="btn btn-sm btn-light border">عرض</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4 text-muted">لا توجد طلبات حديثة.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Default Address Card -->
+                        <div class="default-address p-4 bg-white shadow-sm rounded-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="fw-bold mb-0">عنوان الشحن الافتراضي</h4>
+                                <a href="{% url 'accounts:address_list' %}" class="btn btn-sm btn-outline-primary">إدارة العناوين</a>
+                            </div>
+                            {% if default_address %}
+                            <div class="address-box p-3 border rounded-3 bg-light">
+                                <p class="mb-1 fw-bold">{{ default_address.full_name|default:user.get_full_name }}</p>
+                                <p class="mb-1 text-muted">{{ default_address.address_line1 }}, {{ default_address.city }}</p>
+                                <p class="mb-0 text-muted">{{ default_address.phone_number }}</p>
+                            </div>
+                            {% else %}
+                            <p class="text-muted py-2">لم تقم بتحديد عنوان افتراضي بعد.</p>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+{% endblock %}

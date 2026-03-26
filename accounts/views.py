@@ -4,7 +4,16 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.urls import reverse_lazy
 from .models import Address, Customer
-from .forms import AddressForm
+from .forms import AddressForm, UserSignUpForm
+
+class SignUpView(CreateView):
+    form_class = UserSignUpForm
+    success_url = reverse_lazy('login')
+    template_name = 'registration/signup.html'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'تم إنشاء الحساب بنجاح، يمكنك الآن تسجيل الدخول')
+        return super().form_valid(form)
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/dashboard.html'

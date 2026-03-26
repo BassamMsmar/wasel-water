@@ -56,4 +56,19 @@ def about(request):
 
 def contact(request):
     company = Company.objects.first()
-    return render(request, 'contact.html', {'company': company})
+    return render(request, 'contact.html', {'company': company})
+
+
+def privacy(request):
+    company = Company.objects.first()
+    return render(request, 'privacy.html', {'company': company})
+
+
+def tos(request):
+    company = Company.objects.first()
+    return render(request, 'tos.html', {'company': company})
+
+
+def return_policy(request):
+    company = Company.objects.first()
+    return render(request, 'return-policy.html', {'company': company})

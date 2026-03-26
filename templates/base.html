@@ -42,6 +42,13 @@
 
   {% include "partials/footer.html" %}
 
+  <!-- WhatsApp Float -->
+  {% if company.whatsapp %}
+  <a href="https://wa.me/{{ company.whatsapp }}" class="whatsapp-float" target="_blank" aria-label="WhatsApp Support">
+    <i class="bi bi-whatsapp"></i>
+  </a>
+  {% endif %}
+
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
@@ -57,8 +64,41 @@
   <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
   <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Main JS File -->
   <script src="{% static 'assets/js/main.js' %}"></script>
+
+  <script>
+    $(document).ready(function() {
+        $('.add-to-cart-form').on('submit', function(e) {
+            e.preventDefault();
+            const form = $(this);
+            const url = form.attr('action');
+            const data = form.serialize();
+
+            $.ajax({
+                url: url,
+                method: "POST",
+                data: data,
+                success: function(response) {
+                    if (response.success || response.message) {
+                        // Update cart count in header
+                        $('.count-dot').text(response.cart_count || response.qty);
+                        // Update sidebar cart content
+                        if (response.cart_html) {
+                            $('.cart-panel').html(response.cart_html);
+                        }
+                        // Show success message (optional: use a toast)
+                        alert(response.message || 'تمت الإضافة للسلة');
+                    }
+                },
+                error: function(xhr) {
+                    alert('عذراً، حدث خطأ أثناء الإضافة للسلة.');
+                }
+            });
+        });
+    });
+  </script>
   
   {% block extra_js %}{% endblock %}
 

@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Your Cart - {{ company.name|default:"SmartStore" }}{% endblock %}
+{% block title %}سلة التسوق - {{ company.name|default:"واصل ووتر" }}{% endblock %}
 
 {% block content %}
     <!-- Page Title -->
     <div class="page-title light-background">
       <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">Shopping Cart</h1>
+        <h1 class="mb-2 mb-lg-0">سلة التسوق</h1>
         <nav class="breadcrumbs">
           <ol>
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li class="current">Cart</li>
+            <li><a href="{% url 'home' %}">الرئيسية</a></li>
+            <li class="current">السلة</li>
           </ol>
         </nav>
       </div>
@@ -51,18 +51,18 @@
                           {% endif %}
                       </h6>
                       <div class="item-attributes">
-                        <span class="attribute-badge">{{ item.item_type|capfirst }}</span>
+                        <span class="attribute-badge">{% if item.item_type == 'bundle' %}باقة{% else %}منتج{% endif %}</span>
                       </div>
                       <div class="item-bottom">
                         <div class="item-pricing">
-                          <span class="unit-price">${{ item.price }}</span>
+                          <span class="unit-price">{{ item.price }}</span>
                         </div>
                         <div class="quantity-selector">
                           <button class="quantity-btn decrease update-qty" data-action="decrease"><i class="bi bi-dash"></i></button>
                           <input type="number" class="quantity-input" value="{{ item.quantity }}" min="1">
                           <button class="quantity-btn increase update-qty" data-action="increase"><i class="bi bi-plus"></i></button>
                         </div>
-                        <div class="line-total">${{ item.total_price }}</div>
+                        <div class="line-total">{{ item.total_price }}</div>
                       </div>
                     </div>
                   </div>
@@ -71,9 +71,9 @@
               {% empty %}
               <div class="text-center py-5">
                 <i class="bi bi-cart-x fs-1 text-muted mb-3 d-block"></i>
-                <h3>Your cart is empty</h3>
-                <p>Looks like you haven't added anything to your cart yet.</p>
-                <a href="{% url 'products:product_list' %}" class="btn btn-primary">Start Shopping</a>
+                <h3>سلة التسوق فارغة</h3>
+                <p>يبدو أنك لم تضف أي شيء إلى سلة التسوق الخاصة بك بعد.</p>
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary">ابدأ التسوق</a>
               </div>
               {% endfor %}
             </div>
@@ -81,7 +81,7 @@
             {% if cart %}
             <div class="cart-toolbar mt-4">
               <a href="{% url 'products:product_list' %}" class="toolbar-link">
-                <i class="bi bi-arrow-left"></i> Continue Shopping
+                <i class="bi bi-arrow-right"></i> استمر في التسوق
               </a>
             </div>
             {% endif %}
@@ -92,32 +92,32 @@
             <div class="order-panel sticky-top" style="top: 100px;">
               <div class="panel-header">
                 <i class="bi bi-bag-check"></i>
-                <h4>Order Summary</h4>
+                <h4>ملخص الطلب</h4>
               </div>
 
               <div class="panel-body">
                 <div class="cost-breakdown">
                   <div class="cost-row">
-                    <span class="cost-label">Subtotal ({{ cart|length }} items)</span>
-                    <span class="cost-amount cart-total-price">${{ cart.get_total_price }}</span>
+                    <span class="cost-label">المجموع الفرعي ({{ cart|length }} منتجات)</span>
+                    <span class="cost-amount cart-total-price">{{ cart.get_total_price }}</span>
                   </div>
                   <div class="cost-row">
-                    <span class="cost-label">Shipping</span>
-                    <span class="text-success">Calculated at checkout</span>
+                    <span class="cost-label">الشحن</span>
+                    <span class="text-success">يتم حسابه عند الدفع</span>
                   </div>
                 </div>
 
                 <div class="grand-total">
-                  <span>Estimated Total</span>
-                  <span class="total-amount cart-total-price">${{ cart.get_total_price }}</span>
+                  <span>المجموع التقديري</span>
+                  <span class="total-amount cart-total-price">{{ cart.get_total_price }}</span>
                 </div>
 
-                <a href="{% url 'cart:cart_checkout' %}" class="btn checkout-btn w-100 mt-3">
-                  Proceed to Checkout <i class="bi bi-arrow-right"></i>
+                <a href="{% url 'cart:checkout' %}" class="btn checkout-btn w-100 mt-3">
+                  متابعة عملية الشراء <i class="bi bi-arrow-left"></i>
                 </a>
 
                 <div class="secure-badges mt-4">
-                  <p class="badges-label">Secure Payments</p>
+                  <p class="badges-label">وسائل دفع آمنة</p>
                   <div class="badges-row d-flex gap-3 justify-content-center">
                     <i class="bi bi-credit-card fs-4"></i>
                     <i class="bi bi-paypal fs-4"></i>
@@ -134,6 +134,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
     // CSRF Token helper
@@ -177,8 +178,8 @@ $(document).ready(function() {
             },
             success: function(response) {
                 input.val(qty);
-                row.find('.line-total').text('$' + response.item_total);
-                $('.cart-total-price').text('$' + response.total_price);
+                row.find('.line-total').text(response.item_total);
+                $('.cart-total-price').text(response.total_price);
             }
         });
     });
@@ -203,7 +204,7 @@ $(document).ready(function() {
                     if ($('.cart-item').length === 0) {
                         location.reload();
                     } else {
-                        $('.cart-total-price').text('$' + response.cart_total);
+                        $('.cart-total-price').text(response.cart_total);
                     }
                 });
             }
