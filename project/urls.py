@@ -29,12 +29,13 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),  # Includes all auth URLs (login, logout, password reset, etc.)
     
     
-    path('accounts/', include('accounts.urls')),
-    path('products/', include('products.urls')),
-    path('orders/', include('orders.urls')),
-    path('cart/', include('cart.urls')),
-    path('core/', include('core.urls')),
-
+    path('accounts/', include('accounts.urls', namespace='accounts')),
+    path('products/', include('products.urls', namespace='products')),
+    path('orders/', include('orders.urls', namespace='orders')),
+    path('cart/', include('cart.urls', namespace='cart')),
+    path('core/', include('core.urls', namespace='settings')),
+    path('api/v1/', include('project.api_urls')),
+    path('api-auth/', include('rest_framework.urls')),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

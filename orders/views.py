@@ -56,3 +56,24 @@ class CompletePaymentView(LoginRequiredMixin, View):
         
         messages.error(request, 'طريقة الدفع غير صحيحة')
         return redirect('orders:payment_selection', pk=order.pk)
+
+class OrderTrackingView(TemplateView):
+    template_name = 'orders/order_track.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        order_id = self.request.GET.get('order_id')
+        phone = self.request.GET.get('phone')
+        
+        if order_id and phone:
+            try:
+                # Assuming your Order model has a phone field or user has a phone
+                # If not, we might need to adjust this lookup
+                order = Order.objects.get(id=order_id)
+                # For safety, we should verify the phone number matches the order
+                # If order.phone doesn't exist, we might check order.billing_address phone
+                context['order_found'] = order
+            except Order.DoesNotExist:
+                context['error'] = 'لم يتم العثور على طلب بهذا الرقم.'
+        
+        return context

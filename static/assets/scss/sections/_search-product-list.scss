@@ -1,0 +1,311 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Search Product List Section
+--------------------------------------------------------------*/
+.search-product-list {
+  .item-card {
+    background: var(--surface-color);
+    border: 1px solid color-mix(in srgb, var(--default-color), transparent 88%);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: color-mix(in srgb, var(--accent-color), transparent 40%);
+      box-shadow: 0 10px 35px color-mix(in srgb, var(--accent-color), transparent 90%);
+
+      .thumb-overlay {
+        opacity: 1;
+        visibility: visible;
+
+        .preview-btn {
+          transform: scale(1);
+        }
+      }
+
+      .item-thumb img {
+        transform: scale(1.06);
+      }
+    }
+  }
+
+  .item-thumb {
+    position: relative;
+    height: 100%;
+    min-height: 220px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+  }
+
+  .badge-label {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 2;
+
+    &.label-new {
+      background: var(--accent-color);
+      color: var(--contrast-color);
+    }
+
+    &.label-sale {
+      background: color-mix(in srgb, #e74c3c, transparent 0%);
+      color: var(--contrast-color);
+    }
+  }
+
+  .wishlist-btn {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--surface-color), transparent 10%);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: all 0.3s ease;
+    color: color-mix(in srgb, var(--default-color), transparent 20%);
+
+    &:hover {
+      color: color-mix(in srgb, #e74c3c, transparent 0%);
+      transform: scale(1.15);
+    }
+
+    i {
+      font-size: 0.9rem;
+    }
+  }
+
+  .thumb-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: color-mix(in srgb, var(--default-color), transparent 55%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1;
+
+    .preview-btn {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 50%;
+      background: var(--surface-color);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-color);
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      transform: scale(0.7);
+      cursor: pointer;
+
+      &:hover {
+        background: var(--accent-color);
+        color: var(--contrast-color);
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .item-info {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+  }
+
+  .item-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color), transparent 90%);
+    padding: 0.15rem 0.55rem;
+    border-radius: 3px;
+    margin-bottom: 0.5rem;
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .item-info h4 {
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+
+    a {
+      color: var(--heading-color);
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: var(--accent-color);
+      }
+    }
+  }
+
+  .star-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+    margin-bottom: 0.5rem;
+
+    i {
+      font-size: 0.75rem;
+      color: #ffc107;
+    }
+
+    .rating-count {
+      font-size: 0.8rem;
+      color: color-mix(in srgb, var(--default-color), transparent 45%);
+      margin-left: 0.3rem;
+    }
+  }
+
+  .item-desc {
+    font-size: 0.85rem;
+    color: color-mix(in srgb, var(--default-color), transparent 30%);
+    margin-bottom: 0.75rem;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .item-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+  }
+
+  .item-cost {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-color);
+
+    .old-cost {
+      font-size: 0.85rem;
+      color: color-mix(in srgb, var(--default-color), transparent 50%);
+      text-decoration: line-through;
+      font-weight: 400;
+      margin-left: 0.35rem;
+    }
+  }
+
+  .cart-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.85rem;
+    border: 1px solid var(--accent-color);
+    background: transparent;
+    color: var(--accent-color);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--accent-color);
+      color: var(--contrast-color);
+    }
+
+    i {
+      font-size: 0.95rem;
+    }
+  }
+
+  @media (max-width: 992px) {
+    .item-info {
+      padding: 1rem 1.25rem;
+    }
+
+    .item-info h4 {
+      font-size: 0.95rem;
+    }
+
+    .item-desc {
+      -webkit-line-clamp: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .cart-btn {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.75rem;
+    }
+
+    .item-cost {
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .item-thumb {
+      min-height: 170px;
+    }
+
+    .item-info {
+      padding: 0.85rem 1rem;
+    }
+
+    .item-tag {
+      font-size: 0.65rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .item-desc {
+      display: none;
+    }
+
+    .star-rating {
+      margin-bottom: 0.35rem;
+    }
+
+    .item-footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .wishlist-btn {
+      width: 1.75rem;
+      height: 1.75rem;
+
+      i {
+        font-size: 0.8rem;
+      }
+    }
+
+    .thumb-overlay .preview-btn {
+      width: 2.25rem;
+      height: 2.25rem;
+      font-size: 0.95rem;
+    }
+  }
+}

@@ -1,60 +1,88 @@
-{% extends 'base_account.html' %}
+{% extends "base.html" %}
+{% load static %}
 
-{% block account_title %}إدارة العناوين{% endblock %}
-{% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">حسابي</a></li>
-<li class="breadcrumb-item active" aria-current="page">إدارة العناوين</li>
-{% endblock %}
+{% block title %}عناويني - {{ company.name|default:"واصل ووتر" }}{% endblock %}
 
-{% block account_content %}
-<div class="account-card">
-    <div class="account-title">
-        <h4>العناوين المحفوظة</h4>
-        <button class="btn btn-sm btn-primary">إضافة عنوان جديد</button>
+{% block content %}
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">عناويني</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'home' %}">الرئيسية</a></li>
+            <li><a href="{% url 'accounts:dashboard' %}">لوحة التحكم</a></li>
+            <li class="current">عناوين الشحن</li>
+          </ol>
+        </nav>
+      </div>
     </div>
-    <div class="account-content">
-        <div class="row">
-            {% for address in addresses %}
-            <div class="col-md-6">
-                <div class="card mb-3 shadow-sm {% if address.is_default %}border-success{% endif %}">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            {{ address.get_address_type_display }}
-                            {% if address.is_default %}
-                            <span class="badge bg-success ms-2">الافتراضي</span>
-                            {% endif %}
-                        </h5>
-                        <p class="card-text text-muted">
-                            <strong>{{ address.full_name }}</strong><br>
-                            {{ address.city }} - {{ address.neighborhood }}<br>
-                            ش {{ address.street }}، مبنى {{ address.building_number }}{% if address.apartment_number %}،
-                            شقة {{ address.apartment_number }}{% endif %}<br>
-                            <span dir="ltr">{{ address.phone_number }}</span>
-                            {% if address.image_of_building %}
-                            <br>
-                            <img src="{{ address.image_of_building.url }}" alt="صورة المبنى" class="img-thumbnail mt-2"
-                                style="max-height: 80px;">
-                            {% endif %}
-                        </p>
-                        <div class="d-flex justify-content-between mt-3">
-                            <a href="{% url 'accounts:address_update' address.id %}" class="btn btn-sm btn-outline-secondary">تعديل</a>
-                            <form method="post" action="{% url 'accounts:address_delete' address.id %}" class="d-inline">
-                                {% csrf_token %}
-                                <input type="hidden" name="delete_address" value="{{ address.id }}">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">حذف</button>
-                            </form>
+
+    <section id="address-list" class="address-list section">
+        <div class="container">
+            <div class="row g-4">
+                
+                <!-- Sidebar Navigation -->
+                <div class="col-lg-3">
+                    <div class="account-sidebar p-4 bg-white shadow-sm rounded-4">
+                        <nav id="account-nav" class="account-nav">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><a href="{% url 'accounts:dashboard' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-speedometer2"></i> لوحة التحكم</a></li>
+                                <li class="mb-2"><a href="{% url 'orders:order_list' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-bag-check"></i> طلباتي</a></li>
+                                <li class="mb-2"><a href="{% url 'accounts:address_list' %}" class="nav-link active py-2 px-3 rounded-3 d-flex align-items-center gap-2"><i class="bi bi-geo-alt"></i> عناويني</a></li>
+                                <li class="mb-2"><a href="{% url 'accounts:profile_detail' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-person-gear"></i> تفاصيل الحساب</a></li>
+                                <hr>
+                                <li><a href="{% url 'logout' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-danger"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Address List Content -->
+                <div class="col-lg-9">
+                    <div class="address-list-content">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold mb-0">عناوين الشحن</h4>
+                            <a href="{% url 'accounts:address_create' %}" class="btn btn-primary rounded-pill px-4"><i class="bi bi-plus-lg me-1"></i> إضافة عنوان جديد</a>
+                        </div>
+                        
+                        <div class="row g-4">
+                            {% for address in addresses %}
+                            <div class="col-md-6">
+                                <div class="address-card p-4 bg-white shadow-sm rounded-4 border h-100 {% if address.is_default %}border-primary{% endif %}">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <h5 class="fw-bold mb-0">{{ address.full_name }}</h5>
+                                        {% if address.is_default %}
+                                        <span class="badge bg-primary-subtle text-primary rounded-pill">الافتراضي</span>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-muted mb-1">{{ address.address_line1 }}</p>
+                                    {% if address.address_line2 %}
+                                    <p class="text-muted mb-1">{{ address.address_line2 }}</p>
+                                    {% endif %}
+                                    <p class="text-muted mb-1">{{ address.city }}, {{ address.state|default:"" }} {{ address.zip_code|default:"" }}</p>
+                                    <p class="text-muted mb-4">{{ address.phone_number }}</p>
+                                    
+                                    <div class="d-flex gap-2 mt-auto">
+                                        <a href="{% url 'accounts:address_update' address.id %}" class="btn btn-sm btn-light border px-3">تعديل</a>
+                                        <a href="{% url 'accounts:address_delete' address.id %}" class="btn btn-sm btn-outline-danger px-3">حذف</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12 text-center py-5">
+                                <div class="p-5 bg-white shadow-sm rounded-4 border">
+                                    <i class="bi bi-geo-alt text-muted fs-1 mb-3"></i>
+                                    <h5 class="text-muted">لم تقم بإضافة أي عناوين بعد.</h5>
+                                    <p class="text-muted small">أضف عنوان شحن ليسهل عليك عملية الطلب.</p>
+                                    <a href="{% url 'accounts:address_create' %}" class="btn btn-primary rounded-pill px-4 mt-2">أضف عنواناً الآن</a>
+                                </div>
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
+
             </div>
-            {% empty %}
-            <div class="col-12 text-center py-5">
-                <i class="fas fa-map-marked-alt fa-3x text-muted mb-3"></i>
-                <h5>لا توجد عناوين محفوظة</h5>
-                <p class="text-muted">قم بإضافة عنوان جديد لتسريع عملية الطلب</p>
-            </div>
-            {% endfor %}
         </div>
-    </div>
-</div>
+    </section>
 {% endblock %}

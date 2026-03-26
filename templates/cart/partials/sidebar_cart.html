@@ -1,51 +1,49 @@
-{% load static %}
-<div style="height: 100%; display: flex; flex-direction: column;">
-    <div class="cart-header">
-        <div class="cart-total">
-            <i class="fas fa-shopping-basket"></i>
-            <span>إجمالي العناصر ({{ cart|length }})</span>
-        </div>
-        <button class="cart-close"><i class="icofont-close"></i></button>
-    </div>
-    <ul class="cart-list" style="flex: 1; overflow-y: auto; max-height: none; padding-bottom: 10px;">
-        {% for item in cart %}
-        <li class="cart-item">
-            <div class="cart-media">
-                <a href="#">
-                    <img src="{{ item.product.image.url }}" alt="product">
-                </a>
-                <button class="cart-delete cart-remove-btn" type="button" data-id="{{ item.product.id }}"><i
-                        class="far fa-trash-alt"></i></button>
-            </div>
-            <div class="cart-info-group">
-                <div class="cart-info">
-                    <h6><a href="{% url 'product_detail' item.product.slug %}">{{ item.product.name }}</a></h6>
-                    <p>سعر الوحدة - {{ item.price }} ر.س</p>
-                </div>
-                <div class="cart-action-group">
-                    <div class="product-action">
-                        <button class="action-minus" title="Quantity Minus"><i class="icofont-minus"></i></button>
-                        <input class="action-input" title="Quantity Number" type="text" name="quantity"
-                            value="{{ item.quantity }}" data-id="{{ item.product.id }}"
-                            data-type="{{ item.item_type|default:'product' }}">
-                        <button class="action-plus" title="Quantity Plus"><i class="icofont-plus"></i></button>
-                    </div>
-                    <h6>{{ item.total_price }} ر.س</h6>
-                </div>
-            </div>
-        </li>
-        {% empty %}
-        <li class="text-center p-3">سلة المشتريات فارغة</li>
-        {% endfor %}
-    </ul>
-    <div class="cart-footer" style="padding: 15px; box-shadow: 0px -3px 7px 0px rgba(0, 0, 0, 0.08); background: #fff;">
-        <a class="cart-checkout-btn my-2 mb-3" href="{% url 'cart:checkout' %}">
-            <span class="checkout-label">الذهاب للدفع</span>
-            <span class="checkout-price">{{ cart.get_total_price }} ر.س</span>
-        </a>
-        <button class="cart-checkout-btn trigger-close-sidebar my-2"
-            style="width: 100%; display: flex; align-items: center; justify-content: center; background: #fff; color: var(--primary); border: 2px solid var(--primary);">
-            <span class="checkout-label" style="color: var(--primary); font-weight: bold;">متابعة التسوق</span>
-        </button>
-    </div>
+{% if cart %}
+<div class="cart-panel-header">
+  <h6>سلة التسوق</h6>
+  <span class="item-count">{{ cart|length }} منتجات</span>
 </div>
+<div class="cart-panel-body">
+  {% for item in cart %}
+  <!-- Cart Item -->
+  <div class="cart-item">
+    <div class="cart-item-img">
+      {% if item.product.image %}
+      <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid rounded">
+      {% endif %}
+    </div>
+    <div class="cart-item-info">
+      <h6>
+          {% if item.item_type == 'bundle' %}
+          <a href="{% url 'products:bundle_list' %}">{{ item.product.name }}</a>
+          {% else %}
+          <a href="{% url 'products:product_detail' item.product.slug %}">{{ item.product.name }}</a>
+          {% endif %}
+      </h6>
+      <span class="cart-item-variant">{% if item.item_type == 'bundle' %}باقة{% else %}منتج{% endif %}</span>
+      <div class="cart-item-meta">
+        <span class="cart-item-price">{{ item.price }}</span>
+        <span class="cart-item-qty">الكمية: {{ item.quantity }}</span>
+      </div>
+    </div>
+    <button class="cart-item-remove-sidebar" aria-label="إزالة" data-item-id="{{ item.product.id }}" data-item-type="{{ item.item_type }}">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div><!-- End Cart Item -->
+  {% endfor %}
+</div>
+<div class="cart-panel-footer">
+  <div class="cart-subtotal">
+    <span>المجموع الفرعي</span>
+    <span class="cart-subtotal-price">{{ cart.get_total_price }}</span>
+  </div>
+  <a href="{% url 'cart:checkout' %}" class="btn btn-checkout">إتمام الشراء</a>
+  <a href="{% url 'cart:cart_detail' %}" class="btn-viewcart">عرض السلة بالكامل ←</a>
+</div>
+{% else %}
+<div class="cart-panel-body text-center py-4">
+    <i class="bi bi-cart-x fs-2 text-muted mb-2 d-block"></i>
+    <p>سلة التسوق فارغة</p>
+    <a href="{% url 'products:product_list' %}" class="btn btn-sm btn-outline-primary mt-2">تسوق الآن</a>
+</div>
+{% endif %}

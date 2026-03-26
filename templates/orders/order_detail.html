@@ -1,417 +1,139 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
 
+{% block title %}تفاصيل الطلب #{{ order.id }} - {{ company.name|default:"واصل ووتر" }}{% endblock %}
+
 {% block content %}
-
-
-
-<style>
-    @media print {
-
-        /* Hide everything by default */
-        body * {
-            visibility: hidden;
-        }
-
-        /* Hide layout elements explicitly to be safe */
-        header,
-        footer,
-        .header-top,
-        .header-part,
-        .mobile-menu,
-        .category-sidebar,
-        .cart-sidebar,
-        .nav-sidebar,
-        .backdrop,
-        .backtop,
-        .btn,
-        .breadcrumb {
-            display: none !important;
-        }
-
-        /* Show only the invoice section and its children */
-        .invoice-part,
-        .invoice-part * {
-            visibility: visible;
-        }
-
-        /* Position the invoice at the top left */
-        .invoice-part {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            background: white;
-        }
-
-        /* Adjust container widths for print */
-        .container {
-            width: 100% !important;
-            max-width: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-
-        .row {
-            margin: 0 !important;
-        }
-
-        .col-lg-12 {
-            padding: 0 !important;
-            flex: 0 0 100%;
-            max-width: 100%;
-        }
-
-        /* Ensure texts are black for printing */
-        h3,
-        h5,
-        h6,
-        p,
-        span,
-        td,
-        th {
-            color: #000 !important;
-        }
-
-        /* Borders for table clarity */
-        table {
-            border: 1px solid #000 !important;
-        }
-
-        th,
-        td {
-            border: 1px solid #000 !important;
-        }
-    }
-</style>
-
-<style>
-    /* Custom Invoice Styles */
-    .invoice-card {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-        margin-bottom: 2rem;
-        overflow: hidden;
-    }
-
-    .invoice-header-strip {
-        background: linear-gradient(135deg, #f3f4f6 0%, #fff 100%);
-        padding: 2rem;
-        border-bottom: 1px solid #e5e7eb;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
-    }
-
-    .invoice-logo img {
-        height: 60px;
-        object-fit: contain;
-    }
-
-    .invoice-title-group h2 {
-        font-family: 'Almarai', sans-serif;
-        font-weight: 800;
-        color: #1f2937;
-        margin: 0;
-        font-size: 1.8rem;
-    }
-
-    .invoce-status-badge {
-        font-size: 0.9rem;
-        padding: 0.5em 1em;
-        border-radius: 9999px;
-        display: inline-block;
-        margin-top: 0.5rem;
-    }
-
-    .bg-pending {
-        background-color: #fef3c7;
-        color: #92400e;
-    }
-
-    .bg-processing {
-        background-color: #dbeafe;
-        color: #1e40af;
-    }
-
-    .bg-completed {
-        background-color: #d1fae5;
-        color: #065f46;
-    }
-
-    .bg-cancelled {
-        background-color: #fee2e2;
-        color: #b91c1c;
-    }
-
-    .invoice-meta-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-        padding: 2rem;
-        background: #fff;
-    }
-
-    .meta-box {
-        background: #f9fafb;
-        padding: 1rem;
-        border-radius: 8px;
-        border: 1px solid #f3f4f6;
-    }
-
-    .meta-label {
-        color: #6b7280;
-        font-size: 0.85rem;
-        margin-bottom: 0.25rem;
-        display: block;
-    }
-
-    .meta-value {
-        color: #111827;
-        font-weight: 600;
-        font-size: 1rem;
-        display: block;
-    }
-
-    .invoice-table-container {
-        padding: 0 2rem 2rem;
-    }
-
-    .styled-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.95rem;
-    }
-
-    .styled-table thead tr {
-        background-color: #f3f4f6;
-        color: #374151;
-        text-align: right;
-    }
-
-    .styled-table th,
-    .styled-table td {
-        padding: 12px 15px;
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    .styled-table tbody tr:last-of-type {
-        border-bottom: 2px solid #e5e7eb;
-    }
-
-    .styled-table tbody tr.active-row {
-        font-weight: bold;
-        color: #009879;
-    }
-
-    .product-name a {
-        color: #111827;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-    .invoice-summary {
-        display: flex;
-        justify-content: flex-end;
-        padding: 0 2rem 2rem;
-    }
-
-    .summary-box {
-        width: 100%;
-        max-width: 400px;
-        background: #f9fafb;
-        border-radius: 8px;
-        padding: 1.5rem;
-    }
-
-    .summary-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.75rem;
-        color: #4b5563;
-    }
-
-    .summary-row.total {
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 2px dashed #d1d5db;
-        font-weight: 800;
-        color: #1f2937;
-        font-size: 1.25rem;
-    }
-
-    @media print {
-        body * {
-            visibility: hidden;
-        }
-
-        .invoice-card,
-        .invoice-card * {
-            visibility: visible;
-        }
-
-        .invoice-card {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            box-shadow: none;
-            border: none;
-            margin: 0;
-        }
-
-        header,
-        footer,
-        .btn-print-hide {
-            display: none !important;
-        }
-
-        .invoice-header-strip {
-            background: none !important;
-            border-bottom: 2px solid #000;
-        }
-
-        .summary-box {
-            background: none !important;
-            border: 1px solid #000;
-        }
-
-        .meta-box {
-            background: none !important;
-            border: 1px solid #000;
-        }
-    }
-</style>
-
-<section class="inner-section">
-    <div class="container">
-        <div class="invoice-card">
-            <!-- Header -->
-            <div class="invoice-header-strip">
-                <div class="invoice-logo">
-                    {% if company.logo %}
-                    <img src="{{ company.logo.url }}" alt="Company Logo">
-                    {% else %}
-                    <h3>{{ company.name|default:"واصِل للمياه" }}</h3>
-                    {% endif %}
-                </div>
-                <div class="invoice-title-group text-end">
-                    <h2>فاتورة ضريبية</h2>
-                    <span
-                        class="invoce-status-badge {% if order.status == 'pending' %}bg-pending{% elif order.status == 'processing' %}bg-processing{% elif order.status == 'completed' %}bg-completed{% else %}bg-cancelled{% endif %}">
-                        {{ order.get_status_display }}
-                    </span>
-                </div>
-            </div>
-
-            <!-- Meta Information Grid -->
-            <div class="invoice-meta-grid">
-                <div class="meta-box">
-                    <span class="meta-label">رقم الفاتورة</span>
-                    <span class="meta-value">#{{ order.id }}</span>
-                </div>
-                <div class="meta-box">
-                    <span class="meta-label">تاريخ الطلب</span>
-                    <span class="meta-value">{{ order.created_at|date:"Y/m/d" }}</span>
-                </div>
-                <div class="meta-box">
-                    <span class="meta-label">وقت الطلب</span>
-                    <span class="meta-value">{{ order.created_at|date:"H:i A" }}</span>
-                </div>
-            </div>
-
-            <div class="row px-4 mb-4">
-                <div class="col-md-6">
-                    <h5 class="mb-3 ps-2 border-end border-3 border-secondary text-secondary">بيانات العميل</h5>
-                    <div class="p-3 bg-light rounded">
-                        <p class="mb-1"><strong>الاسم:</strong> {{ order.shipping_full_name }}</p>
-                        <p class="mb-1"><strong>العنوان:</strong> {{ order.shipping_city }} - {{ order.shipping_address
-                            }}</p>
-                        <p class="mb-0"><strong>رقم الجوال:</strong> {{ order.shipping_phone }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6 mt-3 mt-md-0">
-                    <h5 class="mb-3 ps-2 border-end border-3 border-secondary text-secondary">طريقة الدفع</h5>
-                    <div class="p-3 bg-light rounded">
-                        <p class="mb-0">
-                            {% if order.payment_method == 'cod' %}
-                            <i class="fas fa-money-bill-wave text-success mx-2"></i> الدفع عند الاستلام
-                            {% else %}
-                            <i class="fas fa-credit-card text-primary mx-2"></i> أونلاين / غير محدد
-                            {% endif %}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Items Table -->
-            <div class="invoice-table-container">
-                <table class="styled-table">
-                    <thead>
-                        <tr>
-                            <th>المنتج</th>
-                            <th>النوع</th>
-                            <th>السعر</th>
-                            <th>الكمية</th>
-                            <th>الإجمالي</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in order.items.all %}
-                        <tr>
-                            <td class="product-name">
-                                <a href="#">{{ item.get_name }}</a>
-                            </td>
-                            <td>
-                                {% if item.bundle %}
-                                <span class="badge bg-info text-dark">باقة</span>
-                                {% else %}
-                                <span class="badge bg-light text-dark">منتج</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ item.price }} ر.س</td>
-                            <td>{{ item.quantity }}</td>
-                            <td>{{ item.get_cost }} ر.س</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Summary -->
-            <div class="invoice-summary">
-                <div class="summary-box">
-                    <div class="summary-row">
-                        <span>الإجمالي الفرعي</span>
-                        <span>{{ order.total_price }} ر.س</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>قيمة الشحن</span>
-                        <span>0.00 ر.س</span> <!-- Can be dynamic if you have shipping cost logic -->
-                    </div>
-                    <div class="summary-row">
-                        <span>الضريبة (15%)</span>
-                        <span class="text-muted">مشمولة</span>
-                    </div>
-                    <div class="summary-row total">
-                        <span>الإجمالي النهائي</span>
-                        <span>{{ order.total_price }} ر.س</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center pb-5 btn-print-hide">
-            <button class="btn btn-primary btn-lg px-5" style="border-radius: 50px;" onclick="window.print()">
-                <i class="icofont-print me-2"></i> طباعة الفاتورة
-            </button>
-        </div>
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">تفاصيل الطلب</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'home' %}">الرئيسية</a></li>
+            <li><a href="{% url 'accounts:dashboard' %}">لوحة التحكم</a></li>
+            <li><a href="{% url 'orders:order_list' %}">طلباتي</a></li>
+            <li class="current">الطلب #{{ order.id }}</li>
+          </ol>
+        </nav>
+      </div>
     </div>
-</section>
+
+    <section id="order-detail" class="order-detail section">
+        <div class="container">
+            <div class="row g-4">
+                
+                <!-- Sidebar Navigation -->
+                <div class="col-lg-3">
+                    <div class="account-sidebar p-4 bg-white shadow-sm rounded-4">
+                        <nav id="account-nav" class="account-nav">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><a href="{% url 'accounts:dashboard' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-speedometer2"></i> لوحة التحكم</a></li>
+                                <li class="mb-2"><a href="{% url 'orders:order_list' %}" class="nav-link active py-2 px-3 rounded-3 d-flex align-items-center gap-2"><i class="bi bi-bag-check"></i> طلباتي</a></li>
+                                <li class="mb-2"><a href="{% url 'accounts:address_list' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-geo-alt"></i> عناويني</a></li>
+                                <li class="mb-2"><a href="{% url 'accounts:profile_detail' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-person-gear"></i> تفاصيل الحساب</a></li>
+                                <hr>
+                                <li><a href="{% url 'logout' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-danger"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Order Detail Content -->
+                <div class="col-lg-9">
+                    <div class="order-detail-content">
+                        <!-- Order Status Header -->
+                        <div class="order-header p-4 bg-white shadow-sm rounded-4 mb-4 d-md-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="fw-bold mb-1">الطلب #{{ order.id }}</h3>
+                                <p class="text-muted mb-0">تم الطلب في {{ order.created_at|date:"Y-m-d H:i" }}</p>
+                            </div>
+                            <div class="mt-3 mt-md-0">
+                                <span class="badge fs-6 px-3 py-2 rounded-pill {% if order.status == 'delivered' %}bg-success{% elif order.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <!-- Shipping Address -->
+                            <div class="col-md-6">
+                                <div class="p-4 bg-white shadow-sm rounded-4 h-100">
+                                    <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt text-primary me-2"></i> عنوان الشحن</h5>
+                                    <p class="mb-1 fw-bold">{{ order.shipping_full_name }}</p>
+                                    <p class="mb-1 text-muted">{{ order.shipping_address }}</p>
+                                    <p class="mb-1 text-muted">{{ order.shipping_city }}</p>
+                                    <p class="mb-0 text-muted">{{ order.shipping_phone }}</p>
+                                </div>
+                            </div>
+                            <!-- Payment Info -->
+                            <div class="col-md-6">
+                                <div class="p-4 bg-white shadow-sm rounded-4 h-100">
+                                    <h5 class="fw-bold mb-3"><i class="bi bi-credit-card text-primary me-2"></i> معلومات الدفع</h5>
+                                    <p class="mb-1 text-muted">طريقة الدفع: {{ order.get_payment_method_display|default:"غير محدد" }}</p>
+                                    <p class="mb-0 text-muted">حالة الدفع: {% if order.paid %}مدفوع{% else %}بانتظار الدفع{% endif %}</p>
+                                    {% if not order.paid and order.status != 'cancelled' %}
+                                    <a href="{% url 'orders:payment_selection' order.id %}" class="btn btn-sm btn-primary mt-3 rounded-pill px-4">إكمال الدفع الآن</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Items -->
+                        <div class="order-items p-4 bg-white shadow-sm rounded-4 mb-4">
+                            <h5 class="fw-bold mb-4">منتجات الطلب</h5>
+                            <div class="table-responsive">
+                                <table class="table align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>المنتج</th>
+                                            <th class="text-center">الكمية</th>
+                                            <th class="text-end">السعر</th>
+                                            <th class="text-end">الإجمالي</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in order.items.all %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    {% if item.product.image %}
+                                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid rounded" style="width: 50px;">
+                                                    {% elif item.bundle.image %}
+                                                    <img src="{{ item.bundle.image.url }}" alt="{{ item.bundle.name }}" class="img-fluid rounded" style="width: 50px;">
+                                                    {% endif %}
+                                                    <div>
+                                                        <span class="d-block fw-bold">{% if item.product %}{{ item.product.name }}{% else %}{{ item.bundle.name }}{% endif %}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">{{ item.quantity }}</td>
+                                            <td class="text-end">{{ item.price }}</td>
+                                            <td class="text-end fw-bold">{{ item.get_total_price }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot class="border-top-0">
+                                        <tr>
+                                            <td colspan="3" class="text-end py-3">المجموع الفرعي:</td>
+                                            <td class="text-end py-3">{{ order.total_price }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" class="text-end border-0 py-0">الشحن:</td>
+                                            <td class="text-end border-0 py-0 text-success">مجاني</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" class="text-end fs-5 fw-bold py-3">الإجمالي:</td>
+                                            <td class="text-end fs-5 fw-bold py-3">{{ order.total_price }}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 {% endblock %}

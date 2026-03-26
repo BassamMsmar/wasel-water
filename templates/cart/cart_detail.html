@@ -1,88 +1,215 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
+
+{% block title %}سلة التسوق - {{ company.name|default:"واصل ووتر" }}{% endblock %}
+
 {% block content %}
+    <!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">سلة التسوق</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'home' %}">الرئيسية</a></li>
+            <li class="current">السلة</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
 
-<!--=====================================
-                    CART PART START
-        =======================================-->
+    <!-- Cart Section -->
+    <section id="cart" class="cart section">
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-
-<section class="inner-section cart-part">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="account-card">
-                    <div class="account-title">
-                        <h4>عربة التسوق الخاصة بك</h4>
-                    </div>
-                    <div class="account-content">
-                        <div class="table-scroll">
-                            <table class="table-list">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">الرقم</th>
-                                        <th scope="col">المنتج</th>
-                                        <th scope="col">الاسم</th>
-                                        <th scope="col">السعر</th>
-                                        <th scope="col">العلامة التجارية</th>
-                                        <th scope="col">الكمية</th>
-                                        <th scope="col">الإجراء</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for item in cart %}
-                                    <tr id="cart-row-{{ item.product.id }}">
-                                        <td class="table-serial"><h6>{{ forloop.counter }}</h6></td>
-                                        <td class="table-image"><img src="{{ item.product.image.url }}" alt="product"></td>
-                                        <td class="table-name"><h6>{{ item.product.name }}</h6></td>
-                                        <td class="table-price"><h6>{{ item.price }} ر.س</h6></td>
-                                        <td class="table-brand"><h6>{{ item.product.brand.name|default:"-" }}</h6></td>
-                                        <td class="table-quantity">
-                                            <div class="cart-action-group" style="justify-content: center;">
-                                                <div class="product-action">
-                                                    <button class="action-minus" title="Quantity Minus"><i class="icofont-minus"></i></button>
-                                                    <input class="action-input" title="Quantity Number" type="text" name="quantity" value="{{ item.quantity }}" data-id="{{ item.product.id }}">
-                                                    <button class="action-plus" title="Quantity Plus"><i class="icofont-plus"></i></button>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="table-action">
-                                            <a class="view" href="{% url 'product_detail' item.product.slug %}" title="View Products"><i class="fas fa-eye"></i></a>
-                                            <a class="trash cart-remove-btn" href="#" title="Remove Wishlist" data-id="{{ item.product.id }}"><i class="icofont-trash"></i></a>
-                                        </td>
-                                    </tr>
-                                    {% empty %}
-                                    <tr>
-                                        <td colspan="7" class="text-center">سلة المشتريات فارغة حالياً.</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+        <div class="row gy-4">
+          <div class="col-lg-8">
+            <div class="items-list">
+              {% for item in cart %}
+              <div class="cart-item" data-item-id="{{ item.product.id }}" data-item-type="{{ item.item_type }}">
+                <button class="dismiss-btn remove-item-btn" type="button">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+                <div class="row g-0 align-items-center">
+                  <div class="col-md-2 col-3">
+                    <div class="item-thumb px-2">
+                        {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid rounded" loading="lazy">
+                        {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center rounded" style="aspect-ratio: 1/1;">
+                            <i class="bi bi-image text-muted"></i>
                         </div>
+                        {% endif %}
                     </div>
+                  </div>
+                  <div class="col-md-10 col-9">
+                    <div class="item-body">
+                      <h6 class="item-name">
+                          {% if item.item_type == 'bundle' %}
+                          <a href="{% url 'products:bundle_list' %}">{{ item.product.name }}</a>
+                          {% else %}
+                          <a href="{% url 'products:product_detail' item.product.slug %}">{{ item.product.name }}</a>
+                          {% endif %}
+                      </h6>
+                      <div class="item-attributes">
+                        <span class="attribute-badge">{% if item.item_type == 'bundle' %}باقة{% else %}منتج{% endif %}</span>
+                      </div>
+                      <div class="item-bottom">
+                        <div class="item-pricing">
+                          <span class="unit-price">{{ item.price }}</span>
+                        </div>
+                        <div class="quantity-selector">
+                          <button class="quantity-btn decrease update-qty" data-action="decrease"><i class="bi bi-dash"></i></button>
+                          <input type="number" class="quantity-input" value="{{ item.quantity }}" min="1">
+                          <button class="quantity-btn increase update-qty" data-action="increase"><i class="bi bi-plus"></i></button>
+                        </div>
+                        <div class="line-total">{{ item.total_price }}</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                {% if cart|length > 0 %}
-                <div class="checkout-charge">
-                    <ul>
-                        <li>
-                            <span>المجموع الكلي</span>
-                            <span class="cart-total-price">{{ cart.get_total_price }} ر.س</span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="checkout-process">
-                    <a href="{% url 'cart:checkout' %}" class="btn btn-inline">
-                        <i class="fas fa-paper-plane"></i>
-                        <span>إتمام الطلب</span>
-                    </a>
-                </div>
-                {% endif %}
+              </div>
+              {% empty %}
+              <div class="text-center py-5">
+                <i class="bi bi-cart-x fs-1 text-muted mb-3 d-block"></i>
+                <h3>سلة التسوق فارغة</h3>
+                <p>يبدو أنك لم تضف أي شيء إلى سلة التسوق الخاصة بك بعد.</p>
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary">ابدأ التسوق</a>
+              </div>
+              {% endfor %}
             </div>
-        </div>
-    </div>
-</section>
-<!--=====================================
-                    CART PART END
-        =======================================-->
 
+            {% if cart %}
+            <div class="cart-toolbar mt-4">
+              <a href="{% url 'products:product_list' %}" class="toolbar-link">
+                <i class="bi bi-arrow-right"></i> استمر في التسوق
+              </a>
+            </div>
+            {% endif %}
+          </div>
+
+          {% if cart %}
+          <div class="col-lg-4">
+            <div class="order-panel sticky-top" style="top: 100px;">
+              <div class="panel-header">
+                <i class="bi bi-bag-check"></i>
+                <h4>ملخص الطلب</h4>
+              </div>
+
+              <div class="panel-body">
+                <div class="cost-breakdown">
+                  <div class="cost-row">
+                    <span class="cost-label">المجموع الفرعي ({{ cart|length }} منتجات)</span>
+                    <span class="cost-amount cart-total-price">{{ cart.get_total_price }}</span>
+                  </div>
+                  <div class="cost-row">
+                    <span class="cost-label">الشحن</span>
+                    <span class="text-success">يتم حسابه عند الدفع</span>
+                  </div>
+                </div>
+
+                <div class="grand-total">
+                  <span>المجموع التقديري</span>
+                  <span class="total-amount cart-total-price">{{ cart.get_total_price }}</span>
+                </div>
+
+                <a href="{% url 'cart:checkout' %}" class="btn checkout-btn w-100 mt-3">
+                  متابعة عملية الشراء <i class="bi bi-arrow-left"></i>
+                </a>
+
+                <div class="secure-badges mt-4">
+                  <p class="badges-label">وسائل دفع آمنة</p>
+                  <div class="badges-row d-flex gap-3 justify-content-center">
+                    <i class="bi bi-credit-card fs-4"></i>
+                    <i class="bi bi-paypal fs-4"></i>
+                    <i class="bi bi-shield-lock fs-4"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // CSRF Token helper
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    // Update Quantity
+    $('.update-qty').on('click', function() {
+        const row = $(this).closest('.cart-item');
+        const productId = row.data('item-id');
+        const itemType = row.data('item-type');
+        const input = row.find('.quantity-input');
+        let qty = parseInt(input.val());
+        const action = $(this).data('action');
+
+        if (action === 'increase') qty++;
+        else if (action === 'decrease' && qty > 1) qty--;
+        else return;
+
+        $.ajax({
+            url: "{% url 'cart:cart_update' %}",
+            method: "POST",
+            data: {
+                'product_id': productId,
+                'item_type': itemType,
+                'quantity': qty,
+                'csrfmiddlewaretoken': csrftoken
+            },
+            success: function(response) {
+                input.val(qty);
+                row.find('.line-total').text(response.item_total);
+                $('.cart-total-price').text(response.total_price);
+            }
+        });
+    });
+
+    // Remove Item
+    $('.remove-item-btn').on('click', function() {
+        const row = $(this).closest('.cart-item');
+        const productId = row.data('item-id');
+        const itemType = row.data('item-type');
+
+        $.ajax({
+            url: "{% url 'cart:cart_remove' %}",
+            method: "POST",
+            data: {
+                'product_id': productId,
+                'item_type': itemType,
+                'csrfmiddlewaretoken': csrftoken
+            },
+            success: function(response) {
+                row.fadeOut(300, function() {
+                    $(this).remove();
+                    if ($('.cart-item').length === 0) {
+                        location.reload();
+                    } else {
+                        $('.cart-total-price').text(response.cart_total);
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

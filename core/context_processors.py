@@ -1,9 +1,10 @@
 # settings/context_processors.py
 from .models import Company
+from products.models import Category
 
 def company(request):
     """
-    يقوم بجلب بيانات الشركة من قاعدة البيانات
+    يقوم بجلب بيانات الشركة والأقسام من قاعدة البيانات
     ويجعلها متاحة في جميع القوالب.
     """
     try:
@@ -12,8 +13,15 @@ def company(request):
     except Company.DoesNotExist:
         company = None
 
+    categories = Category.objects.all()
+
+    context = {
+        'company': company,
+        'categories': categories,
+    }
+
     if company:
-        return {
+        context.update({
             'company_name': company.name,
             'company_description': company.description,
             'company_title': company.title,
@@ -28,7 +36,6 @@ def company(request):
             'company_linkedin': company.linkedin,
             'company_tiktok': company.tiktok,
             'company_whatsapp': company.whatsapp,
-        }
-    else:
-        # في حال لا توجد شركة بعد
-        return {}
+        })
+    
+    return context

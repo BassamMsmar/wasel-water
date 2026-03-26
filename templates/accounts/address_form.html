@@ -1,107 +1,74 @@
-{% extends 'base_account.html' %}
+{% extends "base.html" %}
 {% load static %}
 
-{% block account_title %}
-{% if form.instance.pk %}تعديل العنوان{% else %}إضافة عنوان جديد{% endif %}
-{% endblock %}
+{% block title %}{{ title|default:"إضافة عنوان" }} - {{ company.name|default:"واصل ووتر" }}{% endblock %}
 
-{% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'accounts:dashboard' %}">حسابي</a></li>
-<li class="breadcrumb-item"><a href="{% url 'accounts:address_list' %}">العناوين</a></li>
-<li class="breadcrumb-item active" aria-current="page">
-    {% if form.instance.pk %}تعديل العنوان{% else %}إضافة عنوان جديد{% endif %}
-</li>
-{% endblock %}
-
-{% block account_content %}
-<div class="account-card">
-    <div class="account-title">
-        <h4>{% if form.instance.pk %}تعديل العنوان{% else %}إضافة عنوان جديد{% endif %}</h4>
+{% block content %}
+    <div class="page-title light-background">
+      <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">{{ title|default:"إدارة العناوين" }}</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'home' %}">الرئيسية</a></li>
+            <li><a href="{% url 'accounts:dashboard' %}">لوحة التحكم</a></li>
+            <li><a href="{% url 'accounts:address_list' %}">عناويني</a></li>
+            <li class="current">تحرير العنوان</li>
+          </ol>
+        </nav>
+      </div>
     </div>
-    <div class="account-content">
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-                {% for error in form.non_field_errors %}
-                {{ error }}
-                {% endfor %}
+
+    <section id="address-form" class="address-form section">
+        <div class="container">
+            <div class="row g-4">
+                
+                <!-- Sidebar Navigation -->
+                <div class="col-lg-3">
+                    <div class="account-sidebar p-4 bg-white shadow-sm rounded-4">
+                        <nav id="account-nav" class="account-nav">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><a href="{% url 'accounts:dashboard' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-speedometer2"></i> لوحة التحكم</a></li>
+                                <li class="mb-2"><a href="{% url 'orders:order_list' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-bag-check"></i> طلباتي</a></li>
+                                <li class="mb-2"><a href="{% url 'accounts:address_list' %}" class="nav-link active py-2 px-3 rounded-3 d-flex align-items-center gap-2"><i class="bi bi-geo-alt"></i> عناويني</a></li>
+                                <li class="mb-2"><a href="{% url 'accounts:profile_detail' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-person-gear"></i> تفاصيل الحساب</a></li>
+                                <hr>
+                                <li><a href="{% url 'logout' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-danger"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Address Form Content -->
+                <div class="col-lg-9">
+                    <div class="address-form-content p-4 p-md-5 bg-white shadow-sm rounded-4">
+                        <h4 class="fw-bold mb-4">{{ title|default:"تفاصيل العنوان" }}</h4>
+                        
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="row g-4">
+                                {% for field in form %}
+                                <div class="col-md-{% if field.name == 'address_line1' or field.name == 'address_line2' or field.name == 'note' %}12{% else %}6{% endif %}">
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.errors %}
+                                    <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+                                    {% endif %}
+                                    {% if field.help_text %}
+                                    <div class="text-muted small mt-1">{{ field.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                                
+                                <div class="col-12 mt-5">
+                                    <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-pill">حفظ العنوان</button>
+                                    <a href="{% url 'accounts:address_list' %}" class="btn btn-light border px-4 py-2 rounded-pill ms-2 text-secondary text-decoration-none d-inline-block">إلغاء</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
             </div>
-            {% endif %}
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">الاسم الكامل</label>
-                    {{ form.full_name }}
-                    {{ form.full_name.errors }}
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">رقم الهاتف</label>
-                    {{ form.phone_number }}
-                    {{ form.phone_number.errors }}
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">المدينة</label>
-                    <div class="choices">
-                        {{ form.city }}
-                        {{ form.city.errors }}
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">الحي</label>
-                    <div class="choices">
-                        {{ form.neighborhood }}
-                        {{ form.neighborhood.errors }}
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">الشارع</label>
-                    <div class="choices">
-                        {{ form.street }}
-                        {{ form.street.errors }}
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">رقم المبنى</label>
-                    {{ form.building_number }}
-                    {{ form.building_number.errors }}
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label class="form-label">رقم الشقة</label>
-                    {{ form.apartment_number }}
-                    {{ form.apartment_number.errors }}
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">نوع العنوان</label>
-                    {{ form.address_type }}
-                    {{ form.address_type.errors }}
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">صورة المبنى (اختياري)</label>
-                    {{ form.image_of_building }}
-                    {% if form.instance.image_of_building %}
-                    <div class="mt-2">
-                        <img src="{{ form.instance.image_of_building.url }}" alt="Building" style="max-height: 100px;">
-                    </div>
-                    {% endif %}
-                    {{ form.image_of_building.errors }}
-                </div>
-
-                <div class="col-12 mb-3">
-                    <div class="form-check">
-                        {{ form.is_default }}
-                        <label class="form-check-label" for="{{ form.is_default.id_for_label }}">
-                            تعيين كعنوان افتراضي
-                        </label>
-                    </div>
-                </div>
-
-                <div class="col-12 text-end">
-                    <a href="{% url 'accounts:address_list' %}" class="btn btn-outline-secondary me-2">إلغاء</a>
-                    <button type="submit" class="btn btn-primary">حفظ العنوان</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+        </div>
+    </section>
 {% endblock %}

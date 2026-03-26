@@ -1,0 +1,109 @@
+{% load static %}
+<footer id="footer" class="footer dark-background">
+    <div class="footer-main">
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-4 col-md-6">
+            <div class="footer-widget footer-about">
+              <a href="{% url 'home' %}" class="logo">
+                <span class="sitename">{{ company.name|default:"واصل ووتر" }}</span>
+              </a>
+              <p>{{ company.description|default:"مصدرك الموثوق للمياه المتميزة ومنتجات نمط الحياة." }}</p>
+
+              <div class="social-links mt-4">
+                <h5>تواصل معنا</h5>
+                <div class="social-icons">
+                  {% if company.facebook %}<a href="{{ company.facebook }}" aria-label="Facebook"><i class="bi bi-facebook"></i></a>{% endif %}
+                  {% if company.instagram %}<a href="{{ company.instagram }}" aria-label="Instagram"><i class="bi bi-instagram"></i></a>{% endif %}
+                  {% if company.twitter %}<a href="{{ company.twitter }}" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>{% endif %}
+                  {% if company.tiktok %}<a href="{{ company.tiktok }}" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>{% endif %}
+                  {% if company.whatsapp %}<a href="https://wa.me/{{ company.whatsapp }}" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>{% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="col-lg-2 col-md-6 col-sm-6">
+            <div class="footer-widget">
+              <h4>المتجر</h4>
+              <ul class="footer-links">
+                {% for category in categories|slice:":6" %}
+                {% if category.slug %}
+                <li><a href="{% url 'products:category_detail' category.slug %}">{{ category.name }}</a></li>
+                {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-lg-2 col-md-6 col-sm-6">
+            <div class="footer-widget">
+              <h4>الدعم</h4>
+              <ul class="footer-links">
+                <li><a href="{% url 'products:product_list' %}">المتجر</a></li>
+            <li><a href="{% url 'orders:track' %}">تتبع الطلب</a></li>
+            <li><a href="#">الأسئلة الشائعة</a></li>
+                <li><a href="#">معلومات الشحن</a></li>
+                <li><a href="{% url 'settings:return_policy' %}">الاسترجاع والاستبدال</a></li>
+                <li><a href="{% url 'settings:contact' %}">اتصل بنا</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6">
+            <div class="footer-widget">
+              <h4>معلومات الاتصال</h4>
+              <div class="footer-contact">
+                <div class="contact-item">
+                  <i class="bi bi-geo-alt"></i>
+                  <span>{{ company.address }}</span>
+                </div>
+                <div class="contact-item">
+                  <i class="bi bi-telephone"></i>
+                  <span>{{ company.phone }}</span>
+                </div>
+                <div class="contact-item">
+                  <i class="bi bi-envelope"></i>
+                  <span>{{ company.email }}</span>
+                </div>
+                <div class="contact-item">
+                  <i class="bi bi-clock"></i>
+                  <span>الإثنين-السبت: 11 صباحاً - 11 مساءً<br>الأحد: مغلق</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="row gy-3 align-items-center">
+          <div class="col-lg-6 col-md-12">
+            <div class="copyright text-center text-lg-start">
+              <p>© <span>جميع الحقوق محفوظة</span> <strong class="sitename">{{ company.name|default:"واصل ووتر" }}</strong></p>
+            </div>
+          </div>
+
+          <div class="col-lg-6 col-md-12">
+            <div class="d-flex flex-wrap justify-content-lg-end justify-content-center align-items-center gap-4">
+              <div class="payment-methods">
+                <div class="payment-icons">
+                  <i class="bi bi-credit-card" aria-label="بطاقة ائتمان"></i>
+                  <i class="bi bi-paypal" aria-label="باي بال"></i>
+                  <i class="bi bi-cash" aria-label="دفع عند الاستلام"></i>
+                </div>
+              </div>
+
+              <div class="legal-links">
+                <a href="{% url 'settings:tos' %}">الشروط</a>
+                <a href="{% url 'settings:privacy' %}">الخصوصية</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
