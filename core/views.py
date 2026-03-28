@@ -9,6 +9,7 @@ from orders.forms import OrderForm, OrderItemFormSet
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
 from django.contrib import messages
+from accounts.forms import StaffForm
 
 User = get_user_model()
 
@@ -199,10 +200,18 @@ class AdminOrderCreateView(StaffRequiredMixin, CreateView):
         context = self.get_context_data()
         items = context['items']
         if items.is_valid():
+            # Initial save to get the order ID
             self.object = form.save()
             items.instance = self.object
             items.save()
-            return super().form_valid(form)
+            
+            # Recalculate total_price from items to ensure accuracy
+            total = sum(item.get_cost() for item in self.object.items.all())
+            self.object.total_price = total
+            self.object.save()
+            
+            messages.success(self.request, f'تم إنشاء الطلب #{self.object.id} بنجاح.')
+            return redirect(self.success_url)
         else:
             return self.render_to_response(self.get_context_data(form=form))
 
@@ -232,7 +241,14 @@ class AdminOrderUpdateView(StaffRequiredMixin, UpdateView):
             self.object = form.save()
             items.instance = self.object
             items.save()
-            return super().form_valid(form)
+            
+            # Recalculate total_price from items
+            total = sum(item.get_cost() for item in self.object.items.all())
+            self.object.total_price = total
+            self.object.save()
+            
+            messages.success(self.request, f'تم تحديث الطلب #{self.object.id} بنجاح.')
+            return redirect(self.success_url)
         else:
             return self.render_to_response(self.get_context_data(form=form))
 
@@ -260,3 +276,23 @@ class AdminStaffListView(StaffRequiredMixin, ListView):
 
     def get_queryset(self):
         return User.objects.filter(is_staff=True)
+
+class AdminStaffCreateView(StaffRequiredMixin, CreateView):
+    model = User
+    form_class = StaffForm
+    template_name = 'admin/staff_form.html'
+    success_url = reverse_lazy('settings:admin_staff')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'تم إضافة الموظف بنجاح.')
+        return super().form_valid(form)
+
+class AdminStaffUpdateView(StaffRequiredMixin, UpdateView):
+    model = User
+    form_class = StaffForm
+    template_name = 'admin/staff_form.html'
+    success_url = reverse_lazy('settings:admin_staff')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'تم تحديث بيانات الموظف بنجاح.')
+        return super().form_valid(form)

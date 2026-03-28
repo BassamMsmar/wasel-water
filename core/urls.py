@@ -4,6 +4,7 @@ from .views import (
     AdminDashboardView, AdminProductListView, AdminProductCreateView, AdminProductUpdateView,
     AdminOrderListView, AdminOrderCreateView, AdminOrderUpdateStatusView, AdminOrderDetailView, AdminOrderUpdateView,
     AdminCustomerListView, AdminOfferListView, AdminOfferCreateView, AdminOfferUpdateView, AdminStaffListView,
+    AdminStaffCreateView, AdminStaffUpdateView,
     AdminBrandListView, AdminBrandCreateView, AdminBrandUpdateView,
     AdminCategoryListView, AdminCategoryCreateView, AdminCategoryUpdateView
 )
@@ -50,4 +51,6 @@ urlpatterns = [
 
     path('admin/customers/', AdminCustomerListView.as_view(), name='admin_customers'),
     path('admin/staff/', AdminStaffListView.as_view(), name='admin_staff'),
+    path('admin/staff/add/', AdminStaffCreateView.as_view(), name='admin_staff_create'),
+    path('admin/staff/<int:pk>/edit/', AdminStaffUpdateView.as_view(), name='admin_staff_update'),
 ]
