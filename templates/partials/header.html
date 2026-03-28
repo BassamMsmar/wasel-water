@@ -1,144 +1,165 @@
 {% load static %}
 <header id="header" class="header position-relative">
-    <!-- Header Bar -->
-    <div class="header-bar">
-      <div class="container-fluid container-xl">
-        <div class="d-flex align-items-center justify-content-between">
+  <!-- Header Bar -->
+  <div class="header-bar">
+    <div class="container-fluid container-xl">
+      <div class="d-flex align-items-center justify-content-between">
 
-          <!-- Logo -->
-          <a href="{% url 'home' %}" class="logo d-flex align-items-center">
-            {% if company.logo %}
-            <img src="{{ company.logo.url }}" alt="{{ company.name }}">
-            {% endif %}
-            <h1 class="sitename">{{ company.name|default:"واصل ووتر" }}</h1>
+        <!-- Logo -->
+        <a href="{% url 'home' %}" class="logo d-flex align-items-center">
+          {% if company.logo %}
+          <img src="{{ company.logo.url }}" alt="{{ company.name }}">
+          {% endif %}
+          <h1 class="sitename">{{ company.name|default:"متاجر 360" }}</h1>
+        </a>
+
+        <!-- Search -->
+        <form class="header-search d-none d-lg-flex" action="{% url 'products:product_list' %}" method="GET">
+          <input type="text" name="q" class="search-input"
+            placeholder="ابحث عن المنتجات، الأصناف، العلامات التجارية...">
+          <button class="search-btn" type="submit">
+            <i class="bi bi-search"></i>
+            <span class="d-none d-xl-inline">بحث</span>
+          </button>
+        </form>
+
+        <!-- Quick Links -->
+        <div class="quick-links d-none d-xl-flex align-items-center">
+          <a href="{% url 'settings:about' %}" class="quick-link">
+            <i class="bi bi-info-circle"></i>
+            <span>من نحن</span>
           </a>
+          <a href="{% url 'settings:contact' %}" class="quick-link">
+            <i class="bi bi-envelope"></i>
+            <span>اتصل بنا</span>
+          </a>
+        </div>
 
-          <!-- Search -->
-          <form class="header-search d-none d-lg-flex" action="{% url 'products:product_list' %}" method="GET">
-            <input type="text" name="q" class="search-input" placeholder="ابحث عن المنتجات، الأصناف، العلامات التجارية...">
-            <button class="search-btn" type="submit">
-              <i class="bi bi-search"></i>
-              <span class="d-none d-xl-inline">بحث</span>
+        <!-- Header Actions -->
+        <div class="header-actions d-flex align-items-center">
+
+          <!-- Mobile Search Toggle -->
+          <button class="action-icon mobile-search-toggle d-lg-none" type="button" data-bs-toggle="collapse"
+            data-bs-target="#mobileSearch" aria-expanded="false" aria-controls="mobileSearch">
+            <i class="bi bi-search"></i>
+          </button>
+
+          <!-- Account -->
+          <div class="dropdown account-dropdown">
+            <button class="action-icon" data-bs-toggle="dropdown" aria-label="الحساب">
+              <i class="bi bi-person"></i>
+              <span class="action-label d-none d-md-inline">حسابي</span>
             </button>
-          </form>
-
-          <!-- Quick Links -->
-          <div class="quick-links d-none d-xl-flex align-items-center">
-            <a href="{% url 'settings:about' %}" class="quick-link">
-              <i class="bi bi-info-circle"></i>
-              <span>من نحن</span>
-            </a>
-            <a href="{% url 'settings:contact' %}" class="quick-link">
-              <i class="bi bi-envelope"></i>
-              <span>اتصل بنا</span>
-            </a>
-          </div>
-
-          <!-- Header Actions -->
-          <div class="header-actions d-flex align-items-center">
-
-            <!-- Mobile Search Toggle -->
-            <button class="action-icon mobile-search-toggle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileSearch" aria-expanded="false" aria-controls="mobileSearch">
-              <i class="bi bi-search"></i>
-            </button>
-
-            <!-- Account -->
-            <div class="dropdown account-dropdown">
-              <button class="action-icon" data-bs-toggle="dropdown" aria-label="الحساب">
-                <i class="bi bi-person"></i>
-                <span class="action-label d-none d-md-inline">حسابي</span>
-              </button>
-              <div class="dropdown-menu account-panel">
-                <div class="account-panel-header">
-                  <h6>أهلاً بك!</h6>
-                  {% if user.is_authenticated and user.is_staff %}
-                  <div class="admin-badge mb-2">
-                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3">مسؤول النظام</span>
-                  </div>
-                  <a href="{% url 'settings:admin_dashboard' %}" class="btn btn-primary btn-sm w-100 mb-3 rounded-pill fw-bold">
-                    <i class="bi bi-speedometer2 me-1"></i> لوحة تحكم الإدارة
-                  </a>
-                  {% else %}
-                  <p>قم بتسجيل الدخول للحصول على أفضل تجربة</p>
-                  {% endif %}
-                </div>
+            <div class="dropdown-menu account-panel">
+              <div class="account-panel-header mb-2 px-3 pt-3">
+                <h6 class="fw-bold mb-1">أهلاً بك!</h6>
+                {% if user.is_authenticated and user.is_staff %}
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1" style="font-size: 11px;">مسؤول النظام</span>
+                {% endif %}
                 {% if not user.is_authenticated %}
-                <div class="account-panel-auth">
-                  <a href="{% url 'login' %}" class="btn btn-signin">تسجيل الدخول</a>
-                  <a href="{% url 'accounts:signup' %}" class="btn btn-register">إنشاء حساب</a>
-                </div>
-                {% else %}
-                <div class="account-panel-links">
-                  <a href="{% url 'orders:order_list' %}">
-                    <i class="bi bi-box-seam"></i>
-                    <span>طلباتي</span>
+                <p class="small text-muted mb-3">قم بتسجيل الدخول للحصول على أفضل تجربة</p>
+                {% endif %}
+              </div>
+              
+              <div class="account-panel-body px-2 pb-2">
+                {% if user.is_authenticated %}
+                <div class="account-panel-links d-grid gap-1">
+                  <a href="{% url 'orders:order_list' %}" class="dropdown-item rounded-3 py-2 px-3 d-flex align-items-center gap-3">
+                    <i class="bi bi-box-seam text-muted"></i>
+                    <span class="small fw-semibold">طلباتي</span>
                   </a>
-                  <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                  
+                  {% if user.is_staff %}
+                  <a href="{% url 'settings:admin_dashboard' %}" class="dropdown-item rounded-3 py-2 px-3 d-flex align-items-center gap-3">
+                    <i class="bi bi-speedometer2 text-muted"></i>
+                    <span class="small fw-semibold">لوحة تحكم الإدارة</span>
+                  </a>
+                  {% endif %}
+                  
+                  <hr class="my-2 opacity-10">
+                  
+                  <form action="{% url 'logout' %}" method="post">
                     {% csrf_token %}
-                    <button type="submit" class="dropdown-item p-0 border-0 bg-transparent text-muted" style="font-size: 14px;">
-                        <i class="bi bi-box-arrow-right me-2"></i>
-                        <span>تسجيل الخروج</span>
+                    <button type="submit" class="dropdown-item rounded-3 py-2 px-3 d-flex align-items-center gap-3 text-danger w-100 border-0 bg-transparent">
+                      <i class="bi bi-box-arrow-right"></i>
+                      <span class="small fw-semibold">تسجيل الخروج</span>
                     </button>
                   </form>
+                </div>
+                {% else %}
+                <div class="account-panel-auth d-grid gap-2 px-2 pt-2">
+                  <a href="{% url 'login' %}" class="btn btn-primary btn-sm rounded-pill fw-bold py-2">تسجيل الدخول</a>
+                  <a href="{% url 'accounts:signup' %}" class="btn btn-outline-secondary btn-sm rounded-pill fw-bold py-2">إنشاء حساب</a>
                 </div>
                 {% endif %}
               </div>
             </div>
-
-            <!-- Cart -->
-            <div class="dropdown cart-dropdown">
-              <button class="action-icon shadow-none" data-bs-toggle="dropdown" aria-label="السلة">
-                <i class="bi bi-cart3"></i>
-                <span class="action-label d-none d-md-inline">السلة</span>
-                <span class="count-dot">{{ cart|length }}</span>
-              </button>
-              <div class="dropdown-menu cart-panel">
-                {% include "cart/partials/sidebar_cart.html" %}
-              </div>
-            </div>
-
-            <!-- Mobile Navigation Toggle -->
-            <i class="mobile-nav-toggle d-xl-none bi bi-list me-0"></i>
-
           </div>
+
+          <!-- Cart -->
+          <div class="dropdown cart-dropdown">
+            <button class="action-icon shadow-none" data-bs-toggle="dropdown" aria-label="السلة">
+              <i class="bi bi-cart3"></i>
+              <span class="action-label d-none d-md-inline">السلة</span>
+              <span class="count-dot">{{ cart|length }}</span>
+            </button>
+            <div class="dropdown-menu cart-panel">
+              {% include "cart/partials/sidebar_cart.html" %}
+            </div>
+          </div>
+
+          <!-- Mobile Navigation Toggle -->
+          <i class="mobile-nav-toggle d-xl-none bi bi-list me-0"></i>
+
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Navigation -->
-    <div class="header-nav">
-      <div class="container-fluid container-xl position-relative">
-        <nav id="navmenu" class="navmenu">
-          <ul class="d-flex justify-content-center">
-            <li><a href="{% url 'home' %}">الرئيسية</a></li>
-            <li><a href="{% url 'products:product_list' %}">المتجر</a></li>
-            <li class="dropdown"><a href="#"><span>الأصناف</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-              <ul>
-                {% for category in categories %}
-                  {% if category.slug %}
-                  <li><a href="{% url 'products:category_detail' category.slug %}">{{ category.name }}</a></li>
-                  {% endif %}
-                {% endfor %}
-              </ul>
-            </li>
-            <li><a href="{% url 'products:bundle_list' %}">الباقات</a></li>
-            <li><a href="{% url 'settings:about' %}">عن الشركة</a></li>
-            <li><a href="{% url 'settings:contact' %}">اتصل بنا</a></li>
-          </ul>
-        </nav>
-      </div>
+  <!-- Navigation -->
+  <div class="header-nav">
+    <div class="container-fluid container-xl position-relative">
+      <nav id="navmenu" class="navmenu">
+        <ul class="d-flex justify-content-center">
+          <li><a href="{% url 'home' %}">الرئيسية</a></li>
+          <li><a href="{% url 'products:product_list' %}">المتجر</a></li>
+          <li class="dropdown"><a href="#"><span>الأصناف</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              {% for category in categories %}
+              {% if category.slug %}
+              <li><a href="{% url 'products:category_detail' category.slug %}">{{ category.name }}</a></li>
+              {% endif %}
+              {% endfor %}
+            </ul>
+          </li>
+          <li class="dropdown"><a href="{% url 'products:brand_list' %}"><span>الماركات</span> <i
+                class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              {% for brand in brands %}
+              {% if brand.slug %}
+              <li><a href="{% url 'products:brand_detail' brand.slug %}">{{ brand.name }}</a></li>
+              {% endif %}
+              {% endfor %}
+            </ul>
+          </li>
+          <li><a href="{% url 'products:bundle_list' %}">الباقات</a></li>
+          <li><a href="{% url 'settings:about' %}">عن الشركة</a></li>
+          <li><a href="{% url 'settings:contact' %}">اتصل بنا</a></li>
+        </ul>
+      </nav>
     </div>
+  </div>
 
-    <!-- Mobile Search Form -->
-    <div class="collapse" id="mobileSearch">
-      <div class="container-fluid container-xl">
-        <form class="mobile-search-form" action="{% url 'products:product_list' %}" method="GET">
-          <div class="search-wrap">
-            <i class="bi bi-search"></i>
-            <input type="text" name="q" class="form-control" placeholder="ابحث عن المنتجات...">
-          </div>
-        </form>
-      </div>
+  <!-- Mobile Search Form -->
+  <div class="collapse" id="mobileSearch">
+    <div class="container-fluid container-xl">
+      <form class="mobile-search-form" action="{% url 'products:product_list' %}" method="GET">
+        <div class="search-wrap">
+          <i class="bi bi-search"></i>
+          <input type="text" name="q" class="form-control" placeholder="ابحث عن المنتجات...">
+        </div>
+      </form>
     </div>
+  </div>
 
-  </header>
+</header>

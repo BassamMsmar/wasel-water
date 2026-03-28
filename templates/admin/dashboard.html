@@ -76,7 +76,7 @@
                     </td>
                     <td>{{ order.total_price }}</td>
                     <td>
-                        <a href="/admin/orders/order/{{ order.id }}/change/" class="btn btn-sm btn-light border">تفاصيل</a>
+                        <a href="{% url 'settings:admin_order_detail' order.id %}" class="btn btn-sm btn-light border">تفاصيل</a>
                     </td>
                 </tr>
                 {% endfor %}

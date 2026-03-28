@@ -1,0 +1,75 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{% if object %}تعديل{% else %}إضافة{% endif %} موظف{% endblock %}
+{% block page_title %}{% if object %}تعديل بيانات الموظف: {{ object.username }}{% else %}إضافة موظف جديد{% endif %}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center pt-5">
+    <div class="col-md-7">
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden" data-aos="zoom-in">
+            <div class="card-header bg-dark text-white p-4">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-person-plus me-2"></i> بيانات الموظف</h5>
+            </div>
+            <div class="card-body p-5">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger rounded-4 mb-4">
+                        <ul class="mb-0 small">
+                            {% for field, errors in form.errors.items %}
+                                <li><strong>{{ field.label }}:</strong> {{ errors|striptags }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold small text-muted text-uppercase tracking-wider">اسم المستخدم</label>
+                            {{ form.username }}
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold small text-muted text-uppercase tracking-wider">البريد الإلكتروني</label>
+                            {{ form.email }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold small text-muted text-uppercase tracking-wider">الاسم الأول</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold small text-muted text-uppercase tracking-wider">اسم العائلة</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted text-uppercase tracking-wider">{% if object %}تغيير كلمة المرور (اختياري){% else %}كلمة المرور{% endif %}</label>
+                        {{ form.password }}
+                        {% if object %}
+                        <div class="form-text small text-muted mt-2">اتركه فارغاً إذا كنت لا ترغب في تغيير كلمة المرور.</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check form-switch p-3 bg-light rounded-4 border">
+                            {{ form.is_active }}
+                            <label class="form-check-label fw-bold" for="{{ form.is_active.id_for_label }}">حالة الحساب (نشط)</label>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 text-center">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow fw-bold">
+                            <i class="bi bi-save me-2"></i> {% if object %}تحديث البيانات{% else %}إضافة الموظف{% endif %}
+                        </button>
+                        <a href="{% url 'settings:admin_staff' %}" class="btn btn-link text-muted ms-3">تراجع</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

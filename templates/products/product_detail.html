@@ -1,174 +1,178 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ product.name }} - {{ company.name|default:"واصل ووتر" }}{% endblock %}
+{% block title %}{{ product.name }} - {{ company.name|default:"متاجر 360" }}{% endblock %}
 
 {% block content %}
-    <!-- Page Title -->
-    <div class="page-title light-background">
-      <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">تفاصيل المنتج</h1>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="{% url 'home' %}">الرئيسية</a></li>
-            <li><a href="{% url 'products:product_list' %}">المتجر</a></li>
-            {% if product.category and product.category.slug %}
-            <li><a href="{% url 'products:category_detail' product.category.slug %}">{{ product.category.name }}</a></li>
-            {% endif %}
-            <li class="current">{{ product.name }}</li>
-          </ol>
-        </nav>
-      </div>
-    </div><!-- End Page Title -->
-
-    <!-- Product Details Section -->
-    <section id="product-details" class="product-details section px-0">
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-        <div class="row g-5 align-items-start">
-          
-          <!-- Product Gallery -->
-          <div class="col-lg-6" data-aos="fade-left" data-aos-delay="150">
-            <div class="gallery-wrapper">
-              <div class="gallery-thumbs">
-                <div class="thumb-item thumbnail-item active" data-image="{{ product.image.url }}">
-                  <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
-                </div>
-                {% for img in product.product_image.all %}
-                <div class="thumb-item thumbnail-item" data-image="{{ img.image.url }}">
-                  <img src="{{ img.image.url }}" alt="{{ product.name }} gallery" class="img-fluid">
-                </div>
-                {% endfor %}
-              </div>
-
-              <div class="gallery-main">
-                <div class="main-image-container">
-                  {% if product.old_price > product.new_price %}
-                  <span class="sale-tag">-{{ product.discount_percentage }}%</span>
-                  {% endif %}
-                  <img id="main-product-image" src="{{ product.image.url }}" data-zoom="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid drift-zoom">
-                  <div class="image-zoom-container"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Product Info -->
-          <div class="col-lg-6" data-aos="fade-right" data-aos-delay="200">
-            <div class="product-info">
-              <span class="category-tag">{{ product.category.name|default:"عام" }}</span>
-              <h1 class="item-title">{{ product.name }}</h1>
-
-              <!-- Ratings removed per user request -->
-
-              <div class="price-block">
-                <span class="current-price">{{ product.new_price }}</span>
-                {% if product.old_price > product.new_price %}
-                <span class="original-price">{{ product.old_price }}</span>
-                <span class="savings-pill">وفر {{ product.old_price|add:"-product.new_price"|default:"0" }}</span>
-                {% endif %}
-              </div>
-
-              {% if product.subtitle %}
-              <div class="subtitle-text mb-3">
-                  <strong>{{ product.subtitle }}</strong>
-              </div>
-              {% endif %}
-
-              <div class="description-text">
-                <p>{{ product.descriptions|safe|truncatewords:40 }}</p>
-              </div>
-
-              <div class="availability-row">
-                <span class="in-stock"><i class="bi bi-patch-check-fill"></i> متوفر في المخزن</span>
-                <span class="remaining">SKU: {{ product.sku|default:"N/A" }}</span>
-              </div>
-
-              <div class="purchase-controls">
-                <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-flex align-items-center gap-3">
-                  {% csrf_token %}
-                  <input type="hidden" name="product_id" value="{{ product.id }}">
-                  <input type="hidden" name="item_type" value="product">
-                  <div class="quantity-selector">
-                    <button class="quantity-btn decrease" type="button"><i class="bi bi-dash"></i></button>
-                    <input type="number" name="quantity" class="quantity-input" value="1" min="1">
-                    <button class="quantity-btn increase" type="button"><i class="bi bi-plus"></i></button>
-                  </div>
-                  <button type="submit" class="btn add-cart-btn flex-grow-1">
-                    <i class="bi bi-bag-plus"></i> إضافة إلى السلة
-                  </button>
-                </form>
-              </div>
-
-              <div class="perks-grid mt-4">
-                <div class="perk-card">
-                  <i class="bi bi-truck"></i>
-                  <span>توصيل سريع</span>
-                </div>
-                <div class="perk-card">
-                  <i class="bi bi-arrow-counterclockwise"></i>
-                  <span>إرجاع خالٍ من المتاعب</span>
-                </div>
-                <div class="perk-card">
-                  <i class="bi bi-shield-check"></i>
-                  <span>دفع آمن</span>
-                </div>
-                <div class="perk-card">
-                  <i class="bi bi-headset"></i>
-                  <span>دعم 24/7</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product Detail Tabs -->
-        <div class="row mt-5" data-aos="fade-up" data-aos-delay="300">
-          <div class="col-12">
-            <div class="detail-tabs">
-              <ul class="tab-links nav" role="tablist">
-                <li><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#product-details-tab-desc" type="button">وصف المنتج</button></li>
-              </ul>
-
-              <div class="tab-content px-0">
-                <!-- Description Tab -->
-                <div class="tab-pane fade show active" id="product-details-tab-desc">
-                  <div class="desc-body py-4">
-                    <h3>عن هذا المنتج</h3>
-                    <div class="content">
-                        {{ product.descriptions|safe }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Related Products -->
-        {% if related_products %}
-        <div class="related-products mt-5" data-aos="fade-up">
-            <h3 class="mb-4">منتجات ذات صلة</h3>
-            <div class="row g-4">
-                {% for rel_product in related_products|slice:":4" %}
-                <div class="col-md-3 col-6">
-                    <article class="item-card">
-                        <div class="item-media">
-                            <img src="{{ rel_product.image.url }}" class="img-fluid" alt="{{ rel_product.name }}">
-                            <div class="quick-add">
-                                <a href="{% url 'products:product_detail' rel_product.slug %}" class="quick-add-btn">عرض</a>
-                            </div>
-                        </div>
-                        <div class="item-info text-center mt-2">
-                            <h4 class="item-name"><a href="{% url 'products:product_detail' rel_product.slug %}">{{ rel_product.name }}</a></h4>
-                            <span class="item-cost">{{ rel_product.new_price }}</span>
-                        </div>
-                    </article>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+<!-- Page Title -->
+<div class="page-title light-background">
+  <div class="container d-lg-flex justify-content-between align-items-center">
+    <h1 class="mb-2 mb-lg-0">تفاصيل المنتج</h1>
+    <nav class="breadcrumbs">
+      <ol>
+        <li><a href="{% url 'home' %}">الرئيسية</a></li>
+        <li><a href="{% url 'products:product_list' %}">المتجر</a></li>
+        {% if product.category and product.category.slug %}
+        <li><a href="{% url 'products:category_detail' product.category.slug %}">{{ product.category.name }}</a></li>
         {% endif %}
+        <li class="current">{{ product.name }}</li>
+      </ol>
+    </nav>
+  </div>
+</div><!-- End Page Title -->
 
+<!-- Product Details Section -->
+<section id="product-details" class="product-details section px-0">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-5 align-items-start">
+
+      <!-- Product Gallery -->
+      <div class="col-lg-6" data-aos="fade-left" data-aos-delay="150">
+        <div class="gallery-wrapper">
+          <div class="gallery-thumbs">
+            <div class="thumb-item thumbnail-item active" data-image="{{ product.image.url }}">
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+            </div>
+            {% for img in product.product_image.all %}
+            <div class="thumb-item thumbnail-item" data-image="{{ img.image.url }}">
+              <img src="{{ img.image.url }}" alt="{{ product.name }} gallery" class="img-fluid">
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="gallery-main">
+            <div class="main-image-container">
+              {% if product.old_price > product.new_price %}
+              <span class="sale-tag">-{{ product.discount_percentage }}%</span>
+              {% endif %}
+              <img id="main-product-image" src="{{ product.image.url }}" data-zoom="{{ product.image.url }}"
+                alt="{{ product.name }}" class="img-fluid drift-zoom">
+              <div class="image-zoom-container"></div>
+            </div>
+          </div>
+        </div>
       </div>
-    </section>
+
+      <!-- Product Info -->
+      <div class="col-lg-6" data-aos="fade-right" data-aos-delay="200">
+        <div class="product-info">
+          <span class="category-tag">{{ product.category.name|default:"عام" }}</span>
+          <h1 class="item-title">{{ product.name }}</h1>
+
+          <!-- Ratings removed per user request -->
+
+          <div class="price-block">
+            <span class="current-price">{{ product.new_price }}</span>
+            {% if product.old_price > product.new_price %}
+            <span class="original-price">{{ product.old_price }}</span>
+            <span class="savings-pill">وفر {{ product.old_price|add:"-product.new_price"|default:"0" }}</span>
+            {% endif %}
+          </div>
+
+          {% if product.subtitle %}
+          <div class="subtitle-text mb-3">
+            <strong>{{ product.subtitle }}</strong>
+          </div>
+          {% endif %}
+
+          <div class="description-text">
+            <p>{{ product.descriptions|safe|truncatewords:40 }}</p>
+          </div>
+
+          <div class="availability-row">
+            <span class="in-stock"><i class="bi bi-patch-check-fill"></i> متوفر في المخزن</span>
+            <span class="remaining">SKU: {{ product.sku|default:"N/A" }}</span>
+          </div>
+
+          <div class="purchase-controls">
+            <form action="{% url 'cart:cart_add' %}" method="POST"
+              class="add-to-cart-form d-flex align-items-center gap-3">
+              {% csrf_token %}
+              <input type="hidden" name="product_id" value="{{ product.id }}">
+              <input type="hidden" name="item_type" value="product">
+              <div class="quantity-selector">
+                <button class="quantity-btn decrease" type="button"><i class="bi bi-dash"></i></button>
+                <input type="number" name="quantity" class="quantity-input" value="1" min="1">
+                <button class="quantity-btn increase" type="button"><i class="bi bi-plus"></i></button>
+              </div>
+              <button type="submit" class="btn add-cart-btn flex-grow-1">
+                <i class="bi bi-bag-plus"></i> إضافة إلى السلة
+              </button>
+            </form>
+          </div>
+
+          <div class="perks-grid mt-4">
+            <div class="perk-card">
+              <i class="bi bi-truck"></i>
+              <span>توصيل سريع</span>
+            </div>
+            <div class="perk-card">
+              <i class="bi bi-arrow-counterclockwise"></i>
+              <span>إرجاع خالٍ من المتاعب</span>
+            </div>
+            <div class="perk-card">
+              <i class="bi bi-shield-check"></i>
+              <span>دفع آمن</span>
+            </div>
+            <div class="perk-card">
+              <i class="bi bi-headset"></i>
+              <span>دعم 24/7</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Detail Tabs -->
+    <div class="row mt-5" data-aos="fade-up" data-aos-delay="300">
+      <div class="col-12">
+        <div class="detail-tabs">
+          <ul class="tab-links nav" role="tablist">
+            <li><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#product-details-tab-desc"
+                type="button">وصف المنتج</button></li>
+          </ul>
+
+          <div class="tab-content px-0">
+            <!-- Description Tab -->
+            <div class="tab-pane fade show active" id="product-details-tab-desc">
+              <div class="desc-body py-4">
+                <h3>عن هذا المنتج</h3>
+                <div class="content">
+                  {{ product.descriptions|safe }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <div class="related-products mt-5" data-aos="fade-up">
+      <h3 class="mb-4">منتجات ذات صلة</h3>
+      <div class="row g-4">
+        {% for rel_product in related_products|slice:":4" %}
+        <div class="col-md-3 col-6">
+          <article class="item-card">
+            <div class="item-media">
+              <img src="{{ rel_product.image.url }}" class="img-fluid" alt="{{ rel_product.name }}">
+              <div class="quick-add">
+                <a href="{% url 'products:product_detail' rel_product.slug %}" class="quick-add-btn">عرض</a>
+              </div>
+            </div>
+            <div class="item-info text-center mt-2">
+              <h4 class="item-name"><a href="{% url 'products:product_detail' rel_product.slug %}">{{ rel_product.name
+                  }}</a></h4>
+              <span class="item-cost">{{ rel_product.new_price }}</span>
+            </div>
+          </article>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
 {% endblock %}

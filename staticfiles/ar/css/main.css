@@ -5356,22 +5356,8 @@ tbody tr td:last-child {
   padding-top: 15px;
   padding-left: 5px;
   padding-right: 5px;
-  min-height: 70px;
+  min-height: 75px;
   border-radius: 20px 20px 0 0;
-}
-
-/* Create notch effect using pseudo-element */
-.mobile-menu::before {
-  content: '';
-  position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90px;
-  height: 30px;
-  background: #ffffff;
-  border-radius: 50% 50% 0 0;
-  box-shadow: 0px -2px 15px rgba(0, 0, 0, 0.05);
 }
 
 .mobile-menu a,
@@ -5398,39 +5384,42 @@ tbody tr td:last-child {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Special Floating Home Button - Positioned in notch */
+/* Special Home Button - Larger but inline */
 .mobile-menu a[href*="home"],
 .mobile-menu a[title="الرئيسية"] {
-  position: absolute;
-  top: -40px;
-  left: 50%;
-  transform: translateX(-50%);
   background: linear-gradient(135deg, #2e86de 0%, #1a5c9e 100%);
-  width: 65px;
-  height: 65px;
-  border-radius: 50%;
-  box-shadow: 0 8px 20px rgba(46, 134, 222, 0.4);
-  margin: 0;
-  flex: 0 0 65px;
-  z-index: 10;
+  border-radius: 16px;
+  padding: 12px 18px;
+  box-shadow: 0 4px 12px rgba(46, 134, 222, 0.3);
+  flex: 1.2;
+  margin: 0 5px;
+}
+
+/* Keep home button blue even when active */
+.mobile-menu a[href*="home"].active,
+.mobile-menu a[title="الرئيسية"].active {
+  background: linear-gradient(135deg, #2e86de 0%, #1a5c9e 100%) !important;
 }
 
 .mobile-menu a[href*="home"]:active,
 .mobile-menu a[title="الرئيسية"]:active {
-  transform: translateX(-50%) scale(0.95);
+  transform: scale(0.95);
 }
 
 .mobile-menu a[href*="home"] i,
 .mobile-menu a[title="الرئيسية"] i {
   color: #ffffff !important;
-  font-size: 26px !important;
-  margin-bottom: 0 !important;
+  font-size: 24px !important;
+  margin-bottom: 4px !important;
   text-shadow: none !important;
 }
 
 .mobile-menu a[href*="home"] span,
 .mobile-menu a[title="الرئيسية"] span {
-  display: none !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  display: block !important;
 }
 
 /* Regular Items Hover */
@@ -5490,16 +5479,21 @@ tbody tr td:last-child {
   box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
 }
 
-/* Active State */
+/* Active State - Highlight current page */
 .mobile-menu a.active:not([href*="home"]) i,
 .mobile-menu button.active i {
   color: var(--primary);
+  transform: scale(1.1);
 }
 
 .mobile-menu a.active:not([href*="home"]) span,
 .mobile-menu button.active span {
   color: var(--primary);
   font-weight: 700;
+}
+
+.mobile-menu a.active:not([href*="home"]) {
+  background: rgba(46, 134, 222, 0.1);
 }
 
 /* Global Mobile Padding for Bottom Menu */
@@ -5523,6 +5517,43 @@ tbody tr td:last-child {
   .btn-group-fixed {
     bottom: 90px !important;
     z-index: 9998 !important;
+  }
+  
+  /* Cart Sidebar - Above Bottom Menu */
+  .cart-sidebar,
+  .sidebar-cart,
+  aside[class*="cart"],
+  [class*="cart-aside"],
+  .offcanvas,
+  [class*="sidebar"] {
+    z-index: 10000 !important;
+    bottom: 0 !important;
+  }
+  
+  /* Cart Footer - Space for mobile menu */
+  .cart-footer {
+    padding-bottom: 120px !important;
+    position: relative;
+    z-index: 10001;
+  }
+  
+  /* Cart List - Proper scrolling */
+  .cart-list {
+    max-height: calc(100vh - 300px) !important;
+    overflow-y: auto !important;
+    padding-bottom: 20px !important;
+  }
+  
+  /* Cart Checkout Buttons */
+  .cart-checkout-btn {
+    margin-bottom: 10px !important;
+  }
+  
+  /* Cart overlay/backdrop */
+  .modal-backdrop,
+  .offcanvas-backdrop,
+  [class*="overlay"] {
+    z-index: 9999 !important;
   }
 }
 

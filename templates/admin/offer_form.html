@@ -1,0 +1,49 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{% if object %}تعديل{% else %}إضافة{% endif %} عرض{% endblock %}
+{% block page_title %}{% if object %}تعديل العرض: {{ object.title }}{% else %}إضافة عرض جديد{% endif %}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center pt-5">
+    <div class="col-md-7">
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+            <div class="card-header bg-dark text-white p-4">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-megaphone me-2"></i> بيانات العرض الخاص</h5>
+            </div>
+            <div class="card-body p-5">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">عنوان العرض</label>
+                        {{ form.title }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">المنتج المرتبط بالعرض</label>
+                        {{ form.products }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">وصف العرض</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">صورة الغلاف (العرض)</label>
+                        {{ form.image }}
+                        {% if object.image %}
+                        <div class="mt-4 text-center p-3 rounded-4 bg-light border border-dashed">
+                            <span class="d-block mb-2 small text-muted">المعاينة الحالية:</span>
+                            <img src="{{ object.image.url }}" class="img-fluid rounded-3 shadow-sm" style="max-height: 180px;">
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="mt-5 text-center">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
+                            <i class="bi bi-check-circle me-2"></i> حفظ العرض
+                        </button>
+                        <a href="{% url 'settings:admin_offers' %}" class="btn btn-outline-secondary btn-lg rounded-pill px-4 ms-2 border-0">تراجع</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

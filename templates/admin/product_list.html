@@ -4,23 +4,59 @@
 {% block page_title %}قائمة المنتجات{% endblock %}
 
 {% block admin_content %}
-<div class="card p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h5 class="fw-bold mb-0">المنتجات الحالية</h5>
-        <a href="/admin/products/product/add/" class="btn btn-primary rounded-pill px-4">
-            <i class="bi bi-plus-lg"></i> إضافة منتج جديد
-        </a>
+<div class="card p-4 shadow-sm border-0 rounded-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <h5 class="fw-bold mb-0 text-dark">المنتجات الحالية</h5>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'products:export_products_excel' %}" class="btn btn-outline-success btn-sm rounded-pill px-3">
+                <i class="bi bi-file-earmark-excel me-1"></i> تصدير إكسل
+            </a>
+            <a href="{% url 'products:download_product_template' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+                <i class="bi bi-download me-1"></i> تحميل النموذج
+            </a>
+            <button class="btn btn-outline-primary btn-sm rounded-pill px-3" type="button" data-bs-toggle="collapse" data-bs-target="#importForm">
+                <i class="bi bi-file-earmark-arrow-up me-1"></i> استيراد المنتجات
+            </button>
+            <a href="{% url 'settings:admin_product_create' %}" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm">
+                <i class="bi bi-plus-lg me-1"></i> إضافة منتج جديد
+            </a>
+        </div>
     </div>
+
+    <!-- Import Form Collapse -->
+    <div class="collapse mb-4" id="importForm">
+        <div class="card card-body border-0 shadow-sm bg-light rounded-4">
+            <div class="d-flex align-items-center mb-3">
+                <i class="bi bi-info-circle text-primary me-2"></i>
+                <h6 class="fw-bold mb-0">استيراد المنتجات من ملف Excel</h6>
+            </div>
+            <form action="{% url 'products:import_products_excel' %}" method="POST" enctype="multipart/form-data" class="row g-3">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <div class="col-md-9">
+                    <input type="file" name="excel_file" class="form-control" accept=".xlsx, .xls" required>
+                    <div class="form-text small text-muted">يتم تحديث المنتجات الموجودة (عن طريق SKU أو الاسم) وإضافة المنتجات الجديدة تلقائياً.</div>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" id="importSubmitBtn" class="btn btn-primary w-100">
+                        <span class="btn-text">بدء الاستيراد</span>
+                        <div class="spinner-border spinner-border-sm d-none" role="status"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="table-responsive">
         <table class="table table-hover align-middle">
             <thead class="table-light">
-                <tr>
-                    <th>الصورة</th>
-                    <th>اسم المنتج</th>
-                    <th>التصنيف</th>
-                    <th>السعر</th>
-                    <th>الحالة</th>
-                    <th>إجراء</th>
+                <tr class="small text-muted text-uppercase">
+                    <th class="border-0">الصورة</th>
+                    <th class="border-0">اسم المنتج</th>
+                    <th class="border-0">العلامة</th>
+                    <th class="border-0">السعر</th>
+                    <th class="border-0">الحالة</th>
+                    <th class="border-0 text-center">إجراء</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,32 +65,80 @@
                     <td>
                         <img src="{{ product.image.url }}" alt="{{ product.name }}" class="rounded shadow-sm" style="width: 50px; height: 50px; object-fit: cover;">
                     </td>
-                    <td><strong>{{ product.name }}</strong></td>
-                    <td>{{ product.category.name|default:"-" }}</td>
-                    <td>{{ product.new_price }}</td>
+                    <td>
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold text-dark">{{ product.name }}</span>
+                            <small class="text-muted">{{ product.sku|default:"-" }}</small>
+                        </div>
+                    </td>
+                    <td>{{ product.brand.name|default:"-" }}</td>
+                    <td class="fw-bold">{{ product.new_price }} ر.س</td>
                     <td>
                         {% if product.active %}
-                        <span class="badge bg-success-subtle text-success">نشط</span>
+                        <span class="badge bg-success-subtle text-success px-3 rounded-pill">نشط</span>
                         {% else %}
-                        <span class="badge bg-danger-subtle text-danger">غير نشط</span>
+                        <span class="badge bg-danger-subtle text-danger px-3 rounded-pill">غير نشط</span>
                         {% endif %}
                     </td>
-                    <td>
+                    <td class="text-center">
                         <div class="dropdown">
                             <button class="btn btn-sm btn-light border" type="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-three-dots-vertical"></i>
                             </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/admin/products/product/{{ product.id }}/change/">تعديل</a></li>
-                                <li><a class="dropdown-item text-danger" href="/admin/products/product/{{ product.id }}/delete/">حذف</a></li>
+                            <ul class="dropdown-menu shadow border-0">
+                                <li><a class="dropdown-item" href="{% url 'settings:admin_product_update' product.id %}"><i class="bi bi-pencil me-2"></i>تعديل</a></li>
+                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>حذف</a></li>
                             </ul>
                         </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5">
+                        <i class="bi bi-box-x fs-1 text-muted"></i>
+                        <p class="mt-2">لا توجد منتجات مسجلة</p>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    {% include "partials/pagination.html" with page_obj=page_obj %}
+    {% if is_paginated %}
+    <div class="mt-4">
+        {% include "partials/pagination.html" with page_obj=page_obj %}
+    </div>
+    {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const importForm = document.querySelector('#importForm form');
+    const importBtn = document.getElementById('importSubmitBtn');
+    
+    if (importForm && importBtn) {
+        importForm.addEventListener('submit', function() {
+            importBtn.disabled = true;
+            importBtn.querySelector('.btn-text').textContent = 'جاري المعالجة...';
+            importBtn.querySelector('.spinner-border').classList.remove('d-none');
+        });
+    }
+
+    // Feedback for Export and Template buttons (optional)
+    const exportBtns = document.querySelectorAll('a[href*="export"], a[href*="template"]');
+    exportBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const originalHtml = this.innerHTML;
+            this.classList.add('disabled');
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> جاري التحميل...';
+            
+            setTimeout(() => {
+                this.classList.remove('disabled');
+                this.innerHTML = originalHtml;
+            }, 3000);
+        });
+    });
+});
+</script>
 {% endblock %}

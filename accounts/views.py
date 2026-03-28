@@ -103,7 +103,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         customer.save()
         
         messages.success(request, 'تم تحديث البيانات بنجاح')
-        return redirect('accounts:profile')
+        return redirect('accounts:profile_detail')
 
 class PaymentMethodsView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/payment_methods.html'

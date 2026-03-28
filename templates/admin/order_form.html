@@ -1,0 +1,262 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}إضافة طلب جديد{% endblock %}
+{% block page_title %}إضافة طلب يدوي{% endblock %}
+
+{% block admin_content %}
+<!-- Error Display -->
+{% if form.errors or items.errors or items.non_form_errors %}
+<div class="alert alert-danger rounded-4 shadow-sm mb-4">
+    <h6 class="fw-bold"><i class="bi bi-exclamation-triangle me-2"></i> يرجى تصحيح الأخطاء التالية:</h6>
+    <ul class="mb-0 small">
+        {% for field in form %}
+            {% for error in field.errors %}
+                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+        {% for error in items.non_form_errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+
+<form method="post" id="order-form">
+    {% csrf_token %}
+    <div class="row">
+        <!-- Customer Details -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 mb-4" data-aos="fade-right">
+                <div class="card-header bg-dark text-white p-3">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-person me-2"></i> بيانات العميل والشحن</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">العميل (المستخدم)</label>
+                        {{ form.user }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">الاسم الكامل للشحن</label>
+                        {{ form.shipping_full_name }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">الجوال</label>
+                        {{ form.shipping_phone }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">المدينة</label>
+                        {{ form.shipping_city }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">العنوان التفصيلي</label>
+                        {{ form.shipping_address }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-4 mb-4" data-aos="fade-right" data-aos-delay="100">
+                <div class="card-header bg-dark text-white p-3">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-info-circle me-2"></i> حالة الطلب</h6>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <div class="mb-3 text-start">
+                         <label class="form-label small fw-bold">الحالة</label>
+                         {{ form.status }}
+                    </div>
+                    <div class="form-check form-switch d-inline-block">
+                         {{ form.is_paid }}
+                         <label class="form-check-label ms-2" for="{{ form.is_paid.id_for_label }}">تم الدفع؟</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Summary -->
+            <div class="card shadow-sm border-0 rounded-4 mb-4 bg-primary text-white" data-aos="fade-right" data-aos-delay="200">
+                <div class="card-body p-4 text-center">
+                    <h5 class="mb-2 opacity-75">إجمالي الطلب</h5>
+                    <div class="display-4 fw-bold mb-0">
+                        <span id="display-total">0.00</span> <small style="font-size: 1.5rem;">ر.س</small>
+                    </div>
+                    {{ form.total_price }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4 h-100" data-aos="fade-left">
+                <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-cart me-2"></i> عناصر الطلب</h6>
+                    <span class="badge bg-light text-dark rounded-pill" id="items-count">1</span>
+                </div>
+                <div class="card-body p-4">
+                    {{ items.management_form }}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle" id="items-table">
+                            <thead class="table-light">
+                                <tr class="small text-muted">
+                                    <th>المنتج</th>
+                                    <th>أو الحزمة</th>
+                                    <th>السعر</th>
+                                    <th>الكمية</th>
+                                    <th class="text-end">المجموع</th>
+                                    <th>حذف</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item_form in items %}
+                                <tr class="item-row">
+                                    <td style="min-width: 150px;">{{ item_form.id }}{{ item_form.product }}</td>
+                                    <td style="min-width: 150px;">{{ item_form.bundle }}</td>
+                                    <td style="width: 120px;">{{ item_form.price }}</td>
+                                    <td style="width: 100px;">{{ item_form.quantity }}</td>
+                                    <td style="width: 120px;" class="text-end fw-bold row-subtotal">0.00</td>
+                                    <td class="text-center">
+                                         {% if item_form.instance.pk %}{{ item_form.DELETE }}{% endif %}
+                                         <button type="button" class="btn btn-outline-danger btn-sm border-0 remove-row" title="حذف">
+                                             <i class="bi bi-trash"></i>
+                                         </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" id="add-item" class="btn btn-primary btn-sm rounded-pill mt-3 shadow-sm">
+                        <i class="bi bi-plus-lg me-1"></i> إضافة عنصر آخر
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-4 py-4 text-end">
+                <button type="submit" class="btn btn-success btn-lg rounded-pill px-5 shadow-lg fw-bold">
+                    <i class="bi bi-check2-circle me-2"></i> إنشاء الطلب وحفظه
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    function calculateTotals() {
+        let grandTotal = 0;
+        document.querySelectorAll('.item-row').forEach(row => {
+            // Check if row is not marked for deletion
+            const deleteInput = row.querySelector('input[name*="-DELETE"]');
+            if (deleteInput && deleteInput.checked) {
+                row.style.display = 'none';
+                return;
+            }
+
+            const priceInput = row.querySelector('input[name*="-price"]');
+            const quantityInput = row.querySelector('input[name*="-quantity"]');
+            
+            if (priceInput && quantityInput) {
+                const price = parseFloat(priceInput.value) || 0;
+                const quantity = parseInt(quantityInput.value) || 0;
+                const subtotal = price * quantity;
+                const subtotalDisplay = row.querySelector('.row-subtotal');
+                if (subtotalDisplay) subtotalDisplay.innerText = subtotal.toFixed(2);
+                grandTotal += subtotal;
+            }
+        });
+        
+        document.getElementById('display-total').innerText = grandTotal.toFixed(2);
+        const totalPriceInput = document.querySelector('input[name="total_price"]');
+        if (totalPriceInput) totalPriceInput.value = grandTotal.toFixed(2);
+        
+        const itemsCountSpan = document.getElementById('items-count');
+        if (itemsCountSpan) itemsCountSpan.innerText = document.querySelectorAll('.item-row:not([style*="display: none"])').length;
+    }
+
+    document.getElementById('add-item').addEventListener('click', function() {
+        const tableBody = document.querySelector('#items-table tbody');
+        const rows = tableBody.querySelectorAll('.item-row');
+        const totalForms = document.getElementById('id_items-TOTAL_FORMS');
+        const newIdx = parseInt(totalForms.value);
+        
+        // Use the first row as a template
+        const templateRow = rows[0];
+        const newRow = templateRow.cloneNode(true);
+        
+        // Update names and IDs using regex to be safe
+        newRow.querySelectorAll('input, select, textarea').forEach(element => {
+            const name = element.getAttribute('name');
+            const id = element.getAttribute('id');
+            if(name) element.setAttribute('name', name.replace(/items-\d+-/, `items-${newIdx}-`));
+            if(id) element.setAttribute('id', id.replace(/id_items-\d+-/, `id_items-${newIdx}-`));
+            
+            // Clear values
+            if (element.type === 'checkbox' || element.type === 'radio') {
+                element.checked = false;
+            } else if (element.tagName === 'SELECT') {
+                element.selectedIndex = 0;
+            } else {
+                element.value = '';
+            }
+            
+            // Remove error classes if any
+            element.classList.remove('is-invalid');
+        });
+        
+        // Remove individual error messages from the cloned row
+        newRow.querySelectorAll('.invalid-feedback, .text-danger').forEach(el => el.remove());
+        
+        const subtotalDisplay = newRow.querySelector('.row-subtotal');
+        if (subtotalDisplay) subtotalDisplay.innerText = '0.00';
+        
+        newRow.style.display = ''; // Ensure it's visible if the template was hidden
+        tableBody.appendChild(newRow);
+        
+        totalForms.value = newIdx + 1;
+        calculateTotals();
+    });
+
+    document.addEventListener('click', function(e) {
+        const removeBtn = e.target.closest('.remove-row');
+        if(removeBtn) {
+            const row = removeBtn.closest('tr');
+            const deleteInput = row.querySelector('input[name*="-DELETE"]');
+            
+            if (deleteInput) {
+                // If it's an existing item, just mark for deletion
+                deleteInput.checked = true;
+                row.style.display = 'none';
+            } else {
+                // If it's a new item, we can just remove it
+                const rows = document.querySelectorAll('.item-row');
+                if(rows.length > 1) {
+                    row.remove();
+                    // Optional: re-index or just keep TOTAL_FORMS as is (Django handles gaps usually)
+                    // But for simplicity in this specific JS, let's decrement if it was the last one
+                    // Actually, Django management form TOTAL_FORMS should be the COUNT of forms provided.
+                    const currentRows = document.querySelectorAll('.item-row').length;
+                    document.getElementById('id_items-TOTAL_FORMS').value = currentRows;
+                }
+            }
+            calculateTotals();
+        }
+    });
+
+    document.addEventListener('input', function(e) {
+        if(e.target.name && (e.target.name.includes('-price') || e.target.name.includes('-quantity'))) {
+            calculateTotals();
+        }
+    });
+
+    document.addEventListener('change', function(e) {
+        if(e.target.name && (e.target.name.includes('-price') || e.target.name.includes('-quantity'))) {
+            calculateTotals();
+        }
+    });
+
+    // Initial calculation
+    window.addEventListener('DOMContentLoaded', calculateTotals);
+
+</script>
+{% endblock %}
+

@@ -1,0 +1,106 @@
+/* =========================================
+   MOBILE DASHBOARD MENU - HORIZONTAL TABS
+   ========================================= */
+
+@media (max-width: 767px) {
+    /* Hide the card wrapper on mobile */
+    .account-menu-card {
+        background: transparent;
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        margin-bottom: 15px;
+    }
+    
+    /* Hide header on mobile */
+    .account-menu-header {
+        display: none;
+    }
+    
+    /* Convert to horizontal scrollable */
+    .account-menu-group {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+        gap: 8px;
+        padding: 10px 15px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+        
+        /* Hide scrollbar but keep functionality */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .account-menu-group::-webkit-scrollbar {
+        display: none;
+    }
+    
+    /* Tab-style menu items */
+    .account-menu-item {
+        flex-shrink: 0;
+        min-width: auto;
+        padding: 10px 16px;
+        border-radius: 20px;
+        border: 1px solid #e0e0e0;
+        background: #fff;
+        white-space: nowrap;
+        font-size: 13px;
+        font-weight: 600;
+        color: #666;
+        border-left: none !important;
+        border-right: none !important;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .account-menu-item:hover {
+        background: #f8faff;
+        padding-right: 16px !important;
+        border-color: var(--primary);
+    }
+    
+    .account-menu-item.active {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+        font-weight: 700;
+    }
+    
+    .account-menu-item .icon-box {
+        margin: 0;
+        font-size: 14px;
+        color: inherit;
+    }
+    
+    .account-menu-item.active .icon-box {
+        color: #fff;
+    }
+    
+    /* Hide section titles on mobile */
+    .account-menu-section-title {
+        display: none;
+    }
+    
+    /* Logout button styling */
+    .account-menu-item.text-danger {
+        border-color: #ffebee;
+        background: #fff;
+        color: #e74c3c;
+    }
+    
+    .account-menu-item.text-danger:hover {
+        background: #ffebee;
+        border-color: #e74c3c;
+    }
+    
+    .account-menu-item.text-danger .icon-box {
+        color: #e74c3c;
+    }
+}

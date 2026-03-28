@@ -1,0 +1,60 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}إدارة التصنيفات{% endblock %}
+{% block page_title %}قائمة التصنيفات{% endblock %}
+
+{% block admin_content %}
+<div class="card p-4 shadow-sm border-0 rounded-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="fw-bold mb-0">التصنيفات المتاحة</h5>
+        <a href="{% url 'settings:admin_category_create' %}" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> إضافة تصنيف جديد
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr class="small text-muted text-uppercase">
+                    <th class="border-0">الأيقونة/الصورة</th>
+                    <th class="border-0">اسم التصنيف</th>
+                    <th class="border-0">عدد المنتجات</th>
+                    <th class="border-0 text-center">إجراء</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td>
+                        {% if category.image %}
+                        <img src="{{ category.image.url }}" alt="{{ category.name }}" class="rounded-3 shadow-sm" style="width: 60px; height: 45px; object-fit: cover;">
+                        {% else %}
+                        <div class="bg-light rounded text-center py-2" style="width: 60px;"><i class="bi bi-image text-muted"></i></div>
+                        {% endif %}
+                    </td>
+                    <td><strong class="text-dark">{{ category.name }}</strong></td>
+                    <td><span class="badge bg-secondary-subtle text-secondary rounded-pill px-3">{{ category.product_category.count }} منتج</span></td>
+                    <td class="text-center">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light border" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu shadow border-0">
+                                <li><a class="dropdown-item" href="{% url 'settings:admin_category_update' category.id %}"><i class="bi bi-pencil me-2"></i>تعديل</a></li>
+                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>حذف</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-5">
+                        <i class="bi bi-grid-3x3-gap fs-1 text-muted"></i>
+                        <p class="mt-2">لا توجد تصنيفات حالياً</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

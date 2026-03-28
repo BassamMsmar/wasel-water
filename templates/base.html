@@ -16,7 +16,7 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
   <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -28,7 +28,6 @@
 
   <!-- Main CSS File -->
   <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
-  
   {% block extra_head %}{% endblock %}
 </head>
 
@@ -37,6 +36,27 @@
   {% include "partials/header.html" %}
 
   <main class="main">
+    <div class="container mt-3">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert" style="border-right: 5px solid;">
+            <div class="d-flex align-items-center">
+              {% if message.tags == 'success' %}
+                <i class="bi bi-check-circle-fill me-2 fs-5 text-success"></i>
+              {% elif message.tags == 'error' %}
+                <i class="bi bi-exclamation-triangle-fill me-2 fs-5 text-danger"></i>
+              {% else %}
+                <i class="bi bi-info-circle-fill me-2 fs-5 text-primary"></i>
+              {% endif %}
+              <div class="ms-2">
+                {{ message }}
+              </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
     {% block content %}{% endblock %}
   </main>
 
