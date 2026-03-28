@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import TemplateView, ListView, UpdateView, CreateView, View, DetailView
+from django.views.generic import TemplateView, ListView, UpdateView, CreateView, View, DetailView, DeleteView
 from django.db.models import Count, Sum
 from products.models import Product, Offer, Brand, Category, Bundle
 from products.forms import ProductForm, BrandForm, CategoryForm, OfferForm
@@ -115,11 +115,28 @@ class AdminProductCreateView(StaffRequiredMixin, CreateView):
     template_name = 'admin/product_form.html'
     success_url = reverse_lazy('settings:admin_products')
 
+    def form_valid(self, form):
+        messages.success(self.request, 'تم إضافة المنتج بنجاح.')
+        return super().form_valid(form)
+
 class AdminProductUpdateView(StaffRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'admin/product_form.html'
     success_url = reverse_lazy('settings:admin_products')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'تم تحديث بيانات المنتج بنجاح.')
+        return super().form_valid(form)
+
+class AdminProductDeleteView(StaffRequiredMixin, DeleteView):
+    model = Product
+    template_name = 'admin/confirm_delete.html'
+    success_url = reverse_lazy('settings:admin_products')
+
+    def post(self, request, *args, **kwargs):
+        messages.success(self.request, 'تم حذف المنتج بنجاح.')
+        return super().post(request, *args, **kwargs)
 
 # --- Brand Management ---
 class AdminBrandListView(StaffRequiredMixin, ListView):
@@ -133,11 +150,28 @@ class AdminBrandCreateView(StaffRequiredMixin, CreateView):
     template_name = 'admin/brand_form.html'
     success_url = reverse_lazy('settings:admin_brands')
 
+    def form_valid(self, form):
+        messages.success(self.request, 'تم إضافة الماركة بنجاح.')
+        return super().form_valid(form)
+
 class AdminBrandUpdateView(StaffRequiredMixin, UpdateView):
     model = Brand
     form_class = BrandForm
     template_name = 'admin/brand_form.html'
     success_url = reverse_lazy('settings:admin_brands')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'تم تحديث بيانات الماركة بنجاح.')
+        return super().form_valid(form)
+
+class AdminBrandDeleteView(StaffRequiredMixin, DeleteView):
+    model = Brand
+    template_name = 'admin/confirm_delete.html'
+    success_url = reverse_lazy('settings:admin_brands')
+
+    def post(self, request, *args, **kwargs):
+        messages.success(self.request, 'تم حذف الماركة بنجاح.')
+        return super().post(request, *args, **kwargs)
 
 # --- Category Management ---
 class AdminCategoryListView(StaffRequiredMixin, ListView):
@@ -151,11 +185,28 @@ class AdminCategoryCreateView(StaffRequiredMixin, CreateView):
     template_name = 'admin/category_form.html'
     success_url = reverse_lazy('settings:admin_categories')
 
+    def form_valid(self, form):
+        messages.success(self.request, 'تم إضافة القسم بنجاح.')
+        return super().form_valid(form)
+
 class AdminCategoryUpdateView(StaffRequiredMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     template_name = 'admin/category_form.html'
     success_url = reverse_lazy('settings:admin_categories')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'تم تحديث بيانات القسم بنجاح.')
+        return super().form_valid(form)
+
+class AdminCategoryDeleteView(StaffRequiredMixin, DeleteView):
+    model = Category
+    template_name = 'admin/confirm_delete.html'
+    success_url = reverse_lazy('settings:admin_categories')
+
+    def post(self, request, *args, **kwargs):
+        messages.success(self.request, 'تم حذف القسم بنجاح.')
+        return super().post(request, *args, **kwargs)
 
 # --- Offer Management ---
 class AdminOfferListView(StaffRequiredMixin, ListView):
@@ -169,11 +220,28 @@ class AdminOfferCreateView(StaffRequiredMixin, CreateView):
     template_name = 'admin/offer_form.html'
     success_url = reverse_lazy('settings:admin_offers')
 
+    def form_valid(self, form):
+        messages.success(self.request, 'تم إضافة العرض بنجاح.')
+        return super().form_valid(form)
+
 class AdminOfferUpdateView(StaffRequiredMixin, UpdateView):
     model = Offer
     form_class = OfferForm
     template_name = 'admin/offer_form.html'
     success_url = reverse_lazy('settings:admin_offers')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'تم تحديث بيانات العرض بنجاح.')
+        return super().form_valid(form)
+
+class AdminOfferDeleteView(StaffRequiredMixin, DeleteView):
+    model = Offer
+    template_name = 'admin/confirm_delete.html'
+    success_url = reverse_lazy('settings:admin_offers')
+
+    def post(self, request, *args, **kwargs):
+        messages.success(self.request, 'تم حذف العرض بنجاح.')
+        return super().post(request, *args, **kwargs)
 
 # --- Order Management ---
 class AdminOrderListView(StaffRequiredMixin, ListView):
@@ -252,6 +320,15 @@ class AdminOrderUpdateView(StaffRequiredMixin, UpdateView):
         else:
             return self.render_to_response(self.get_context_data(form=form))
 
+class AdminOrderDeleteView(StaffRequiredMixin, DeleteView):
+    model = Order
+    template_name = 'admin/confirm_delete.html'
+    success_url = reverse_lazy('settings:admin_orders')
+
+    def post(self, request, *args, **kwargs):
+        messages.success(self.request, f'تم حذف الطلب بنجاح.')
+        return super().post(request, *args, **kwargs)
+
 class AdminOrderUpdateStatusView(StaffRequiredMixin, View):
     def post(self, request, pk):
         order = get_object_or_404(Order, pk=pk)
@@ -296,3 +373,25 @@ class AdminStaffUpdateView(StaffRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, 'تم تحديث بيانات الموظف بنجاح.')
         return super().form_valid(form)
+
+class AdminStaffDeleteView(StaffRequiredMixin, DeleteView):
+    model = User
+    template_name = 'admin/confirm_delete.html'
+    success_url = reverse_lazy('settings:admin_staff')
+
+    def post(self, request, *args, **kwargs):
+        user = self.get_object()
+        if user == request.user:
+            messages.error(request, 'لا يمكنك حذف حسابك الخاص.')
+            return redirect(self.success_url)
+        messages.success(request, 'تم حذف الموظف بنجاح.')
+        return super().post(request, *args, **kwargs)
+
+class AdminCustomerDeleteView(StaffRequiredMixin, DeleteView):
+    model = User
+    template_name = 'admin/confirm_delete.html'
+    success_url = reverse_lazy('settings:admin_customers')
+
+    def post(self, request, *args, **kwargs):
+        messages.success(self.request, 'تم حذف المستخدم بنجاح.')
+        return super().post(request, *args, **kwargs)

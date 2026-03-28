@@ -236,6 +236,9 @@ def import_products_excel(request):
         except Exception as e:
             messages.error(request, f"حدث خطأ أثناء الاستيراد: {str(e)}")
             
+    next_url = request.GET.get('next') or request.POST.get('next')
+    if next_url:
+        return redirect(next_url)
     return redirect('products:product_list')
 
 
