@@ -1,8 +1,12 @@
-from .models import Brand
+from .models import Brand, Category
 
 def brands(request):
     """
-    Context processor to specific brands to the templates.
+    Context processor to provide brands and categories to all templates.
     """
     brands = Brand.objects.all()
-    return {'brands': brands}
+    categories = Category.objects.all()
+    return {
+        'brands': brands,
+        'categories': categories
+    }

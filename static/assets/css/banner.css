@@ -1,0 +1,122 @@
+/* --- Premium Banner & Advanced Offers --- */
+.premium-hero-banner {
+  position: relative;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background: #001630; /* Deep navy fallback */
+}
+
+.premium-hero-banner .banner-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  height: 580px;
+}
+
+.premium-hero-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 8s ease-in-out;
+  opacity: 0.8; /* Slightly darker image for better text contrast/blend */
+}
+
+.premium-hero-banner:hover img {
+  transform: scale(1.08);
+}
+
+.premium-hero-banner .banner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Gradient for RTL: Dark on the RIGHT (start) */
+  background: linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 40%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Start = Right in RTL */
+  padding-right: 8%; /* Space from Right */
+}
+
+.premium-hero-banner .banner-content {
+  max-width: 580px;
+  /* Stronger Dark Glassmorphism */
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 50px;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  text-align: right;
+  animation: bannerFadeIn 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+}
+
+.premium-hero-banner .banner-content h2 {
+  font-size: 3.8rem;
+  font-weight: 900;
+  margin-bottom: 20px;
+  color: #fff;
+  line-height: 1.1;
+  text-shadow: 0 10px 20px rgba(0,0,0,0.6);
+}
+
+.premium-hero-banner .banner-content p {
+  font-size: 1.35rem;
+  margin-bottom: 35px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+}
+
+.premium-hero-banner .btn-banner {
+  display: inline-block;
+  padding: 18px 50px;
+  background: #fff;
+  color: #002147;
+  border-radius: 50px;
+  font-weight: 900;
+  font-size: 1.15rem;
+  text-decoration: none;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.premium-hero-banner .btn-banner:hover {
+  background: #d4af37;
+  color: #fff;
+  transform: translateY(-8px);
+}
+
+@keyframes bannerFadeIn {
+  from { opacity: 0; transform: translateX(50px); } /* Slide from Right (50px) to 0 in RTL */
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 992px) {
+  .premium-hero-banner .banner-container { height: 480px; }
+  .premium-hero-banner .banner-content { padding: 40px; max-width: 450px; }
+  .premium-hero-banner .banner-content h2 { font-size: 2.8rem; }
+  .premium-hero-banner .banner-overlay { padding-right: 5%; }
+}
+
+@media (max-width: 576px) {
+  .premium-hero-banner .banner-container { height: 420px; }
+  .premium-hero-banner .banner-overlay {
+    padding: 0;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 40px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 70%);
+  }
+  .premium-hero-banner .banner-content {
+    margin: 15px;
+    padding: 25px;
+    text-align: center;
+    max-width: 95%;
+  }
+  .premium-hero-banner .banner-content h2 { font-size: 1.8rem; }
+}

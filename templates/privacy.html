@@ -1,492 +1,508 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}سياسة الخصوصية - {{ company.name|default:"واصل ووتر" }}{% endblock %}
+{% block title %}سياسة الخصوصية - {{ company.name|default:"متاجر 360" }}{% endblock %}
 
 {% block content %}
-    <!-- Page Title -->
-    <div class="page-title light-background">
-      <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">سياسة الخصوصية</h1>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="{% url 'home' %}">الرئيسية</a></li>
-            <li class="current">سياسة الخصوصية</li>
-          </ol>
-        </nav>
-      </div>
-    </div><!-- End Page Title -->
+<!-- Page Title -->
+<div class="page-title light-background">
+  <div class="container d-lg-flex justify-content-between align-items-center">
+    <h1 class="mb-2 mb-lg-0">سياسة الخصوصية</h1>
+    <nav class="breadcrumbs">
+      <ol>
+        <li><a href="{% url 'home' %}">الرئيسية</a></li>
+        <li class="current">سياسة الخصوصية</li>
+      </ol>
+    </nav>
+  </div>
+</div><!-- End Page Title -->
 
-    <section class="section">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-10">
-                    <div class="bg-white p-4 p-md-5 shadow-sm rounded-4">
-                        <h2 class="fw-bold mb-4">مرحباً بكم في واصل ووتر</h2>
-                        <p>نحن في واصل ووتر نلتزم بحماية خصوصيتك ومعلوماتك الشخصية. توضح هذه السياسة كيفية جمعنا واستخدامنا وحمايتنا لبياناتكم عند استخدام متجرنا الإلكتروني.</p>
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="bg-white p-4 p-md-5 shadow-sm rounded-4">
+          <h2 class="fw-bold mb-4">مرحباً بكم في متاجر 360</h2>
+          <p>نحن في متاجر 360 نلتزم بحماية خصوصيتك ومعلوماتك الشخصية. توضح هذه السياسة كيفية جمعنا واستخدامنا وحمايتنا
+            لبياناتكم عند استخدام متجرنا الإلكتروني.</p>
 
-                        <h4 class="fw-bold mt-5 mb-3">1. المعلومات التي نجمعها</h4>
-                        <p>نقوم بجمع المعلومات الضرورية لتقديم خدماتنا، بما في ذلك:</p>
-                        <ul>
-                            <li>المعلومات الشخصية (الاسم، البريد الإلكتروني، رقم الجوال).</li>
-                            <li>معلومات التوصيل (العنوان الجغرافي).</li>
-                            <li>معلومات الطلبات وتاريخ الشراء.</li>
-                        </ul>
+          <h4 class="fw-bold mt-5 mb-3">1. المعلومات التي نجمعها</h4>
+          <p>نقوم بجمع المعلومات الضرورية لتقديم خدماتنا، بما في ذلك:</p>
+          <ul>
+            <li>المعلومات الشخصية (الاسم، البريد الإلكتروني، رقم الجوال).</li>
+            <li>معلومات التوصيل (العنوان الجغرافي).</li>
+            <li>معلومات الطلبات وتاريخ الشراء.</li>
+          </ul>
 
-                        <h4 class="fw-bold mt-5 mb-3">2. كيف نستخدم معلوماتكم</h4>
-                        <p>نستخدم البيانات التي نجمعها من أجل:</p>
-                        <ul>
-                            <li>معالجة وتوصيل طلبات المياه الخاصة بكم.</li>
-                            <li>التواصل معكم بخصوص حالة الطلب أو العروض الترويجية (بناءً على موافقتكم).</li>
-                            <li>تحسين تجربة المستخدم على الموقع وتطوير خدماتنا.</li>
-                        </ul>
+          <h4 class="fw-bold mt-5 mb-3">2. كيف نستخدم معلوماتكم</h4>
+          <p>نستخدم البيانات التي نجمعها من أجل:</p>
+          <ul>
+            <li>معالجة وتوصيل طلبات المياه الخاصة بكم.</li>
+            <li>التواصل معكم بخصوص حالة الطلب أو العروض الترويجية (بناءً على موافقتكم).</li>
+            <li>تحسين تجربة المستخدم على الموقع وتطوير خدماتنا.</li>
+          </ul>
 
-                        <h4 class="fw-bold mt-5 mb-3">3. حماية البيانات</h4>
-                        <p>نحن نطبق إجراءات أمنية تقنية وإدارية صارمة لحماية بياناتكم من الوصول غير المصرح به أو التغيير أو الإفصاح.</p>
+          <h4 class="fw-bold mt-5 mb-3">3. حماية البيانات</h4>
+          <p>نحن نطبق إجراءات أمنية تقنية وإدارية صارمة لحماية بياناتكم من الوصول غير المصرح به أو التغيير أو الإفصاح.
+          </p>
 
-                        <h4 class="fw-bold mt-5 mb-3">4. مشاركة المعلومات</h4>
-                        <p>لا نقوم ببيع أو تأجير معلوماتكم الشخصية لأطراف ثالثة. قد نشارك البيانات فقط مع شركاء التوصيل لضمان وصول طلبكم بسلامة.</p>
+          <h4 class="fw-bold mt-5 mb-3">4. مشاركة المعلومات</h4>
+          <p>لا نقوم ببيع أو تأجير معلوماتكم الشخصية لأطراف ثالثة. قد نشارك البيانات فقط مع شركاء التوصيل لضمان وصول
+            طلبكم بسلامة.</p>
 
-                        <h4 class="fw-bold mt-5 mb-3">5. حقوقكم</h4>
-                        <p>لكم الحق في الوصول إلى معلوماتكم الشخصية وتعديلها أو طلب حذفها في أي وقت من خلال إعدادات حسابكم أو التواصل معنا.</p>
+          <h4 class="fw-bold mt-5 mb-3">5. حقوقكم</h4>
+          <p>لكم الحق في الوصول إلى معلوماتكم الشخصية وتعديلها أو طلب حذفها في أي وقت من خلال إعدادات حسابكم أو التواصل
+            معنا.</p>
 
-                        <div class="alert alert-info mt-5 border-0 rounded-4">
-                            <p class="mb-0 small">آخر تحديث: مارس 2026. نحن نحتفظ بالحق في تحديث هذه السياسة من وقت لآخر.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          <div class="alert alert-info mt-5 border-0 rounded-4">
+            <p class="mb-0 small">آخر تحديث: مارس 2026. نحن نحتفظ بالحق في تحديث هذه السياسة من وقت لآخر.</p>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}
 
-          </div>
-        </form>
-      </div>
+</div>
+</form>
+</div>
+</div>
+
+</header>
+
+<main class="main">
+
+  <!-- Page Title -->
+  <div class="page-title light-background">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+      <h1 class="mb-2 mb-lg-0">Privacy</h1>
+      <nav class="breadcrumbs">
+        <ol>
+          <li><a href="index.html">Home</a></li>
+          <li class="current">Privacy</li>
+        </ol>
+      </nav>
     </div>
+  </div><!-- End Page Title -->
 
-  </header>
+  <!-- Privacy Section -->
+  <section id="privacy" class="privacy section">
 
-  <main class="main">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-    <!-- Page Title -->
-    <div class="page-title light-background">
-      <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">Privacy</h1>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="index.html">Home</a></li>
-            <li class="current">Privacy</li>
-          </ol>
-        </nav>
-      </div>
-    </div><!-- End Page Title -->
+      <!-- Policy Overview Banner -->
+      <div class="row mb-5" data-aos="fade-down" data-aos-delay="100">
+        <div class="col-lg-8">
+          <div class="overview-banner">
+            <div class="revision-tag"><i class="bi bi-calendar3"></i> Revised: March 15, 2025</div>
+            <h2>Your Data, Our Responsibility</h2>
+            <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. We
+              prioritize transparency in how your information is gathered, utilized, and safeguarded across every
+              touchpoint.</p>
+          </div>
+        </div>
+        <div class="col-lg-4 d-flex align-items-center justify-content-center">
+          <div class="trust-indicators">
+            <div class="indicator-item" data-aos="zoom-in" data-aos-delay="150">
+              <i class="bi bi-shield-fill-check"></i>
+              <span>Verified Secure</span>
+            </div>
+            <div class="indicator-item" data-aos="zoom-in" data-aos-delay="200">
+              <i class="bi bi-lock-fill"></i>
+              <span>Encrypted Data</span>
+            </div>
+            <div class="indicator-item" data-aos="zoom-in" data-aos-delay="250">
+              <i class="bi bi-person-fill-lock"></i>
+              <span>User Controlled</span>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Policy Overview -->
 
-    <!-- Privacy Section -->
-    <section id="privacy" class="privacy section">
+      <!-- Data Practices Tabs -->
+      <div class="data-practices" data-aos="fade-up" data-aos-delay="150">
+        <ul class="nav nav-tabs practice-tabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#privacy-tab-1" type="button"
+              role="tab" aria-selected="true">
+              <i class="bi bi-inbox"></i> Data Collection
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#privacy-tab-2" type="button" role="tab"
+              aria-selected="false">
+              <i class="bi bi-bar-chart-line"></i> Data Utilization
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#privacy-tab-3" type="button" role="tab"
+              aria-selected="false">
+              <i class="bi bi-diagram-3"></i> Data Distribution
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="privacy-tab-1" role="tabpanel">
+            <div class="row">
+              <div class="col-md-6">
+                <ul class="practice-list">
+                  <li><i class="bi bi-check-circle-fill"></i> Personal identifiers and contact details</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Login credentials and authentication tokens</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Billing and payment information</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <ul class="practice-list">
+                  <li><i class="bi bi-check-circle-fill"></i> Hardware and software identifiers</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Behavioral analytics and preferences</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Correspondence and support history</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="privacy-tab-2" role="tabpanel">
+            <div class="row">
+              <div class="col-md-6">
+                <ul class="practice-list">
+                  <li><i class="bi bi-check-circle-fill"></i> Deliver and enhance platform features</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Complete payment processing</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Distribute notifications and alerts</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <ul class="practice-list">
+                  <li><i class="bi bi-check-circle-fill"></i> Tailor content to individual needs</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Monitor platform performance metrics</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Maintain system integrity</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="privacy-tab-3" role="tabpanel">
+            <div class="row">
+              <div class="col-md-6">
+                <ul class="practice-list">
+                  <li><i class="bi bi-check-circle-fill"></i> Third-party service vendors</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Strategic business affiliates</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Regulatory compliance obligations</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <ul class="practice-list">
+                  <li><i class="bi bi-check-circle-fill"></i> Authorized user permissions</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Corporate restructuring events</li>
+                  <li><i class="bi bi-check-circle-fill"></i> Measurement and insight partners</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Data Practices -->
 
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
+      <!-- Protection Framework -->
+      <div class="protection-framework" data-aos="fade-up" data-aos-delay="150">
+        <div class="row mb-4">
+          <div class="col-12">
+            <h3 class="framework-title">Protection Framework</h3>
+            <p class="framework-subtitle">Multi-layered safeguards ensuring comprehensive data defense</p>
+          </div>
+        </div>
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+            <div class="framework-step">
+              <div class="step-number">01</div>
+              <div class="step-icon"><i class="bi bi-shield-lock-fill"></i></div>
+              <h4>Cryptographic Security</h4>
+              <p>End-to-end encryption safeguards all data during transit and at rest using advanced protocols</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+            <div class="framework-step">
+              <div class="step-number">02</div>
+              <div class="step-icon"><i class="bi bi-fingerprint"></i></div>
+              <h4>Identity Verification</h4>
+              <p>Multi-factor authentication and role-based permissions guard sensitive resources</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+            <div class="framework-step">
+              <div class="step-number">03</div>
+              <div class="step-icon"><i class="bi bi-incognito"></i></div>
+              <h4>Anonymization</h4>
+              <p>Continuous privacy audits and data reduction strategies minimize exposure risks</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+            <div class="framework-step">
+              <div class="step-number">04</div>
+              <div class="step-icon"><i class="bi bi-award-fill"></i></div>
+              <h4>Regulatory Alignment</h4>
+              <p>Full adherence to GDPR, CCPA, and other global data protection frameworks</p>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Protection Framework -->
 
-        <!-- Policy Overview Banner -->
-        <div class="row mb-5" data-aos="fade-down" data-aos-delay="100">
+      <!-- Individual Rights -->
+      <div class="individual-rights" data-aos="fade-up" data-aos-delay="150">
+        <div class="row align-items-center">
+          <div class="col-lg-4 mb-4 mb-lg-0">
+            <div class="rights-intro">
+              <h3>Individual Data Rights</h3>
+              <p>Exercising control over your personal information is fundamental. Below are the rights available to you
+                under applicable regulations.</p>
+              <a href="#" class="rights-cta">Discover More <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
           <div class="col-lg-8">
-            <div class="overview-banner">
-              <div class="revision-tag"><i class="bi bi-calendar3"></i> Revised: March 15, 2025</div>
-              <h2>Your Data, Our Responsibility</h2>
-              <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. We prioritize transparency in how your information is gathered, utilized, and safeguarded across every touchpoint.</p>
-            </div>
-          </div>
-          <div class="col-lg-4 d-flex align-items-center justify-content-center">
-            <div class="trust-indicators">
-              <div class="indicator-item" data-aos="zoom-in" data-aos-delay="150">
-                <i class="bi bi-shield-fill-check"></i>
-                <span>Verified Secure</span>
-              </div>
-              <div class="indicator-item" data-aos="zoom-in" data-aos-delay="200">
-                <i class="bi bi-lock-fill"></i>
-                <span>Encrypted Data</span>
-              </div>
-              <div class="indicator-item" data-aos="zoom-in" data-aos-delay="250">
-                <i class="bi bi-person-fill-lock"></i>
-                <span>User Controlled</span>
-              </div>
-            </div>
-          </div>
-        </div><!-- End Policy Overview -->
-
-        <!-- Data Practices Tabs -->
-        <div class="data-practices" data-aos="fade-up" data-aos-delay="150">
-          <ul class="nav nav-tabs practice-tabs" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#privacy-tab-1" type="button" role="tab" aria-selected="true">
-                <i class="bi bi-inbox"></i> Data Collection
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#privacy-tab-2" type="button" role="tab" aria-selected="false">
-                <i class="bi bi-bar-chart-line"></i> Data Utilization
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#privacy-tab-3" type="button" role="tab" aria-selected="false">
-                <i class="bi bi-diagram-3"></i> Data Distribution
-              </button>
-            </li>
-          </ul>
-          <div class="tab-content">
-            <div class="tab-pane fade show active" id="privacy-tab-1" role="tabpanel">
-              <div class="row">
-                <div class="col-md-6">
-                  <ul class="practice-list">
-                    <li><i class="bi bi-check-circle-fill"></i> Personal identifiers and contact details</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Login credentials and authentication tokens</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Billing and payment information</li>
-                  </ul>
-                </div>
-                <div class="col-md-6">
-                  <ul class="practice-list">
-                    <li><i class="bi bi-check-circle-fill"></i> Hardware and software identifiers</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Behavioral analytics and preferences</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Correspondence and support history</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="tab-pane fade" id="privacy-tab-2" role="tabpanel">
-              <div class="row">
-                <div class="col-md-6">
-                  <ul class="practice-list">
-                    <li><i class="bi bi-check-circle-fill"></i> Deliver and enhance platform features</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Complete payment processing</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Distribute notifications and alerts</li>
-                  </ul>
-                </div>
-                <div class="col-md-6">
-                  <ul class="practice-list">
-                    <li><i class="bi bi-check-circle-fill"></i> Tailor content to individual needs</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Monitor platform performance metrics</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Maintain system integrity</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="tab-pane fade" id="privacy-tab-3" role="tabpanel">
-              <div class="row">
-                <div class="col-md-6">
-                  <ul class="practice-list">
-                    <li><i class="bi bi-check-circle-fill"></i> Third-party service vendors</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Strategic business affiliates</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Regulatory compliance obligations</li>
-                  </ul>
-                </div>
-                <div class="col-md-6">
-                  <ul class="practice-list">
-                    <li><i class="bi bi-check-circle-fill"></i> Authorized user permissions</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Corporate restructuring events</li>
-                    <li><i class="bi bi-check-circle-fill"></i> Measurement and insight partners</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div><!-- End Data Practices -->
-
-        <!-- Protection Framework -->
-        <div class="protection-framework" data-aos="fade-up" data-aos-delay="150">
-          <div class="row mb-4">
-            <div class="col-12">
-              <h3 class="framework-title">Protection Framework</h3>
-              <p class="framework-subtitle">Multi-layered safeguards ensuring comprehensive data defense</p>
-            </div>
-          </div>
-          <div class="row g-4">
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-              <div class="framework-step">
-                <div class="step-number">01</div>
-                <div class="step-icon"><i class="bi bi-shield-lock-fill"></i></div>
-                <h4>Cryptographic Security</h4>
-                <p>End-to-end encryption safeguards all data during transit and at rest using advanced protocols</p>
-              </div>
-            </div>
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-              <div class="framework-step">
-                <div class="step-number">02</div>
-                <div class="step-icon"><i class="bi bi-fingerprint"></i></div>
-                <h4>Identity Verification</h4>
-                <p>Multi-factor authentication and role-based permissions guard sensitive resources</p>
-              </div>
-            </div>
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-              <div class="framework-step">
-                <div class="step-number">03</div>
-                <div class="step-icon"><i class="bi bi-incognito"></i></div>
-                <h4>Anonymization</h4>
-                <p>Continuous privacy audits and data reduction strategies minimize exposure risks</p>
-              </div>
-            </div>
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
-              <div class="framework-step">
-                <div class="step-number">04</div>
-                <div class="step-icon"><i class="bi bi-award-fill"></i></div>
-                <h4>Regulatory Alignment</h4>
-                <p>Full adherence to GDPR, CCPA, and other global data protection frameworks</p>
-              </div>
-            </div>
-          </div>
-        </div><!-- End Protection Framework -->
-
-        <!-- Individual Rights -->
-        <div class="individual-rights" data-aos="fade-up" data-aos-delay="150">
-          <div class="row align-items-center">
-            <div class="col-lg-4 mb-4 mb-lg-0">
-              <div class="rights-intro">
-                <h3>Individual Data Rights</h3>
-                <p>Exercising control over your personal information is fundamental. Below are the rights available to you under applicable regulations.</p>
-                <a href="#" class="rights-cta">Discover More <i class="bi bi-arrow-right"></i></a>
-              </div>
-            </div>
-            <div class="col-lg-8">
-              <div class="row g-3">
-                <div class="col-sm-6" data-aos="fade-left" data-aos-delay="100">
-                  <div class="right-card">
-                    <div class="right-icon"><i class="bi bi-binoculars-fill"></i></div>
-                    <div class="right-info">
-                      <h4>Access Right</h4>
-                      <p>Obtain a complete copy of all stored personal records</p>
-                    </div>
+            <div class="row g-3">
+              <div class="col-sm-6" data-aos="fade-left" data-aos-delay="100">
+                <div class="right-card">
+                  <div class="right-icon"><i class="bi bi-binoculars-fill"></i></div>
+                  <div class="right-info">
+                    <h4>Access Right</h4>
+                    <p>Obtain a complete copy of all stored personal records</p>
                   </div>
                 </div>
-                <div class="col-sm-6" data-aos="fade-left" data-aos-delay="200">
-                  <div class="right-card">
-                    <div class="right-icon"><i class="bi bi-pencil-fill"></i></div>
-                    <div class="right-info">
-                      <h4>Correction Right</h4>
-                      <p>Modify or amend inaccurate personal details</p>
-                    </div>
+              </div>
+              <div class="col-sm-6" data-aos="fade-left" data-aos-delay="200">
+                <div class="right-card">
+                  <div class="right-icon"><i class="bi bi-pencil-fill"></i></div>
+                  <div class="right-info">
+                    <h4>Correction Right</h4>
+                    <p>Modify or amend inaccurate personal details</p>
                   </div>
                 </div>
-                <div class="col-sm-6" data-aos="fade-left" data-aos-delay="300">
-                  <div class="right-card">
-                    <div class="right-icon"><i class="bi bi-eraser-fill"></i></div>
-                    <div class="right-info">
-                      <h4>Deletion Right</h4>
-                      <p>Demand removal of your information from our systems</p>
-                    </div>
+              </div>
+              <div class="col-sm-6" data-aos="fade-left" data-aos-delay="300">
+                <div class="right-card">
+                  <div class="right-icon"><i class="bi bi-eraser-fill"></i></div>
+                  <div class="right-info">
+                    <h4>Deletion Right</h4>
+                    <p>Demand removal of your information from our systems</p>
                   </div>
                 </div>
-                <div class="col-sm-6" data-aos="fade-left" data-aos-delay="400">
-                  <div class="right-card">
-                    <div class="right-icon"><i class="bi bi-box-arrow-up-right"></i></div>
-                    <div class="right-info">
-                      <h4>Portability Right</h4>
-                      <p>Export and migrate your data to an alternative platform</p>
-                    </div>
+              </div>
+              <div class="col-sm-6" data-aos="fade-left" data-aos-delay="400">
+                <div class="right-card">
+                  <div class="right-icon"><i class="bi bi-box-arrow-up-right"></i></div>
+                  <div class="right-info">
+                    <h4>Portability Right</h4>
+                    <p>Export and migrate your data to an alternative platform</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div><!-- End Individual Rights -->
+        </div>
+      </div><!-- End Individual Rights -->
 
-        <!-- Supplementary Policies -->
-        <div class="supplementary-policies" data-aos="fade-up" data-aos-delay="100">
-          <div class="row g-4">
-            <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100">
-              <div class="policy-block">
-                <div class="policy-icon"><i class="bi bi-browser-chrome"></i></div>
-                <h4>Browser Tracking</h4>
-                <p>Cookies and similar technologies improve site functionality. Manage your tracking preferences via browser controls at any time.</p>
-              </div>
+      <!-- Supplementary Policies -->
+      <div class="supplementary-policies" data-aos="fade-up" data-aos-delay="100">
+        <div class="row g-4">
+          <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100">
+            <div class="policy-block">
+              <div class="policy-icon"><i class="bi bi-browser-chrome"></i></div>
+              <h4>Browser Tracking</h4>
+              <p>Cookies and similar technologies improve site functionality. Manage your tracking preferences via
+                browser controls at any time.</p>
             </div>
-            <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200">
-              <div class="policy-block">
-                <div class="policy-icon"><i class="bi bi-people-fill"></i></div>
-                <h4>Minor Protection</h4>
-                <p>Our platform is designed for users aged 13 and above. We do not intentionally gather information from younger individuals.</p>
-              </div>
+          </div>
+          <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200">
+            <div class="policy-block">
+              <div class="policy-icon"><i class="bi bi-people-fill"></i></div>
+              <h4>Minor Protection</h4>
+              <p>Our platform is designed for users aged 13 and above. We do not intentionally gather information from
+                younger individuals.</p>
             </div>
-            <div class="col-md-4" data-aos="zoom-in" data-aos-delay="300">
-              <div class="policy-block">
-                <div class="policy-icon"><i class="bi bi-arrow-repeat"></i></div>
-                <h4>Revision Notice</h4>
-                <p>This document undergoes periodic review. Significant modifications will be communicated through appropriate channels.</p>
+          </div>
+          <div class="col-md-4" data-aos="zoom-in" data-aos-delay="300">
+            <div class="policy-block">
+              <div class="policy-icon"><i class="bi bi-arrow-repeat"></i></div>
+              <h4>Revision Notice</h4>
+              <p>This document undergoes periodic review. Significant modifications will be communicated through
+                appropriate channels.</p>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Supplementary Policies -->
+
+      <!-- Contact Banner -->
+      <div class="contact-banner" data-aos="fade-up" data-aos-delay="100">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="banner-wrapper text-center">
+              <div class="banner-icon">
+                <i class="bi bi-chat-dots-fill"></i>
+              </div>
+              <h4>Have Privacy Concerns?</h4>
+              <p>Reach out to our dedicated Data Protection team for clarification on any aspect of this policy document
+              </p>
+              <a href="#" class="banner-btn">Reach Out to Us <i class="bi bi-arrow-right-short"></i></a>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Contact Banner -->
+
+    </div>
+
+  </section><!-- /Privacy Section -->
+
+</main>
+
+<footer id="footer" class="footer dark-background">
+  <div class="footer-main">
+    <div class="container">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6">
+          <div class="footer-widget footer-about">
+            <a href="index.html" class="logo">
+              <span class="sitename">SmartStore</span>
+            </a>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in nibh vehicula, facilisis magna ut,
+              consectetur lorem. Proin eget tortor risus.</p>
+
+            <div class="social-links mt-4">
+              <h5>Connect With Us</h5>
+              <div class="social-icons">
+                <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+                <a href="#" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+                <a href="#" aria-label="Pinterest"><i class="bi bi-pinterest"></i></a>
+                <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
               </div>
             </div>
           </div>
-        </div><!-- End Supplementary Policies -->
+        </div>
 
-        <!-- Contact Banner -->
-        <div class="contact-banner" data-aos="fade-up" data-aos-delay="100">
-          <div class="row justify-content-center">
-            <div class="col-lg-8">
-              <div class="banner-wrapper text-center">
-                <div class="banner-icon">
-                  <i class="bi bi-chat-dots-fill"></i>
-                </div>
-                <h4>Have Privacy Concerns?</h4>
-                <p>Reach out to our dedicated Data Protection team for clarification on any aspect of this policy document</p>
-                <a href="#" class="banner-btn">Reach Out to Us <i class="bi bi-arrow-right-short"></i></a>
+        <div class="col-lg-2 col-md-6 col-sm-6">
+          <div class="footer-widget">
+            <h4>Shop</h4>
+            <ul class="footer-links">
+              <li><a href="category.html">New Arrivals</a></li>
+              <li><a href="category.html">Bestsellers</a></li>
+              <li><a href="category.html">Women's Clothing</a></li>
+              <li><a href="category.html">Men's Clothing</a></li>
+              <li><a href="category.html">Accessories</a></li>
+              <li><a href="category.html">Sale</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-md-6 col-sm-6">
+          <div class="footer-widget">
+            <h4>Support</h4>
+            <ul class="footer-links">
+              <li><a href="support.html">Help Center</a></li>
+              <li><a href="account.html">Order Status</a></li>
+              <li><a href="shiping-info.html">Shipping Info</a></li>
+              <li><a href="return-policy.html">Returns &amp; Exchanges</a></li>
+              <li><a href="#">Size Guide</a></li>
+              <li><a href="contact.html">Contact Us</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="footer-widget">
+            <h4>Contact Information</h4>
+            <div class="footer-contact">
+              <div class="contact-item">
+                <i class="bi bi-geo-alt"></i>
+                <span>123 Fashion Street, New York, NY 10001</span>
+              </div>
+              <div class="contact-item">
+                <i class="bi bi-telephone"></i>
+                <span>+1 (555) 123-4567</span>
+              </div>
+              <div class="contact-item">
+                <i class="bi bi-envelope"></i>
+                <span>hello@example.com</span>
+              </div>
+              <div class="contact-item">
+                <i class="bi bi-clock"></i>
+                <span>Monday-Friday: 9am-6pm<br>Saturday: 10am-4pm<br>Sunday: Closed</span>
               </div>
             </div>
-          </div>
-        </div><!-- End Contact Banner -->
 
-      </div>
-
-    </section><!-- /Privacy Section -->
-
-  </main>
-
-  <footer id="footer" class="footer dark-background">
-    <div class="footer-main">
-      <div class="container">
-        <div class="row gy-4">
-          <div class="col-lg-4 col-md-6">
-            <div class="footer-widget footer-about">
-              <a href="index.html" class="logo">
-                <span class="sitename">SmartStore</span>
+            <div class="app-buttons mt-4">
+              <a href="#" class="app-btn">
+                <i class="bi bi-apple"></i>
+                <span>App Store</span>
               </a>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in nibh vehicula, facilisis magna ut, consectetur lorem. Proin eget tortor risus.</p>
-
-              <div class="social-links mt-4">
-                <h5>Connect With Us</h5>
-                <div class="social-icons">
-                  <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-                  <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-                  <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
-                  <a href="#" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
-                  <a href="#" aria-label="Pinterest"><i class="bi bi-pinterest"></i></a>
-                  <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-2 col-md-6 col-sm-6">
-            <div class="footer-widget">
-              <h4>Shop</h4>
-              <ul class="footer-links">
-                <li><a href="category.html">New Arrivals</a></li>
-                <li><a href="category.html">Bestsellers</a></li>
-                <li><a href="category.html">Women's Clothing</a></li>
-                <li><a href="category.html">Men's Clothing</a></li>
-                <li><a href="category.html">Accessories</a></li>
-                <li><a href="category.html">Sale</a></li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="col-lg-2 col-md-6 col-sm-6">
-            <div class="footer-widget">
-              <h4>Support</h4>
-              <ul class="footer-links">
-                <li><a href="support.html">Help Center</a></li>
-                <li><a href="account.html">Order Status</a></li>
-                <li><a href="shiping-info.html">Shipping Info</a></li>
-                <li><a href="return-policy.html">Returns &amp; Exchanges</a></li>
-                <li><a href="#">Size Guide</a></li>
-                <li><a href="contact.html">Contact Us</a></li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6">
-            <div class="footer-widget">
-              <h4>Contact Information</h4>
-              <div class="footer-contact">
-                <div class="contact-item">
-                  <i class="bi bi-geo-alt"></i>
-                  <span>123 Fashion Street, New York, NY 10001</span>
-                </div>
-                <div class="contact-item">
-                  <i class="bi bi-telephone"></i>
-                  <span>+1 (555) 123-4567</span>
-                </div>
-                <div class="contact-item">
-                  <i class="bi bi-envelope"></i>
-                  <span>hello@example.com</span>
-                </div>
-                <div class="contact-item">
-                  <i class="bi bi-clock"></i>
-                  <span>Monday-Friday: 9am-6pm<br>Saturday: 10am-4pm<br>Sunday: Closed</span>
-                </div>
-              </div>
-
-              <div class="app-buttons mt-4">
-                <a href="#" class="app-btn">
-                  <i class="bi bi-apple"></i>
-                  <span>App Store</span>
-                </a>
-                <a href="#" class="app-btn">
-                  <i class="bi bi-google-play"></i>
-                  <span>Google Play</span>
-                </a>
-              </div>
+              <a href="#" class="app-btn">
+                <i class="bi bi-google-play"></i>
+                <span>Google Play</span>
+              </a>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="footer-bottom">
-      <div class="container">
-        <div class="row gy-3 align-items-center">
-          <div class="col-lg-6 col-md-12">
-            <div class="copyright">
-              <p>© <span>Copyright</span> <strong class="sitename">SmartStore</strong>. All Rights Reserved.</p>
-            </div>
-            <div class="credits mt-1">
-              <!-- All the links in the footer should remain intact. -->
-              <!-- You can delete the links only if you've purchased the pro version. -->
-              <!-- Licensing information: https://bootstrapmade.com/license/ -->
-              <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-              Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-            </div>
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="row gy-3 align-items-center">
+        <div class="col-lg-6 col-md-12">
+          <div class="copyright">
+            <p>© <span>Copyright</span> <strong class="sitename">SmartStore</strong>. All Rights Reserved.</p>
           </div>
-
-          <div class="col-lg-6 col-md-12">
-            <div class="d-flex flex-wrap justify-content-lg-end justify-content-center align-items-center gap-4">
-              <div class="payment-methods">
-                <div class="payment-icons">
-                  <i class="bi bi-credit-card" aria-label="Credit Card"></i>
-                  <i class="bi bi-paypal" aria-label="PayPal"></i>
-                  <i class="bi bi-apple" aria-label="Apple Pay"></i>
-                  <i class="bi bi-google" aria-label="Google Pay"></i>
-                  <i class="bi bi-shop" aria-label="Shop Pay"></i>
-                  <i class="bi bi-cash" aria-label="Cash on Delivery"></i>
-                </div>
-              </div>
-
-              <div class="legal-links">
-                <a href="tos.html">Terms</a>
-                <a href="privacy.html">Privacy</a>
-                <a href="tos.html">Cookies</a>
-              </div>
-            </div>
+          <div class="credits mt-1">
+            <!-- All the links in the footer should remain intact. -->
+            <!-- You can delete the links only if you've purchased the pro version. -->
+            <!-- Licensing information: https://bootstrapmade.com/license/ -->
+            <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+            Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
           </div>
         </div>
 
+        <div class="col-lg-6 col-md-12">
+          <div class="d-flex flex-wrap justify-content-lg-end justify-content-center align-items-center gap-4">
+            <div class="payment-methods">
+              <div class="payment-icons">
+                <i class="bi bi-credit-card" aria-label="Credit Card"></i>
+                <i class="bi bi-paypal" aria-label="PayPal"></i>
+                <i class="bi bi-apple" aria-label="Apple Pay"></i>
+                <i class="bi bi-google" aria-label="Google Pay"></i>
+                <i class="bi bi-shop" aria-label="Shop Pay"></i>
+                <i class="bi bi-cash" aria-label="Cash on Delivery"></i>
+              </div>
+            </div>
+
+            <div class="legal-links">
+              <a href="tos.html">Terms</a>
+              <a href="privacy.html">Privacy</a>
+              <a href="tos.html">Cookies</a>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
-  </footer>
+  </div>
+</footer>
 
-  <!-- Scroll Top -->
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+<!-- Scroll Top -->
+<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+    class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Preloader -->
-  <div id="preloader"></div>
+<!-- Preloader -->
+<div id="preloader"></div>
 
-  <!-- Vendor JS Files -->
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
-  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/drift-zoom/Drift.min.js"></script>
-  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+<!-- Vendor JS Files -->
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="assets/vendor/php-email-form/validate.js"></script>
+<script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="assets/vendor/aos/aos.js"></script>
+<script src="assets/vendor/drift-zoom/Drift.min.js"></script>
+<script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
 
-  <!-- Main JS File -->
-  <script src="assets/js/main.js"></script>
+<!-- Main JS File -->
+<script src="assets/js/main.js"></script>
 
 </body>
 

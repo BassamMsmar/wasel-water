@@ -4,49 +4,92 @@
 {% block page_title %}قائمة الطلبات{% endblock %}
 
 {% block admin_content %}
-<div class="card p-4">
+<div class="card p-4 shadow-sm border-0 rounded-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h5 class="fw-bold mb-0">جميع الطلبات</h5>
+        <a href="{% url 'settings:admin_order_create' %}" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> إضافة طلب يدوي
+        </a>
     </div>
+
+    <!-- Stats summary (Optional but nice) -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="p-3 bg-primary-subtle rounded-3 border">
+                 <small class="text-primary fw-bold d-block pb-1">إجمالي الطلبات</small>
+                 <h4 class="mb-0">{{ orders.count }}</h4>
+            </div>
+        </div>
+    </div>
+
     <div class="table-responsive">
         <table class="table table-hover align-middle">
             <thead class="table-light">
-                <tr>
-                    <th>رقم الطلب</th>
-                    <th>العميل</th>
-                    <th>التاريخ</th>
-                    <th>الإجمالي</th>
-                    <th>الحالة</th>
-                    <th>إجراء</th>
+                <tr class="small text-muted text-uppercase">
+                    <th class="border-0">رقم الطلب</th>
+                    <th class="border-0">العميل</th>
+                    <th class="border-0">التاريخ</th>
+                    <th class="border-0">الإجمالي</th>
+                    <th class="border-0">الحالة</th>
+                    <th class="border-0 text-center">إجراء</th>
                 </tr>
             </thead>
             <tbody>
                 {% for order in orders %}
                 <tr>
-                    <td><strong>#{{ order.id }}</strong></td>
+                    <td class="fw-bold">#{{ order.id }}</td>
                     <td>
-                        <div class="d-flex flex-column">
-                            <span>{{ order.user.get_full_name|default:order.user.username }}</span>
-                            <small class="text-muted">{{ order.user.email }}</small>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person-circle fs-4 me-2 text-secondary opacity-50"></i>
+                            <div class="d-flex flex-column">
+                                <span class="fw-medium">{{ order.user.get_full_name|default:order.user.username }}</span>
+                                <small class="text-muted">{{ order.shipping_phone }}</small>
+                            </div>
                         </div>
                     </td>
-                    <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
-                    <td>{{ order.total_price }}</td>
+                    <td class="small">{{ order.created_at|date:"Y-m-d H:i" }}</td>
+                    <td class="fw-bold text-dark">{{ order.total_price }} ر.س</td>
                     <td>
-                        <span class="badge rounded-pill {% if order.status == 'delivered' %}bg-success{% elif order.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %}">
-                            {{ order.get_status_display }}
-                        </span>
+                        <form action="{% url 'settings:admin_order_update_status' order.pk %}" method="post" class="status-form">
+                            {% csrf_token %}
+                            <select name="status" class="form-select form-select-sm rounded-pill fw-bold bg-opacity-10 
+                                {% if order.status == 'delivered' %}border-success text-success bg-success{% elif order.status == 'cancelled' %}border-danger text-danger bg-danger{% else %}border-warning text-warning bg-warning{% endif %}" 
+                                onchange="this.form.submit()">
+                                {% for code, label in order.STATUS_CHOICES %}
+                                <option value="{{ code }}" {% if order.status == code %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
                     </td>
-                    <td>
-                        <a href="/admin/orders/order/{{ order.id }}/change/" class="btn btn-sm btn-outline-primary rounded-pill px-3">
-                            <i class="bi bi-eye"></i> تفاصيل
-                        </a>
+                    <td class="text-center">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light border" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu shadow border-0">
+                                <li><a class="dropdown-item" href="{% url 'settings:admin_order_detail' order.id %}"><i class="bi bi-eye me-2"></i>عرض التفاصيل</a></li>
+                                <li><a class="dropdown-item" href="{% url 'settings:admin_order_update' order.id %}"><i class="bi bi-pencil me-2"></i>تعديل البيانات</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>حذف</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5">
+                        <i class="bi bi-cart-x fs-1 text-muted"></i>
+                        <p class="mt-2">لا توجد طلبات مسجلة</p>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    {% include "partials/pagination.html" with page_obj=page_obj %}
+    {% if is_paginated %}
+    <div class="mt-4">
+        {% include "partials/pagination.html" with page_obj=page_obj %}
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

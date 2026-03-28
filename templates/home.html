@@ -1,285 +1,195 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}الرئيسية - {{ company.name|default:"واصل ووتر" }}{% endblock %}
+{% block title %}الرئيسية - {{ company.name|default:"متاجر 360" }}{% endblock %}
 
 {% block body_class %}index-page{% endblock %}
 
 {% block content %}
-    <!-- Hero Section -->
-    <section id="hero" class="hero section">
 
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="row justify-content-center text-center">
-          <div class="col-lg-8">
-            <div class="headline-block" data-aos="zoom-in" data-aos-delay="100">
-              <span class="tagline">{{ company.title|default:"مجموعة متميزة" }}</span>
-              <h1 class="main-heading">{{ company.name|default:"ارتقِ بأسلوب حياتك اليومي" }}</h1>
-              <p class="lead-text">{{ company.description|default:"نقدم لكم أفضل المنتجات بأعلى جودة وأنسب الأسعار..." }}</p>
-              <div class="cta-group" data-aos="fade-up" data-aos-delay="200">
-                <a href="#products" class="btn-explore">استكشف المجموعة</a>
-                <a href="#categories" class="btn-outline-explore"><i class="bi bi-grid me-2"></i>عرض الأصناف</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row g-4 justify-content-center mt-4">
-          {% for product in latest_products|slice:":3" %}
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:1 }}00">
-            <div class="showcase-card {% if forloop.counter == 2 %}elevated{% endif %}">
-              <div class="card-visual">
-                <a href="{% url 'products:product_detail' product.slug %}">
-                  <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
-                </a>
-                <span class="label {% if product.flag == 'sale' %}hot{% endif %}">{{ product.get_flag_display|default:product.flag }}</span>
-                <div class="quick-actions-overlay">
-                  <a href="{% url 'products:product_detail' product.slug %}" class="action-link" title="عرض التفاصيل"><i class="bi bi-eye"></i></a>
-                  <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-inline">
-                      {% csrf_token %}
-                      <input type="hidden" name="product_id" value="{{ product.id }}">
-                      <input type="hidden" name="item_type" value="product">
-                      <button type="submit" class="action-link border-0 bg-transparent" title="إضافة للسلة"><i class="bi bi-bag-plus"></i></button>
-                  </form>
-                </div>
-              </div>
-              <div class="card-details">
-                <h4><a href="{% url 'products:product_detail' product.slug %}" class="text-dark">{{ product.name }}</a></h4>
-                <div class="pricing">
-                  <span class="now">{{ product.new_price }}</span>
-                  {% if product.old_price > product.new_price %}
-                  <span class="was">{{ product.old_price }}</span>
-                  {% endif %}
-                </div>
-              </div>
-            </div><!-- End Showcase Card -->
-          </div>
-          {% endfor %}
-        </div>
-
-        <div class="row mt-5">
-          <div class="col-12" data-aos="fade-up" data-aos-delay="500">
-            <div class="perks-strip">
-              <div class="row g-3 justify-content-center">
-                <div class="col-lg-3 col-md-6 col-6">
-                  <div class="perk">
-                    <i class="bi bi-truck"></i>
-                    <span>توصيل مجاني</span>
-                  </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-6">
-                  <div class="perk">
-                    <i class="bi bi-shield-check"></i>
-                    <span>جودة معتمدة</span>
-                  </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-6">
-                  <div class="perk">
-                    <i class="bi bi-chat-dots"></i>
-                    <span>دعم متواصل</span>
-                  </div>
-                </div>
-                <div class="col-lg-3 col-md-6 col-6">
-                  <div class="perk">
-                    <i class="bi bi-arrow-return-left"></i>
-                    <span>إرجاع سهل</span>
-                  </div>
-                </div>
-              </div>
-            </div><!-- End Perks Strip -->
-          </div>
-        </div>
-
-      </div>
-
-    </section><!-- /Hero Section -->
-
-    <!-- Promo Cards Section (Categories) -->
-    <section id="promo-cards" class="promo-cards section">
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        {% if banners %}
-        <div class="row mb-4">
-          <div class="col-12">
-            {% with banner=banners|first %}
-            <div class="featured-banner" data-aos="zoom-in" data-aos-delay="150">
-              <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="img-fluid">
-              <div class="banner-content">
-                <span class="badge-label">{{ banner.get_type_display|default:banner.type }}</span>
-                <h2>{{ banner.title }}</h2>
-                <p>{{ banner.description }}</p>
-                <a href="{{ banner.link }}" class="btn-explore">تصفح المجموعة <i class="bi bi-arrow-left"></i></a>
-              </div>
-            </div>
-            {% endwith %}
-          </div>
-        </div><!-- End Featured Banner -->
-        {% endif %}
-
-        <!-- Centered Categories Section -->
-        <div class="section-title text-center mb-5" data-aos="fade-up">
-            <h2>تسوق حسب الصنف</h2>
-        </div>
-        
-        <div class="row g-4 justify-content-center" id="categories">
-          {% for category in categories %}
-          {% if category.slug %}
-          <div class="col-lg-3 col-md-6 col-6">
-            <div class="collection-tile" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
-              {% if category.image %}
-              <img src="{{ category.image.url }}" alt="{{ category.name }}" loading="lazy" class="img-fluid">
-              {% endif %}
-              <div class="tile-content text-center">
-                <h4>{{ category.name }}</h4>
-                <span class="item-count">{{ category.product_category.count }} منتج</span>
-                <a href="{% url 'products:category_detail' category.slug %}" class="tile-link">تصفح <i class="bi bi-chevron-left"></i></a>
-              </div>
-            </div>
-          </div><!-- End Collection Tile -->
-          {% endif %}
-          {% endfor %}
+<!-- 2. Original Hero Section (Now as a secondary welcome area or showcase) -->
+<section id="hero" class="hero section pt-5">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row justify-content-center text-center mb-5">
+      <div class="col-lg-8">
+        <div class="headline-block">
+          <span class="tagline">{{ company.title|default:"مجموعة متميزة" }}</span>
+          <h1 class="main-heading">{{ company.name|default:"ارتقِ بأسلوب حياتك اليومي" }}</h1>
+<p class="lead-text">{{ company.description|default:"نقدم لكم أفضل المنتجات بأعلى جودة وأنسب الأسعار..." }}</p>
         </div>
       </div>
-    </section><!-- /Promo Cards Section -->
+    </div>
 
-    <!-- Brands Section -->
-    <section id="brands" class="brands section light-background">
-      <div class="container" data-aos="fade-up">
-        <div class="section-title text-center mb-5">
-          <h2>تسوق حسب الماركة</h2>
-          <p>نعمل مع أفضل العلامات التجارية لضمان جودتك</p>
-        </div>
-        <div class="row g-4 align-items-center justify-content-center">
-          {% for brand in brands %}
-          <div class="col-lg-2 col-md-3 col-4" data-aos="zoom-in" data-aos-delay="{{ forloop.counter }}00">
-            <a href="{% url 'products:brand_detail' brand.slug %}" class="brand-item d-block text-center p-3 shadow-sm rounded-4 bg-white border">
-              {% if brand.image %}
-              <img src="{{ brand.image.url }}" alt="{{ brand.name }}" class="img-fluid brand-logo">
-              {% else %}
-              <span class="fw-bold text-primary">{{ brand.name }}</span>
-              {% endif %}
+    <div class="row g-4 justify-content-center">
+      {% for product in latest_products|slice:":3" %}
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:1 }}00">
+        <div class="showcase-card shadow-sm {% if forloop.counter == 2 %}elevated{% endif %}">
+          <div class="card-visual">
+            <a href="{% url 'products:product_detail' product.slug %}">
+              <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
             </a>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </section><!-- /Brands Section -->
-
-
-    {% for section in sections %}
-    <!-- Dynamic Section: {{ section.title }} -->
-    <section id="section-{{ section.id }}" class="section {% if forloop.counter|divisibleby:2 %}light-background{% endif %}">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>{{ section.title }}</h2>
-      </div><!-- End Section Title -->
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="row g-4">
-          {% for product in section.items %}
-          <div class="col-lg-3 col-md-6 col-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
-            <div class="item-card">
-              <div class="item-img">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" loading="lazy">
-                {% if product.flag %}
-                <span class="tag tag-{{ product.flag }}">{{ product.get_flag_display|default:product.flag }}</span>
-                {% endif %}
-                <div class="quick-actions">
-                  <a href="{% url 'products:product_detail' product.slug %}"><i class="bi bi-eye"></i></a>
-                  <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-inline">
-                      {% csrf_token %}
-                      <input type="hidden" name="product_id" value="{{ product.id }}">
-                      <input type="hidden" name="item_type" value="product">
-                      <button type="submit" class="cart-prominent-btn" aria-label="Add to cart">
-                          <i class="bi bi-cart-plus"></i>
-                      </button>
-                  </form>
-                </div>
-              </div>
-              <div class="item-details text-center">
-                <h4><a href="{% url 'products:product_detail' product.slug %}">{{ product.name }}</a></h4>
-                <div class="pricing">
-                  <span class="price">{{ product.new_price }}</span>
-                  {% if product.old_price > product.new_price %}
-                  <span class="was-price">{{ product.old_price }}</span>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-          </div><!-- End Product Item -->
-          {% endfor %}
-        </div>
-
-      </div>
-
-    </section><!-- /Dynamic Section -->
-    {% endfor %}
-
-
-    <!-- Offers & Deals Section -->
-    {% if offers %}
-    <section id="offers" class="offers section light-background">
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-        <div class="section-title">
-          <h2>عروض حصرية</h2>
-          <p>لا تفوت عروضنا المحدودة</p>
-        </div>
-
-        <div class="row gy-4">
-          {% for offer in offer_list %}
-          <div class="col-lg-6" data-aos="zoom-in" data-aos-delay="{{ forloop.counter }}00">
-            <div class="offer-card">
-              <div class="offer-img">
-                <img src="{{ offer.image.url }}" alt="{{ offer.title }}" class="img-fluid">
-                <div class="offer-overlay">
-                  <span class="offer-badge">لفترة محدودة</span>
-                </div>
-              </div>
-              <div class="offer-content">
-                <h3>{{ offer.title }}</h3>
-                <p>{{ offer.description|truncatewords:20 }}</p>
-                <a href="{{ offer.link|default:'#' }}" class="btn-primary">احصل على العرض <i class="bi bi-arrow-left"></i></a>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </section>
-    {% endif %}
-
-    <!-- Newsletter / App Section -->
-    <section id="cta-premium" class="cta-premium section dark-background">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-lg-8 text-center" data-aos="zoom-in">
-            <div class="cta-content">
-              <span class="subtitle">انضم إلى عائلة واصل ووتر</span>
-              <h2>كن أول من يعلم</h2>
-              <p>اشترك في نشرتنا الإخبارية واحصل على خصم 10% على طلبك الأول. بالإضافة إلى أحدث المنتجات والعروض الحصرية.</p>
-              
-              <form class="newsletter-form mt-4">
-                <div class="input-group">
-                  <input type="email" class="form-control" placeholder="أدخل بريدك الإلكتروني" required>
-                  <button class="btn btn-subscribe" type="submit">اشترك الآن</button>
-                </div>
+            <span class="label {% if product.flag == 'sale' %}hot{% endif %}">{{ product.get_flag_display|default:product.flag }}</span>
+            <div class="quick-actions-overlay">
+              <a href="{% url 'products:product_detail' product.slug %}" class="action-link" title="عرض التفاصيل"><i
+                  class="bi bi-eye"></i></a>
+              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="item_type" value="product">
+                <button type="submit" class="action-link border-0 bg-transparent" title="إضافة للسلة"><i
+                    class="bi bi-bag-plus"></i></button>
               </form>
-
-              <div class="app-downloads mt-5">
-                <p>حمل تطبيقنا لتجربة تسوق أفضل</p>
-                <div class="d-flex justify-content-center gap-3">
-                  <a href="#" class="app-link"><img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style="height: 40px;"></a>
-                  <a href="#" class="app-link"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Play Store" style="height: 40px;"></a>
-                </div>
-              </div>
+            </div>
+          </div>
+          <div class="card-details">
+            <h4><a href="{% url 'products:product_detail' product.slug %}" class="text-dark">{{ product.name }}</a></h4>
+            <div class="pricing">
+              <span class="now fw-bold text-primary">{{ product.new_price }} ر.س</span>
+              {% if product.old_price > product.new_price %}
+              <span class="was text-muted text-decoration-line-through small ms-2">{{ product.old_price }}</span>
+              {% endif %}
             </div>
           </div>
         </div>
       </div>
-    </section>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- 3. Shop by Category Section -->
+<section id="categories" class="promo-cards section light-background">
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="section-title text-center mb-5">
+      <h2 class="fw-bold fs-1">تسوق حسب الصنف</h2>
+    </div>
+    <div class="row g-4 justify-content-center">
+      {% for category in categories %}
+      {% if category.slug %}
+      <div class="col-lg-3 col-md-6 col-6">
+        <div class="collection-tile shadow-sm rounded-4 overflow-hidden" data-aos="fade-up"
+          data-aos-delay="{{ forloop.counter }}00">
+          {% if category.image %}
+          <img src="{{ category.image.url }}" alt="{{ category.name }}" loading="lazy" class="img-fluid">
+          {% endif %}
+          <div class="tile-content text-center">
+            <h4 class="fw-bold mb-1">{{ category.name }}</h4>
+            <span class="item-count badge bg-white text-dark rounded-pill shadow-sm mb-3 px-3">{{ category.product_category.count }} منتج</span>
+            <a href="{% url 'products:category_detail' category.slug %}" class="tile-link">تصفح الآن <i
+                class="bi bi-chevron-left ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- 4. Dynamic Sections (Most Sold, etc.) -->
+{% for section in sections %}
+<section id="section-{{ section.id }}" class="section">
+  <div class="container section-title" data-aos="fade-up">
+    <h2 class="fw-bold">{{ section.title }}</h2>
+  </div>
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-4">
+      {% for product in section.items %}
+      <div class="col-lg-3 col-md-6 col-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
+        <div class="item-card shadow-sm border-0 rounded-4 overflow-hidden">
+          <div class="item-img position-relative">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+            {% if product.flag %}
+            <span class="tag tag-{{ product.flag }}">{{ product.get_flag_display|default:product.flag }}</span>
+            {% endif %}
+            <div class="quick-actions">
+              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="item_type" value="product">
+                <button type="submit" class="cart-prominent-btn border-0" title="إضافة للسلة"><i class="bi bi-cart-plus"></i></button>
+              </form>
+              <a href="{% url 'products:product_detail' product.slug %}" title="عرض التفاصيل"><i class="bi bi-eye"></i></a>
+            </div>
+          </div>
+          <div class="item-details p-3 text-center">
+            <h6 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark fw-bold">{{ product.name }}</a></h6>
+            <div class="pricing">
+              <span class="price text-primary fw-bold" style="font-size: 1.2rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endfor %}
+
+<!-- 5. Brands Section -->
+<section id="brands" class="brands section light-background pb-5">
+  <div class="container" data-aos="fade-up">
+    <div class="section-title text-center mb-5">
+      <h2 class="fw-bold">تسوق حسب الماركة</h2>
+      <p class="text-muted">نعمل مع أفضل العلامات التجارية لضمان جودتك</p>
+    </div>
+    <div class="row g-4 align-items-center justify-content-center">
+      {% for brand in brands %}
+      <div class="col-lg-2 col-md-3 col-4" data-aos="zoom-in" data-aos-delay="{{ forloop.counter }}00">
+        <a href="{% url 'products:brand_detail' brand.slug %}"
+          class="brand-item d-block text-center p-3 shadow-sm rounded-4 bg-white border border-0">
+          {% if brand.image %}
+          <img src="{{ brand.image.url }}" alt="{{ brand.name }}" class="img-fluid brand-logo"
+            style="max-height: 55px; filter: grayscale(100%); transition: all 0.3s ease;">
+          {% else %}
+          <span class="fw-bold text-primary">{{ brand.name }}</span>
+          {% endif %}
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- 6. All Products Section -->
+<section id="all-products" class="section pt-5">
+  <div class="container section-title text-center mb-5" data-aos="fade-up">
+    <h2 class="fw-bold">كل المنتجات</h2>
+    <p class="text-muted">اكتشف تشكيلتنا الكاملة من المنتجات المختارة</p>
+  </div>
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-4">
+      {% for product in all_products %}
+      <div class="col-lg-3 col-md-4 col-6">
+        <div class="item-card shadow-sm border-0 rounded-4 overflow-hidden">
+          <div class="item-img">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+            <div class="quick-actions">
+              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="item_type" value="product">
+                <button type="submit" class="cart-prominent-btn border-0" title="إضافة للسلة"><i class="bi bi-cart-plus"></i></button>
+              </form>
+              <a href="{% url 'products:product_detail' product.slug %}" title="عرض التفاصيل"><i class="bi bi-eye"></i></a>
+            </div>
+          </div>
+          <div class="item-details p-3 text-center">
+            <h6 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark fw-bold">{{ product.name }}</a></h6>
+            <div class="pricing">
+              <span class="price text-primary fw-bold" style="font-size: 1.2rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-5">
+      <a href="{% url 'products:product_list' %}" class="btn btn-outline-primary rounded-pill px-5 py-3 fw-bold">عرض
+        المزيد من المنتجات</a>
+    </div>
+  </div>
+</section>
+
 
 {% endblock %}

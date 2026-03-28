@@ -1,99 +1,119 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}تفاصيل الملف الشخصي - {{ company.name|default:"واصل ووتر" }}{% endblock %}
+{% block title %}تفاصيل الملف الشخصي - {{ company.name|default:"متاجر 360" }}{% endblock %}
 
 {% block content %}
-    <div class="page-title light-background">
-      <div class="container d-lg-flex justify-content-between align-items-center">
+<div class="page-title light-background">
+    <div class="container d-lg-flex justify-content-between align-items-center">
         <h1 class="mb-2 mb-lg-0">تفاصيل الحساب</h1>
         <nav class="breadcrumbs">
-          <ol>
-            <li><a href="{% url 'home' %}">الرئيسية</a></li>
-            <li><a href="{% url 'accounts:dashboard' %}">لوحة التحكم</a></li>
-            <li class="current">الملف الشخصي</li>
-          </ol>
+            <ol>
+                <li><a href="{% url 'home' %}">الرئيسية</a></li>
+                <li><a href="{% url 'accounts:dashboard' %}">لوحة التحكم</a></li>
+                <li class="current">الملف الشخصي</li>
+            </ol>
         </nav>
-      </div>
     </div>
+</div>
 
-    <section id="profile-detail" class="profile-detail section">
-        <div class="container">
-            <div class="row g-4">
-                
-                <!-- Sidebar Navigation -->
-                <div class="col-lg-3">
-                    <div class="account-sidebar p-4 bg-white shadow-sm rounded-4">
-                        <nav id="account-nav" class="account-nav">
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-2"><a href="{% url 'accounts:dashboard' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-speedometer2"></i> لوحة التحكم</a></li>
-                                <li class="mb-2"><a href="{% url 'orders:order_list' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-bag-check"></i> طلباتي</a></li>
-                                <li class="mb-2"><a href="{% url 'accounts:address_list' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i class="bi bi-geo-alt"></i> عناويني</a></li>
-                                <li class="mb-2"><a href="{% url 'accounts:profile_detail' %}" class="nav-link active py-2 px-3 rounded-3 d-flex align-items-center gap-2"><i class="bi bi-person-gear"></i> تفاصيل الحساب</a></li>
-                                <hr>
-                                <li><a href="{% url 'logout' %}" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-danger"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
-                            </ul>
-                        </nav>
-                    </div>
+<section id="profile-detail" class="profile-detail section">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Sidebar Navigation -->
+            <div class="col-lg-3">
+                <div class="account-sidebar p-4 bg-white shadow-sm rounded-4">
+                    <nav id="account-nav" class="account-nav">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><a href="{% url 'accounts:dashboard' %}"
+                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i
+                                        class="bi bi-speedometer2"></i> لوحة التحكم</a></li>
+                            <li class="mb-2"><a href="{% url 'orders:order_list' %}"
+                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i
+                                        class="bi bi-bag-check"></i> طلباتي</a></li>
+                            <li class="mb-2"><a href="{% url 'accounts:address_list' %}"
+                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i
+                                        class="bi bi-geo-alt"></i> عناويني</a></li>
+                            <li class="mb-2"><a href="{% url 'accounts:profile_detail' %}"
+                                    class="nav-link active py-2 px-3 rounded-3 d-flex align-items-center gap-2"><i
+                                        class="bi bi-person-gear"></i> تفاصيل الحساب</a></li>
+                            <hr>
+                            <li><a href="{% url 'logout' %}"
+                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-danger"><i
+                                        class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
+                        </ul>
+                    </nav>
                 </div>
+            </div>
 
-                <!-- Profile Form -->
-                <div class="col-lg-9">
-                    <div class="profile-form-content p-4 p-md-5 bg-white shadow-sm rounded-4">
-                        <h4 class="fw-bold mb-4">معلومات الملف الشخصي</h4>
-                        
-                        <form method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="row g-4">
-                                <!-- Avatar Upload -->
-                                <div class="col-12 mb-2">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="avatar-preview">
-                                            {% if user.customer.image %}
-                                            <img src="{{ user.customer.image.url }}" alt="User Avatar" class="img-fluid rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
-                                            {% else %}
-                                            <i class="bi bi-person-circle fs-1 text-primary" style="font-size: 100px !important;"></i>
-                                            {% endif %}
-                                        </div>
-                                        <div>
-                                            <label for="id_image" class="btn btn-sm btn-outline-primary mb-1">تغيير الصورة</label>
-                                            <input type="file" name="image" id="id_image" class="d-none">
-                                            <p class="text-muted small mb-0">نوصي بصورة مربعة لا تزيد عن 2 ميجابايت.</p>
-                                        </div>
+            <!-- Profile Form -->
+            <div class="col-lg-9">
+                <div class="profile-form-content p-4 p-md-5 bg-white shadow-sm rounded-4">
+                    <h4 class="fw-bold mb-4">معلومات الملف الشخصي</h4>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row g-4">
+                            <!-- Avatar Upload -->
+                            <div class="col-12 mb-2">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="avatar-preview">
+                                        {% if user.customer.image %}
+                                        <img src="{{ user.customer.image.url }}" alt="User Avatar"
+                                            class="img-fluid rounded-circle"
+                                            style="width: 100px; height: 100px; object-fit: cover;">
+                                        {% else %}
+                                        <i class="bi bi-person-circle fs-1 text-primary"
+                                            style="font-size: 100px !important;"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <label for="id_image" class="btn btn-sm btn-outline-primary mb-1">تغيير
+                                            الصورة</label>
+                                        <input type="file" name="image" id="id_image" class="d-none">
+                                        <p class="text-muted small mb-0">نوصي بصورة مربعة لا تزيد عن 2 ميجابايت.</p>
                                     </div>
                                 </div>
-
-                                <div class="col-md-6">
-                                    <label for="first_name" class="form-label">الاسم الأول</label>
-                                    <input type="text" name="first_name" id="first_name" class="form-control" value="{{ user.first_name }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="last_name" class="form-label">اسم العائلة</label>
-                                    <input type="text" name="last_name" id="last_name" class="form-control" value="{{ user.last_name }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="email" class="form-label">البريد الإلكتروني</label>
-                                    <input type="email" id="email" class="form-control bg-light" value="{{ user.email }}" readonly>
-                                    <p class="small text-muted mt-1">لا يمكن تغيير البريد الإلكتروني.</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="phone_number" class="form-label">رقم الجوال</label>
-                                    <input type="tel" name="phone_number" id="phone_number" class="form-control" value="{{ user.customer.phone_number }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="birth_date" class="form-label">تاريخ الميلاد</label>
-                                    <input type="date" name="birth_date" id="birth_date" class="form-control" value="{{ user.customer.birth_date|date:'Y-m-d' }}">
-                                </div>
-                                
-                                <div class="col-12 mt-5">
-                                    <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-pill">حفظ التغييرات</button>
-                                </div>
                             </div>
-                        </form>
-                    </div>
-                </div>
 
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label">الاسم الأول</label>
+                                <input type="text" name="first_name" id="first_name" class="form-control"
+                                    value="{{ user.first_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label">اسم العائلة</label>
+                                <input type="text" name="last_name" id="last_name" class="form-control"
+                                    value="{{ user.last_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">البريد الإلكتروني</label>
+                                <input type="email" id="email" class="form-control bg-light" value="{{ user.email }}"
+                                    readonly>
+                                <p class="small text-muted mt-1">لا يمكن تغيير البريد الإلكتروني.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone_number" class="form-label">رقم الجوال</label>
+                                <input type="tel" name="phone_number" id="phone_number" class="form-control"
+                                    value="{{ user.customer.phone_number }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="birth_date" class="form-label">تاريخ الميلاد</label>
+                                <input type="date" name="birth_date" id="birth_date" class="form-control"
+                                    value="{{ user.customer.birth_date|date:'Y-m-d' }}">
+                            </div>
+
+                            <div class="col-12 mt-5">
+                                <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-pill">حفظ
+                                    التغييرات</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
+
         </div>
-    </section>
+    </div>
+</section>
 {% endblock %}

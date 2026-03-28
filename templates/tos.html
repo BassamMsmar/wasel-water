@@ -1,476 +1,502 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}شروط الخدمة - {{ company.name|default:"واصل ووتر" }}{% endblock %}
+{% block title %}شروط الخدمة - {{ company.name|default:"متاجر 360" }}{% endblock %}
 
 {% block content %}
-    <!-- Page Title -->
-    <div class="page-title light-background">
-      <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">شروط الخدمة</h1>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="{% url 'home' %}">الرئيسية</a></li>
-            <li class="current">شروط الخدمة</li>
-          </ol>
-        </nav>
-      </div>
-    </div><!-- End Page Title -->
+<!-- Page Title -->
+<div class="page-title light-background">
+  <div class="container d-lg-flex justify-content-between align-items-center">
+    <h1 class="mb-2 mb-lg-0">شروط الخدمة</h1>
+    <nav class="breadcrumbs">
+      <ol>
+        <li><a href="{% url 'home' %}">الرئيسية</a></li>
+        <li class="current">شروط الخدمة</li>
+      </ol>
+    </nav>
+  </div>
+</div><!-- End Page Title -->
 
-    <section class="section">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-10">
-                    <div class="bg-white p-4 p-md-5 shadow-sm rounded-4">
-                        <h2 class="fw-bold mb-4">اتفاقية استخدام واصل ووتر</h2>
-                        <p>باستخدامك لموقع واصل ووتر، فإنك توافق على الالتزام بالشروط والأحكام التالية. يرجى قراءتها بعناية.</p>
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="bg-white p-4 p-md-5 shadow-sm rounded-4">
+          <h2 class="fw-bold mb-4">اتفاقية استخدام متاجر 360</h2>
+          <p>باستخدامك لموقع متاجر 360، فإنك توافق على الالتزام بالشروط والأحكام التالية. يرجى قراءتها بعناية.</p>
 
-                        <h4 class="fw-bold mt-5 mb-3">1. قبول الشروط</h4>
-                        <p>من خلال الوصول إلى هذا الموقع، فإنك تقر بأنك قرأت وفهمت ووافقت على الالتزام بهذه الشروط والقوانين واللوائح المعمول بها في المملكة العربية السعودية.</p>
+          <h4 class="fw-bold mt-5 mb-3">1. قبول الشروط</h4>
+          <p>من خلال الوصول إلى هذا الموقع، فإنك تقر بأنك قرأت وفهمت ووافقت على الالتزام بهذه الشروط والقوانين واللوائح
+            المعمول بها في المملكة العربية السعودية.</p>
 
-                        <h4 class="fw-bold mt-5 mb-3">2. حساب المستخدم</h4>
-                        <p>أنت مسؤول عن الحفاظ على سرية معلومات حسابك وكلمة المرور، وعن جميع الأنشطة التي تحدث تحت حسابك. يجب أن تكون جميع المعلومات المقدمة دقيقة ومحدثة.</p>
+          <h4 class="fw-bold mt-5 mb-3">2. حساب المستخدم</h4>
+          <p>أنت مسؤول عن الحفاظ على سرية معلومات حسابك وكلمة المرور، وعن جميع الأنشطة التي تحدث تحت حسابك. يجب أن تكون
+            جميع المعلومات المقدمة دقيقة ومحدثة.</p>
 
-                        <h4 class="fw-bold mt-5 mb-3">3. الطلبات والتوصيل</h4>
-                        <p>نحن نسعى جاهدين لتوصيل الطلبات في أسرع وقت ممكن. قد تتأثر أوقات التوصيل بظروف خارجة عن إرادتنا مثل أحوال الطقس أو الازدحام المروري.</p>
+          <h4 class="fw-bold mt-5 mb-3">3. الطلبات والتوصيل</h4>
+          <p>نحن نسعى جاهدين لتوصيل الطلبات في أسرع وقت ممكن. قد تتأثر أوقات التوصيل بظروف خارجة عن إرادتنا مثل أحوال
+            الطقس أو الازدحام المروري.</p>
 
-                        <h4 class="fw-bold mt-5 mb-3">4. الأسعار والمدفوعات</h4>
-                        <p>جميع الأسعار معلنة بالريال السعودي. نحن نحتفظ بالحق في تغيير الأسعار في أي وقت. يتم الدفع من خلال الوسائل المتاحة على الموقع.</p>
+          <h4 class="fw-bold mt-5 mb-3">4. الأسعار والمدفوعات</h4>
+          <p>جميع الأسعار معلنة بالريال السعودي. نحن نحتفظ بالحق في تغيير الأسعار في أي وقت. يتم الدفع من خلال الوسائل
+            المتاحة على الموقع.</p>
 
-                        <h4 class="fw-bold mt-5 mb-3">5. الملكية الفكرية</h4>
-                        <p>جميع المحتويات الموجودة على هذا الموقع، بما في ذلك النصوص والرسومات والشعارات، هي ملك لـ واصل ووتر ومحمية بموجب قوانين الملكية الفكرية.</p>
+          <h4 class="fw-bold mt-5 mb-3">5. الملكية الفكرية</h4>
+          <p>جميع المحتويات الموجودة على هذا الموقع، بما في ذلك النصوص والرسومات والشعارات، هي ملك لـ متاجر 360 ومحمية
+            بموجب قوانين الملكية الفكرية.</p>
 
-                        <h4 class="fw-bold mt-5 mb-3">6. التعديلات</h4>
-                        <p>نحتفظ بالحق في تعديل هذه الشروط في أي وقت. سيتم نشر التغييرات على هذه الصفحة، ويعتبر استمرارك في استخدام الموقع قبولاً لهذه التعديلات.</p>
+          <h4 class="fw-bold mt-5 mb-3">6. التعديلات</h4>
+          <p>نحتفظ بالحق في تعديل هذه الشروط في أي وقت. سيتم نشر التغييرات على هذه الصفحة، ويعتبر استمرارك في استخدام
+            الموقع قبولاً لهذه التعديلات.</p>
 
-                        <div class="alert alert-warning mt-5 border-0 rounded-4">
-                            <p class="mb-0 small">إذا كان لديك أي استفسار حول هذه الشروط، يرجى التواصل معنا عبر صفحة اتصل بنا.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          <div class="alert alert-warning mt-5 border-0 rounded-4">
+            <p class="mb-0 small">إذا كان لديك أي استفسار حول هذه الشروط، يرجى التواصل معنا عبر صفحة اتصل بنا.</p>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}
 
-          </div>
-        </form>
-      </div>
+</div>
+</form>
+</div>
+</div>
+
+</header>
+
+<main class="main">
+
+  <!-- Page Title -->
+  <div class="page-title light-background">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+      <h1 class="mb-2 mb-lg-0">Terms Of Service</h1>
+      <nav class="breadcrumbs">
+        <ol>
+          <li><a href="index.html">Home</a></li>
+          <li class="current">Tos</li>
+        </ol>
+      </nav>
     </div>
+  </div><!-- End Page Title -->
 
-  </header>
+  <!-- Terms Of Service Section -->
+  <section id="terms-of-service" class="terms-of-service section">
 
-  <main class="main">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-    <!-- Page Title -->
-    <div class="page-title light-background">
-      <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">Terms Of Service</h1>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="index.html">Home</a></li>
-            <li class="current">Tos</li>
-          </ol>
-        </nav>
-      </div>
-    </div><!-- End Page Title -->
-
-    <!-- Terms Of Service Section -->
-    <section id="terms-of-service" class="terms-of-service section">
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <!-- Intro -->
-        <div class="row justify-content-center" data-aos="fade-up">
-          <div class="col-lg-8 text-center">
-            <div class="revision-info">
-              <i class="bi bi-calendar-check"></i>
-              <span>Revised: March 15, 2025</span>
-            </div>
-            <p class="intro-desc">Kindly review the following conditions thoroughly prior to engaging with any of our offerings</p>
+      <!-- Intro -->
+      <div class="row justify-content-center" data-aos="fade-up">
+        <div class="col-lg-8 text-center">
+          <div class="revision-info">
+            <i class="bi bi-calendar-check"></i>
+            <span>Revised: March 15, 2025</span>
           </div>
+          <p class="intro-desc">Kindly review the following conditions thoroughly prior to engaging with any of our
+            offerings</p>
         </div>
-
-        <div class="row gy-4 mt-4">
-
-          <!-- Sidebar Navigation -->
-          <div class="col-lg-3" data-aos="fade-right" data-aos-delay="150">
-            <aside class="terms-sidebar">
-              <h5>Navigate Sections</h5>
-              <nav class="toc-list">
-                <a href="#sect-acceptance" class="toc-item">
-                  <span class="toc-num">01</span>
-                  <span>Acceptance of Terms</span>
-                </a>
-                <a href="#sect-ip" class="toc-item">
-                  <span class="toc-num">02</span>
-                  <span>Intellectual Property</span>
-                </a>
-                <a href="#sect-accounts" class="toc-item">
-                  <span class="toc-num">03</span>
-                  <span>User Accounts</span>
-                </a>
-                <a href="#sect-restrictions" class="toc-item">
-                  <span class="toc-num">04</span>
-                  <span>Restricted Activities</span>
-                </a>
-                <a href="#sect-warranties" class="toc-item">
-                  <span class="toc-num">05</span>
-                  <span>Warranty Disclaimers</span>
-                </a>
-                <a href="#sect-liability" class="toc-item">
-                  <span class="toc-num">06</span>
-                  <span>Liability Limits</span>
-                </a>
-                <a href="#sect-indemnity" class="toc-item">
-                  <span class="toc-num">07</span>
-                  <span>Indemnification</span>
-                </a>
-                <a href="#sect-termination" class="toc-item">
-                  <span class="toc-num">08</span>
-                  <span>Termination</span>
-                </a>
-                <a href="#sect-jurisdiction" class="toc-item">
-                  <span class="toc-num">09</span>
-                  <span>Jurisdiction</span>
-                </a>
-                <a href="#sect-modifications" class="toc-item">
-                  <span class="toc-num">10</span>
-                  <span>Term Modifications</span>
-                </a>
-              </nav>
-            </aside>
-          </div>
-
-          <!-- Main Content -->
-          <div class="col-lg-9">
-            <div class="terms-body">
-
-              <!-- Acceptance Section -->
-              <article id="sect-acceptance" class="terms-block" data-aos="fade-up" data-aos-delay="200">
-                <div class="block-heading">
-                  <span class="block-num">01</span>
-                  <h3>Acceptance of Terms</h3>
-                </div>
-                <p>Upon utilizing our platform and related services, you acknowledge your agreement to comply with these Terms of Service along with all relevant laws and statutes. Should you find yourself in disagreement with any portion of these terms, you must refrain from using our services.</p>
-                <div class="callout-info">
-                  <div class="callout-icon">
-                    <i class="bi bi-info-circle-fill"></i>
-                  </div>
-                  <p>These conditions extend to every user, visitor, and individual who interacts with or makes use of our platform.</p>
-                </div>
-              </article><!-- End Terms Block -->
-
-              <!-- Intellectual Property -->
-              <article id="sect-ip" class="terms-block" data-aos="fade-up" data-aos-delay="200">
-                <div class="block-heading">
-                  <span class="block-num">02</span>
-                  <h3>Intellectual Property Rights</h3>
-                </div>
-                <p>Our platform, including its original materials, features, and capabilities, is wholly owned by us and safeguarded under international copyright, trademark, patent, trade secret, and various intellectual property statutes.</p>
-                <ul class="check-list">
-                  <li><i class="bi bi-check2-circle"></i> All materials remain our sole property</li>
-                  <li><i class="bi bi-check2-circle"></i> Reproduction or alteration of content is not permitted</li>
-                  <li><i class="bi bi-check2-circle"></i> Brand marks require written authorization for use</li>
-                  <li><i class="bi bi-check2-circle"></i> Materials are strictly for personal, non-commercial purposes</li>
-                </ul>
-              </article><!-- End Terms Block -->
-
-              <!-- User Accounts -->
-              <article id="sect-accounts" class="terms-block" data-aos="fade-up" data-aos-delay="200">
-                <div class="block-heading">
-                  <span class="block-num">03</span>
-                  <h3>User Accounts</h3>
-                </div>
-                <p>Upon registering for an account, you are obligated to supply truthful, comprehensive, and up-to-date details. Non-compliance constitutes a violation of these Terms, potentially resulting in prompt account suspension.</p>
-                <div class="warning-card">
-                  <div class="warning-header">
-                    <i class="bi bi-shield-exclamation"></i>
-                    <h5>Critical Reminder</h5>
-                  </div>
-                  <p>You bear full responsibility for maintaining the confidentiality of your credentials and for every action performed through your account.</p>
-                </div>
-              </article><!-- End Terms Block -->
-
-              <!-- Restricted Activities -->
-              <article id="sect-restrictions" class="terms-block" data-aos="fade-up" data-aos-delay="200">
-                <div class="block-heading">
-                  <span class="block-num">04</span>
-                  <h3>Restricted Activities</h3>
-                </div>
-                <p>Access to or usage of the Service is limited exclusively to its intended purpose as made available by us.</p>
-                <div class="row gy-3 mt-2">
-                  <div class="col-md-6">
-                    <div class="restriction-card">
-                      <i class="bi bi-slash-circle"></i>
-                      <span>Automated extraction of data or materials</span>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="restriction-card">
-                      <i class="bi bi-slash-circle"></i>
-                      <span>Distribution of harmful or malicious content</span>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="restriction-card">
-                      <i class="bi bi-slash-circle"></i>
-                      <span>Unauthorized embedding or framing</span>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="restriction-card">
-                      <i class="bi bi-slash-circle"></i>
-                      <span>Efforts to breach security protocols</span>
-                    </div>
-                  </div>
-                </div>
-              </article><!-- End Terms Block -->
-
-              <!-- Warranty Disclaimers -->
-              <article id="sect-warranties" class="terms-block" data-aos="fade-up" data-aos-delay="200">
-                <div class="block-heading">
-                  <span class="block-num">05</span>
-                  <h3>Warranty Disclaimers</h3>
-                </div>
-                <p>Utilization of our service is undertaken entirely at your own risk. The service is delivered on an "AS IS" and "AS AVAILABLE" basis, devoid of any warranties, whether explicit or implied.</p>
-                <div class="disclaimer-card">
-                  <p class="disclaimer-lead">No guarantees are provided that:</p>
-                  <ul>
-                    <li>The service will fulfill your specific needs</li>
-                    <li>The service will operate without interruption or defects</li>
-                    <li>Outcomes derived from service usage will be precise</li>
-                    <li>Identified issues will be promptly resolved</li>
-                  </ul>
-                </div>
-              </article><!-- End Terms Block -->
-
-              <!-- Liability Limits -->
-              <article id="sect-liability" class="terms-block" data-aos="fade-up" data-aos-delay="200">
-                <div class="block-heading">
-                  <span class="block-num">06</span>
-                  <h3>Liability Limits</h3>
-                </div>
-                <p>Under no circumstances shall we be held accountable for any indirect, punitive, incidental, special, consequential, or exemplary damages stemming from or related to your engagement with the service.</p>
-              </article><!-- End Terms Block -->
-
-              <!-- Indemnification -->
-              <article id="sect-indemnity" class="terms-block" data-aos="fade-up" data-aos-delay="200">
-                <div class="block-heading">
-                  <span class="block-num">07</span>
-                  <h3>Indemnification</h3>
-                </div>
-                <p>You consent to defend, indemnify, and hold us harmless against any claims, liabilities, damages, losses, and costs that arise from your engagement with the service.</p>
-              </article><!-- End Terms Block -->
-
-              <!-- Termination -->
-              <article id="sect-termination" class="terms-block" data-aos="fade-up" data-aos-delay="200">
-                <div class="block-heading">
-                  <span class="block-num">08</span>
-                  <h3>Termination</h3>
-                </div>
-                <p>We retain the right to suspend or terminate your account without advance notice or obligation, for any reason, including but not limited to violation of these Terms.</p>
-              </article><!-- End Terms Block -->
-
-              <!-- Jurisdiction -->
-              <article id="sect-jurisdiction" class="terms-block" data-aos="fade-up" data-aos-delay="200">
-                <div class="block-heading">
-                  <span class="block-num">09</span>
-                  <h3>Applicable Jurisdiction</h3>
-                </div>
-                <p>These Terms are governed by and interpreted according to the laws of [Your Country], without consideration of conflict of law principles.</p>
-              </article><!-- End Terms Block -->
-
-              <!-- Term Modifications -->
-              <article id="sect-modifications" class="terms-block" data-aos="fade-up" data-aos-delay="200">
-                <div class="block-heading">
-                  <span class="block-num">10</span>
-                  <h3>Modifications to Terms</h3>
-                </div>
-                <p>We maintain the authority to alter or replace these Terms at our discretion. Notification of any amendments will be provided by publishing the updated Terms on this page.</p>
-                <div class="update-notice">
-                  <i class="bi bi-megaphone"></i>
-                  <p>Your continued access or use of our service following the effective date of revisions signifies your acceptance of the amended terms.</p>
-                </div>
-              </article><!-- End Terms Block -->
-
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Help Section -->
-        <div class="terms-help" data-aos="zoom-in" data-aos-delay="200">
-          <div class="row justify-content-center">
-            <div class="col-lg-6 col-md-8">
-              <div class="help-card text-center">
-                <div class="help-icon">
-                  <i class="bi bi-chat-dots"></i>
-                </div>
-                <h4>Need Clarification?</h4>
-                <p>Should you have inquiries regarding these Terms, our support team is ready to assist.</p>
-                <a href="#" class="help-btn">Reach Out to Us <i class="bi bi-arrow-right"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
-    </section><!-- /Terms Of Service Section -->
+      <div class="row gy-4 mt-4">
 
-  </main>
-
-  <footer id="footer" class="footer dark-background">
-    <div class="footer-main">
-      <div class="container">
-        <div class="row gy-4">
-          <div class="col-lg-4 col-md-6">
-            <div class="footer-widget footer-about">
-              <a href="index.html" class="logo">
-                <span class="sitename">SmartStore</span>
+        <!-- Sidebar Navigation -->
+        <div class="col-lg-3" data-aos="fade-right" data-aos-delay="150">
+          <aside class="terms-sidebar">
+            <h5>Navigate Sections</h5>
+            <nav class="toc-list">
+              <a href="#sect-acceptance" class="toc-item">
+                <span class="toc-num">01</span>
+                <span>Acceptance of Terms</span>
               </a>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in nibh vehicula, facilisis magna ut, consectetur lorem. Proin eget tortor risus.</p>
+              <a href="#sect-ip" class="toc-item">
+                <span class="toc-num">02</span>
+                <span>Intellectual Property</span>
+              </a>
+              <a href="#sect-accounts" class="toc-item">
+                <span class="toc-num">03</span>
+                <span>User Accounts</span>
+              </a>
+              <a href="#sect-restrictions" class="toc-item">
+                <span class="toc-num">04</span>
+                <span>Restricted Activities</span>
+              </a>
+              <a href="#sect-warranties" class="toc-item">
+                <span class="toc-num">05</span>
+                <span>Warranty Disclaimers</span>
+              </a>
+              <a href="#sect-liability" class="toc-item">
+                <span class="toc-num">06</span>
+                <span>Liability Limits</span>
+              </a>
+              <a href="#sect-indemnity" class="toc-item">
+                <span class="toc-num">07</span>
+                <span>Indemnification</span>
+              </a>
+              <a href="#sect-termination" class="toc-item">
+                <span class="toc-num">08</span>
+                <span>Termination</span>
+              </a>
+              <a href="#sect-jurisdiction" class="toc-item">
+                <span class="toc-num">09</span>
+                <span>Jurisdiction</span>
+              </a>
+              <a href="#sect-modifications" class="toc-item">
+                <span class="toc-num">10</span>
+                <span>Term Modifications</span>
+              </a>
+            </nav>
+          </aside>
+        </div>
 
-              <div class="social-links mt-4">
-                <h5>Connect With Us</h5>
-                <div class="social-icons">
-                  <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-                  <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-                  <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
-                  <a href="#" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
-                  <a href="#" aria-label="Pinterest"><i class="bi bi-pinterest"></i></a>
-                  <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
-                </div>
+        <!-- Main Content -->
+        <div class="col-lg-9">
+          <div class="terms-body">
+
+            <!-- Acceptance Section -->
+            <article id="sect-acceptance" class="terms-block" data-aos="fade-up" data-aos-delay="200">
+              <div class="block-heading">
+                <span class="block-num">01</span>
+                <h3>Acceptance of Terms</h3>
               </div>
-            </div>
-          </div>
+              <p>Upon utilizing our platform and related services, you acknowledge your agreement to comply with these
+                Terms of Service along with all relevant laws and statutes. Should you find yourself in disagreement
+                with any portion of these terms, you must refrain from using our services.</p>
+              <div class="callout-info">
+                <div class="callout-icon">
+                  <i class="bi bi-info-circle-fill"></i>
+                </div>
+                <p>These conditions extend to every user, visitor, and individual who interacts with or makes use of our
+                  platform.</p>
+              </div>
+            </article><!-- End Terms Block -->
 
-          <div class="col-lg-2 col-md-6 col-sm-6">
-            <div class="footer-widget">
-              <h4>Shop</h4>
-              <ul class="footer-links">
-                <li><a href="category.html">New Arrivals</a></li>
-                <li><a href="category.html">Bestsellers</a></li>
-                <li><a href="category.html">Women's Clothing</a></li>
-                <li><a href="category.html">Men's Clothing</a></li>
-                <li><a href="category.html">Accessories</a></li>
-                <li><a href="category.html">Sale</a></li>
+            <!-- Intellectual Property -->
+            <article id="sect-ip" class="terms-block" data-aos="fade-up" data-aos-delay="200">
+              <div class="block-heading">
+                <span class="block-num">02</span>
+                <h3>Intellectual Property Rights</h3>
+              </div>
+              <p>Our platform, including its original materials, features, and capabilities, is wholly owned by us and
+                safeguarded under international copyright, trademark, patent, trade secret, and various intellectual
+                property statutes.</p>
+              <ul class="check-list">
+                <li><i class="bi bi-check2-circle"></i> All materials remain our sole property</li>
+                <li><i class="bi bi-check2-circle"></i> Reproduction or alteration of content is not permitted</li>
+                <li><i class="bi bi-check2-circle"></i> Brand marks require written authorization for use</li>
+                <li><i class="bi bi-check2-circle"></i> Materials are strictly for personal, non-commercial purposes
+                </li>
               </ul>
-            </div>
-          </div>
+            </article><!-- End Terms Block -->
 
-          <div class="col-lg-2 col-md-6 col-sm-6">
-            <div class="footer-widget">
-              <h4>Support</h4>
-              <ul class="footer-links">
-                <li><a href="support.html">Help Center</a></li>
-                <li><a href="account.html">Order Status</a></li>
-                <li><a href="shiping-info.html">Shipping Info</a></li>
-                <li><a href="return-policy.html">Returns &amp; Exchanges</a></li>
-                <li><a href="#">Size Guide</a></li>
-                <li><a href="contact.html">Contact Us</a></li>
-              </ul>
-            </div>
-          </div>
+            <!-- User Accounts -->
+            <article id="sect-accounts" class="terms-block" data-aos="fade-up" data-aos-delay="200">
+              <div class="block-heading">
+                <span class="block-num">03</span>
+                <h3>User Accounts</h3>
+              </div>
+              <p>Upon registering for an account, you are obligated to supply truthful, comprehensive, and up-to-date
+                details. Non-compliance constitutes a violation of these Terms, potentially resulting in prompt account
+                suspension.</p>
+              <div class="warning-card">
+                <div class="warning-header">
+                  <i class="bi bi-shield-exclamation"></i>
+                  <h5>Critical Reminder</h5>
+                </div>
+                <p>You bear full responsibility for maintaining the confidentiality of your credentials and for every
+                  action performed through your account.</p>
+              </div>
+            </article><!-- End Terms Block -->
 
-          <div class="col-lg-4 col-md-6">
-            <div class="footer-widget">
-              <h4>Contact Information</h4>
-              <div class="footer-contact">
-                <div class="contact-item">
-                  <i class="bi bi-geo-alt"></i>
-                  <span>123 Fashion Street, New York, NY 10001</span>
+            <!-- Restricted Activities -->
+            <article id="sect-restrictions" class="terms-block" data-aos="fade-up" data-aos-delay="200">
+              <div class="block-heading">
+                <span class="block-num">04</span>
+                <h3>Restricted Activities</h3>
+              </div>
+              <p>Access to or usage of the Service is limited exclusively to its intended purpose as made available by
+                us.</p>
+              <div class="row gy-3 mt-2">
+                <div class="col-md-6">
+                  <div class="restriction-card">
+                    <i class="bi bi-slash-circle"></i>
+                    <span>Automated extraction of data or materials</span>
+                  </div>
                 </div>
-                <div class="contact-item">
-                  <i class="bi bi-telephone"></i>
-                  <span>+1 (555) 123-4567</span>
+                <div class="col-md-6">
+                  <div class="restriction-card">
+                    <i class="bi bi-slash-circle"></i>
+                    <span>Distribution of harmful or malicious content</span>
+                  </div>
                 </div>
-                <div class="contact-item">
-                  <i class="bi bi-envelope"></i>
-                  <span>hello@example.com</span>
+                <div class="col-md-6">
+                  <div class="restriction-card">
+                    <i class="bi bi-slash-circle"></i>
+                    <span>Unauthorized embedding or framing</span>
+                  </div>
                 </div>
-                <div class="contact-item">
-                  <i class="bi bi-clock"></i>
-                  <span>Monday-Friday: 9am-6pm<br>Saturday: 10am-4pm<br>Sunday: Closed</span>
+                <div class="col-md-6">
+                  <div class="restriction-card">
+                    <i class="bi bi-slash-circle"></i>
+                    <span>Efforts to breach security protocols</span>
+                  </div>
                 </div>
               </div>
+            </article><!-- End Terms Block -->
 
-              <div class="app-buttons mt-4">
-                <a href="#" class="app-btn">
-                  <i class="bi bi-apple"></i>
-                  <span>App Store</span>
-                </a>
-                <a href="#" class="app-btn">
-                  <i class="bi bi-google-play"></i>
-                  <span>Google Play</span>
-                </a>
+            <!-- Warranty Disclaimers -->
+            <article id="sect-warranties" class="terms-block" data-aos="fade-up" data-aos-delay="200">
+              <div class="block-heading">
+                <span class="block-num">05</span>
+                <h3>Warranty Disclaimers</h3>
               </div>
+              <p>Utilization of our service is undertaken entirely at your own risk. The service is delivered on an "AS
+                IS" and "AS AVAILABLE" basis, devoid of any warranties, whether explicit or implied.</p>
+              <div class="disclaimer-card">
+                <p class="disclaimer-lead">No guarantees are provided that:</p>
+                <ul>
+                  <li>The service will fulfill your specific needs</li>
+                  <li>The service will operate without interruption or defects</li>
+                  <li>Outcomes derived from service usage will be precise</li>
+                  <li>Identified issues will be promptly resolved</li>
+                </ul>
+              </div>
+            </article><!-- End Terms Block -->
+
+            <!-- Liability Limits -->
+            <article id="sect-liability" class="terms-block" data-aos="fade-up" data-aos-delay="200">
+              <div class="block-heading">
+                <span class="block-num">06</span>
+                <h3>Liability Limits</h3>
+              </div>
+              <p>Under no circumstances shall we be held accountable for any indirect, punitive, incidental, special,
+                consequential, or exemplary damages stemming from or related to your engagement with the service.</p>
+            </article><!-- End Terms Block -->
+
+            <!-- Indemnification -->
+            <article id="sect-indemnity" class="terms-block" data-aos="fade-up" data-aos-delay="200">
+              <div class="block-heading">
+                <span class="block-num">07</span>
+                <h3>Indemnification</h3>
+              </div>
+              <p>You consent to defend, indemnify, and hold us harmless against any claims, liabilities, damages,
+                losses, and costs that arise from your engagement with the service.</p>
+            </article><!-- End Terms Block -->
+
+            <!-- Termination -->
+            <article id="sect-termination" class="terms-block" data-aos="fade-up" data-aos-delay="200">
+              <div class="block-heading">
+                <span class="block-num">08</span>
+                <h3>Termination</h3>
+              </div>
+              <p>We retain the right to suspend or terminate your account without advance notice or obligation, for any
+                reason, including but not limited to violation of these Terms.</p>
+            </article><!-- End Terms Block -->
+
+            <!-- Jurisdiction -->
+            <article id="sect-jurisdiction" class="terms-block" data-aos="fade-up" data-aos-delay="200">
+              <div class="block-heading">
+                <span class="block-num">09</span>
+                <h3>Applicable Jurisdiction</h3>
+              </div>
+              <p>These Terms are governed by and interpreted according to the laws of [Your Country], without
+                consideration of conflict of law principles.</p>
+            </article><!-- End Terms Block -->
+
+            <!-- Term Modifications -->
+            <article id="sect-modifications" class="terms-block" data-aos="fade-up" data-aos-delay="200">
+              <div class="block-heading">
+                <span class="block-num">10</span>
+                <h3>Modifications to Terms</h3>
+              </div>
+              <p>We maintain the authority to alter or replace these Terms at our discretion. Notification of any
+                amendments will be provided by publishing the updated Terms on this page.</p>
+              <div class="update-notice">
+                <i class="bi bi-megaphone"></i>
+                <p>Your continued access or use of our service following the effective date of revisions signifies your
+                  acceptance of the amended terms.</p>
+              </div>
+            </article><!-- End Terms Block -->
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Help Section -->
+      <div class="terms-help" data-aos="zoom-in" data-aos-delay="200">
+        <div class="row justify-content-center">
+          <div class="col-lg-6 col-md-8">
+            <div class="help-card text-center">
+              <div class="help-icon">
+                <i class="bi bi-chat-dots"></i>
+              </div>
+              <h4>Need Clarification?</h4>
+              <p>Should you have inquiries regarding these Terms, our support team is ready to assist.</p>
+              <a href="#" class="help-btn">Reach Out to Us <i class="bi bi-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </section><!-- /Terms Of Service Section -->
+
+</main>
+
+<footer id="footer" class="footer dark-background">
+  <div class="footer-main">
+    <div class="container">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6">
+          <div class="footer-widget footer-about">
+            <a href="index.html" class="logo">
+              <span class="sitename">SmartStore</span>
+            </a>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in nibh vehicula, facilisis magna ut,
+              consectetur lorem. Proin eget tortor risus.</p>
+
+            <div class="social-links mt-4">
+              <h5>Connect With Us</h5>
+              <div class="social-icons">
+                <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+                <a href="#" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+                <a href="#" aria-label="Pinterest"><i class="bi bi-pinterest"></i></a>
+                <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-md-6 col-sm-6">
+          <div class="footer-widget">
+            <h4>Shop</h4>
+            <ul class="footer-links">
+              <li><a href="category.html">New Arrivals</a></li>
+              <li><a href="category.html">Bestsellers</a></li>
+              <li><a href="category.html">Women's Clothing</a></li>
+              <li><a href="category.html">Men's Clothing</a></li>
+              <li><a href="category.html">Accessories</a></li>
+              <li><a href="category.html">Sale</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-md-6 col-sm-6">
+          <div class="footer-widget">
+            <h4>Support</h4>
+            <ul class="footer-links">
+              <li><a href="support.html">Help Center</a></li>
+              <li><a href="account.html">Order Status</a></li>
+              <li><a href="shiping-info.html">Shipping Info</a></li>
+              <li><a href="return-policy.html">Returns &amp; Exchanges</a></li>
+              <li><a href="#">Size Guide</a></li>
+              <li><a href="contact.html">Contact Us</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+          <div class="footer-widget">
+            <h4>Contact Information</h4>
+            <div class="footer-contact">
+              <div class="contact-item">
+                <i class="bi bi-geo-alt"></i>
+                <span>123 Fashion Street, New York, NY 10001</span>
+              </div>
+              <div class="contact-item">
+                <i class="bi bi-telephone"></i>
+                <span>+1 (555) 123-4567</span>
+              </div>
+              <div class="contact-item">
+                <i class="bi bi-envelope"></i>
+                <span>hello@example.com</span>
+              </div>
+              <div class="contact-item">
+                <i class="bi bi-clock"></i>
+                <span>Monday-Friday: 9am-6pm<br>Saturday: 10am-4pm<br>Sunday: Closed</span>
+              </div>
+            </div>
+
+            <div class="app-buttons mt-4">
+              <a href="#" class="app-btn">
+                <i class="bi bi-apple"></i>
+                <span>App Store</span>
+              </a>
+              <a href="#" class="app-btn">
+                <i class="bi bi-google-play"></i>
+                <span>Google Play</span>
+              </a>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="footer-bottom">
-      <div class="container">
-        <div class="row gy-3 align-items-center">
-          <div class="col-lg-6 col-md-12">
-            <div class="copyright">
-              <p>© <span>Copyright</span> <strong class="sitename">SmartStore</strong>. All Rights Reserved.</p>
-            </div>
-            <div class="credits mt-1">
-              <!-- All the links in the footer should remain intact. -->
-              <!-- You can delete the links only if you've purchased the pro version. -->
-              <!-- Licensing information: https://bootstrapmade.com/license/ -->
-              <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-              Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-            </div>
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="row gy-3 align-items-center">
+        <div class="col-lg-6 col-md-12">
+          <div class="copyright">
+            <p>© <span>Copyright</span> <strong class="sitename">SmartStore</strong>. All Rights Reserved.</p>
           </div>
-
-          <div class="col-lg-6 col-md-12">
-            <div class="d-flex flex-wrap justify-content-lg-end justify-content-center align-items-center gap-4">
-              <div class="payment-methods">
-                <div class="payment-icons">
-                  <i class="bi bi-credit-card" aria-label="Credit Card"></i>
-                  <i class="bi bi-paypal" aria-label="PayPal"></i>
-                  <i class="bi bi-apple" aria-label="Apple Pay"></i>
-                  <i class="bi bi-google" aria-label="Google Pay"></i>
-                  <i class="bi bi-shop" aria-label="Shop Pay"></i>
-                  <i class="bi bi-cash" aria-label="Cash on Delivery"></i>
-                </div>
-              </div>
-
-              <div class="legal-links">
-                <a href="tos.html">Terms</a>
-                <a href="privacy.html">Privacy</a>
-                <a href="tos.html">Cookies</a>
-              </div>
-            </div>
+          <div class="credits mt-1">
+            <!-- All the links in the footer should remain intact. -->
+            <!-- You can delete the links only if you've purchased the pro version. -->
+            <!-- Licensing information: https://bootstrapmade.com/license/ -->
+            <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+            Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
           </div>
         </div>
 
+        <div class="col-lg-6 col-md-12">
+          <div class="d-flex flex-wrap justify-content-lg-end justify-content-center align-items-center gap-4">
+            <div class="payment-methods">
+              <div class="payment-icons">
+                <i class="bi bi-credit-card" aria-label="Credit Card"></i>
+                <i class="bi bi-paypal" aria-label="PayPal"></i>
+                <i class="bi bi-apple" aria-label="Apple Pay"></i>
+                <i class="bi bi-google" aria-label="Google Pay"></i>
+                <i class="bi bi-shop" aria-label="Shop Pay"></i>
+                <i class="bi bi-cash" aria-label="Cash on Delivery"></i>
+              </div>
+            </div>
+
+            <div class="legal-links">
+              <a href="tos.html">Terms</a>
+              <a href="privacy.html">Privacy</a>
+              <a href="tos.html">Cookies</a>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
-  </footer>
+  </div>
+</footer>
 
-  <!-- Scroll Top -->
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+<!-- Scroll Top -->
+<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+    class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Preloader -->
-  <div id="preloader"></div>
+<!-- Preloader -->
+<div id="preloader"></div>
 
-  <!-- Vendor JS Files -->
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
-  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/drift-zoom/Drift.min.js"></script>
-  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+<!-- Vendor JS Files -->
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="assets/vendor/php-email-form/validate.js"></script>
+<script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="assets/vendor/aos/aos.js"></script>
+<script src="assets/vendor/drift-zoom/Drift.min.js"></script>
+<script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
 
-  <!-- Main JS File -->
-  <script src="assets/js/main.js"></script>
+<!-- Main JS File -->
+<script src="assets/js/main.js"></script>
 
 </body>
 

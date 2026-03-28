@@ -1,0 +1,334 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Shipping Info Section
+--------------------------------------------------------------*/
+.shipping-info {
+  .block-header {
+    margin-bottom: 30px;
+    text-align: center;
+
+    .badge-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: color-mix(in srgb, var(--accent-color), transparent 90%);
+      color: var(--accent-color);
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 6px 16px;
+      border-radius: 30px;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+
+      i {
+        font-size: 1rem;
+      }
+    }
+
+    p {
+      color: color-mix(in srgb, var(--default-color), transparent 40%);
+      margin: 0;
+      font-size: 0.95rem;
+    }
+  }
+
+  /* Delivery Options */
+  .option-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .option-item {
+    display: flex;
+    align-items: stretch;
+    background-color: var(--surface-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 15px color-mix(in srgb, var(--default-color), transparent 92%);
+    transition: transform 0.3s, box-shadow 0.3s;
+
+    &:hover {
+      transform: translateX(6px);
+      box-shadow: 0 6px 25px color-mix(in srgb, var(--default-color), transparent 88%);
+    }
+
+    .option-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 70px;
+      min-width: 70px;
+      background-color: var(--accent-color);
+      color: var(--contrast-color);
+
+      i {
+        font-size: 1.5rem;
+      }
+    }
+
+    .option-body {
+      flex: 1;
+      padding: 22px 25px;
+
+      h4 {
+        font-size: 1.1rem;
+        margin-bottom: 6px;
+      }
+
+      p {
+        color: color-mix(in srgb, var(--default-color), transparent 35%);
+        font-size: 0.9rem;
+        margin: 0;
+      }
+
+      .time-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background-color: color-mix(in srgb, var(--accent-color), transparent 88%);
+        color: var(--accent-color);
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 5px 14px;
+        border-radius: 20px;
+        margin-top: 6px;
+
+        i {
+          font-size: 0.85rem;
+        }
+      }
+    }
+
+    @media (max-width: 576px) {
+      .option-indicator {
+        width: 50px;
+        min-width: 50px;
+
+        i {
+          font-size: 1.2rem;
+        }
+      }
+
+      .option-body {
+        padding: 16px;
+      }
+    }
+  }
+
+  /* Shipping Costs */
+  .rate-box {
+    background-color: var(--surface-color);
+    border-radius: 12px;
+    padding: 30px 25px;
+    text-align: center;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid color-mix(in srgb, var(--default-color), transparent 90%);
+    transition: transform 0.3s, border-color 0.3s;
+
+    &:hover {
+      transform: translateY(-5px);
+      border-color: color-mix(in srgb, var(--accent-color), transparent 50%);
+    }
+
+    &.featured {
+      border-color: var(--accent-color);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--accent-color), transparent 94%) 0%, var(--surface-color) 100%);
+
+      .featured-tag {
+        position: absolute;
+        top: 14px;
+        right: -30px;
+        background-color: var(--accent-color);
+        color: var(--contrast-color);
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 4px 40px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transform: rotate(45deg);
+      }
+    }
+
+    .rate-header {
+      margin-bottom: 15px;
+
+      .rate-label {
+        font-weight: 600;
+        color: var(--heading-color);
+        font-size: 1rem;
+        font-family: var(--heading-font);
+      }
+    }
+
+    .rate-price {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--accent-color);
+      margin-bottom: 10px;
+      line-height: 1;
+      font-family: var(--heading-font);
+    }
+
+    .rate-desc {
+      color: color-mix(in srgb, var(--default-color), transparent 40%);
+      font-size: 0.88rem;
+    }
+  }
+
+  /* International Shipping Banner */
+  .global-banner {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent-color), transparent 90%) 0%, color-mix(in srgb, var(--accent-color), transparent 96%) 100%);
+    border-radius: 16px;
+    padding: 40px 35px;
+    border: 1px solid color-mix(in srgb, var(--accent-color), transparent 80%);
+
+    .global-intro {
+      margin-bottom: 20px;
+
+      @media (min-width: 992px) {
+        margin-bottom: 0;
+      }
+
+      .badge-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background-color: color-mix(in srgb, var(--accent-color), transparent 80%);
+        color: var(--accent-color);
+        font-weight: 600;
+        font-size: 0.8rem;
+        padding: 5px 14px;
+        border-radius: 30px;
+        margin-bottom: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        i {
+          font-size: 0.95rem;
+        }
+      }
+
+      h3 {
+        font-size: 1.6rem;
+        margin-bottom: 12px;
+      }
+
+      p {
+        color: color-mix(in srgb, var(--default-color), transparent 30%);
+        font-size: 0.95rem;
+        margin: 0;
+      }
+    }
+
+    .global-stat {
+      background-color: var(--surface-color);
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+      height: 100%;
+      transition: transform 0.3s;
+
+      &:hover {
+        transform: translateY(-4px);
+      }
+
+      i {
+        font-size: 1.6rem;
+        color: var(--accent-color);
+        margin-bottom: 10px;
+        display: block;
+      }
+
+      h5 {
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+      }
+
+      p {
+        color: color-mix(in srgb, var(--default-color), transparent 35%);
+        font-size: 0.82rem;
+        margin: 0;
+        line-height: 1.5;
+      }
+    }
+
+    @media (max-width: 576px) {
+      padding: 25px 20px;
+    }
+  }
+
+  /* FAQ */
+  .faq-list {
+    .faq-item {
+      border-left: 3px solid color-mix(in srgb, var(--accent-color), transparent 70%);
+      background-color: var(--surface-color);
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 12px;
+      transition: border-color 0.3s;
+
+      &:hover {
+        border-left-color: var(--accent-color);
+      }
+
+      h3 {
+        margin: 0;
+        padding: 18px 22px;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: var(--heading-color);
+        transition: color 0.3s;
+
+        .faq-num {
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: var(--accent-color);
+          opacity: 0.6;
+          font-family: var(--heading-font);
+        }
+
+        .faq-toggle {
+          margin-left: auto;
+          font-size: 1rem;
+          color: color-mix(in srgb, var(--default-color), transparent 50%);
+          transition: transform 0.3s, color 0.3s;
+        }
+      }
+
+      .faq-answer {
+        display: none;
+        padding: 0 22px 18px 56px;
+
+        p {
+          color: color-mix(in srgb, var(--default-color), transparent 35%);
+          margin: 0;
+          font-size: 0.92rem;
+          line-height: 1.7;
+        }
+      }
+
+      &.faq-active {
+        border-left-color: var(--accent-color);
+
+        h3 {
+          color: var(--accent-color);
+
+          .faq-toggle {
+            transform: rotate(45deg);
+            color: var(--accent-color);
+          }
+        }
+
+        .faq-answer {
+          display: block;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,282 @@
+// main: ../main.scss
+/*--------------------------------------------------------------
+# Category Product List Section
+--------------------------------------------------------------*/
+.category-product-list {
+  .item-card {
+    position: relative;
+    border: 1px solid color-mix(in srgb, var(--default-color), transparent 88%);
+    background: var(--surface-color);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+
+    &:hover {
+      border-color: var(--accent-color);
+      box-shadow: 0 8px 30px color-mix(in srgb, var(--accent-color), transparent 85%);
+
+      .secondary-img {
+        opacity: 1;
+      }
+
+      .primary-img {
+        opacity: 0;
+      }
+
+      .quick-add {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .wishlist-toggle {
+        opacity: 1;
+      }
+    }
+  }
+
+  .item-media {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--default-color), transparent 96%);
+
+    img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.4s ease;
+    }
+
+    .secondary-img {
+      opacity: 0;
+    }
+  }
+
+  .wishlist-toggle {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: none;
+    background: var(--surface-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--default-color), transparent 85%);
+    cursor: pointer;
+
+    i {
+      font-size: 1rem;
+      color: var(--default-color);
+      transition: color 0.3s ease;
+    }
+
+    &:hover i {
+      color: #e74c3c;
+    }
+  }
+
+  .item-label {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-radius: 50px;
+    z-index: 2;
+
+    &.label-new {
+      background: var(--accent-color);
+      color: var(--contrast-color);
+    }
+
+    &.label-sale {
+      background: #e74c3c;
+      color: var(--contrast-color);
+    }
+  }
+
+  .quick-add {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.75rem;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 2;
+  }
+
+  .quick-add-btn {
+    width: 100%;
+    padding: 0.6rem;
+    border: none;
+    background: var(--accent-color);
+    color: var(--contrast-color);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--accent-color), #000 15%);
+    }
+  }
+
+  .item-info {
+    padding: 1.25rem;
+  }
+
+  .item-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-color);
+    border: 1px solid color-mix(in srgb, var(--accent-color), transparent 50%);
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    margin-bottom: 0.6rem;
+  }
+
+  .item-name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+
+    a {
+      color: var(--heading-color);
+      text-decoration: none;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: var(--accent-color);
+      }
+    }
+  }
+
+  .item-stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 0.75rem;
+
+    i {
+      font-size: 0.75rem;
+      color: #f5a623;
+    }
+
+    .review-count {
+      font-size: 0.8rem;
+      color: color-mix(in srgb, var(--default-color), transparent 50%);
+      margin-left: 0.35rem;
+    }
+  }
+
+  .item-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+    border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+  }
+
+  .item-cost {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .was-price {
+      font-size: 0.85rem;
+      color: color-mix(in srgb, var(--default-color), transparent 50%);
+      font-weight: 400;
+    }
+  }
+
+  .cart-icon-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 2px solid var(--accent-color);
+    background: transparent;
+    color: var(--accent-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    i {
+      font-size: 1rem;
+    }
+
+    &:hover {
+      background: var(--accent-color);
+      color: var(--contrast-color);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .item-info {
+      padding: 1rem;
+    }
+
+    .item-name {
+      font-size: 0.875rem;
+    }
+
+    .item-cost {
+      font-size: 0.95rem;
+    }
+
+    .quick-add-btn {
+      font-size: 0.7rem;
+      padding: 0.5rem;
+    }
+
+    .cart-icon-btn {
+      width: 2.1rem;
+      height: 2.1rem;
+
+      i {
+        font-size: 0.875rem;
+      }
+    }
+
+    .wishlist-toggle {
+      opacity: 1;
+    }
+
+    .item-tag {
+      font-size: 0.6rem;
+      padding: 0.1rem 0.4rem;
+    }
+
+    .item-stars {
+      i {
+        font-size: 0.65rem;
+      }
+
+      .review-count {
+        font-size: 0.7rem;
+      }
+    }
+  }
+}

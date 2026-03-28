@@ -1,62 +1,63 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}الباقات والحزم - {{ company.name|default:"واصل ووتر" }}{% endblock %}
+{% block title %}الباقات والحزم - {{ company.name|default:"متاجر 360" }}{% endblock %}
 
 {% block content %}
-    <!-- Page Title -->
-    <div class="page-title light-background">
-      <div class="container d-lg-flex justify-content-between align-items-center">
+<!-- Page Title -->
+<div class="page-title light-background">
+    <div class="container d-lg-flex justify-content-between align-items-center">
         <h1 class="mb-2 mb-lg-0">الباقات والحزم</h1>
         <nav class="breadcrumbs">
-          <ol>
-            <li><a href="{% url 'home' %}">الرئيسية</a></li>
-            <li class="current">الباقات</li>
-          </ol>
+            <ol>
+                <li><a href="{% url 'home' %}">الرئيسية</a></li>
+                <li class="current">الباقات</li>
+            </ol>
         </nav>
-      </div>
-    </div><!-- End Page Title -->
+    </div>
+</div><!-- End Page Title -->
 
-    <div class="container mt-5 mb-5 text-center">
-        <div class="section-title" data-aos="fade-up">
-            <h2>وفر أكثر مع باقاتنا</h2>
-            <p>اختر الباقة المناسبة لاحتياجاتك واستمتع بأسعار مخفضة</p>
-        </div>
+<div class="container mt-5 mb-5 text-center">
+    <div class="section-title" data-aos="fade-up">
+        <h2>وفر أكثر مع باقاتنا</h2>
+        <p>اختر الباقة المناسبة لاحتياجاتك واستمتع بأسعار مخفضة</p>
+    </div>
 
-        <div class="row g-4 mt-4">
-            {% for bundle in object_list %}
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
-                <div class="bundle-card h-100 shadow-sm rounded-4 overflow-hidden border">
-                    <div class="bundle-img position-relative">
-                        <img src="{{ bundle.image.url }}" class="img-fluid w-100" alt="{{ bundle.name }}" style="height: 250px; object-fit: cover;">
-                        <span class="badge bg-primary position-absolute top-0 end-0 m-3 p-2">باقة خاصة</span>
-                    </div>
-                    <div class="bundle-info p-4">
-                        <h3 class="fw-bold mb-3">{{ bundle.name }}</h3>
-                        <p class="text-muted small mb-4">{{ bundle.description|truncatewords:20 }}</p>
-                        
-                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                            <div class="pricing">
-                                <span class="fs-4 fw-bold text-primary">{{ bundle.price }}</span>
-                            </div>
-                            <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form">
-                                {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ bundle.id }}">
-                                <input type="hidden" name="item_type" value="bundle">
-                                <button type="submit" class="btn btn-outline-primary rounded-pill px-4">
-                                    <i class="bi bi-cart-plus me-1"></i> إضافة للسلة
-                                </button>
-                            </form>
+    <div class="row g-4 mt-4">
+        {% for bundle in object_list %}
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
+            <div class="bundle-card h-100 shadow-sm rounded-4 overflow-hidden border">
+                <div class="bundle-img position-relative">
+                    <img src="{{ bundle.image.url }}" class="img-fluid w-100" alt="{{ bundle.name }}"
+                        style="height: 250px; object-fit: cover;">
+                    <span class="badge bg-primary position-absolute top-0 end-0 m-3 p-2">باقة خاصة</span>
+                </div>
+                <div class="bundle-info p-4">
+                    <h3 class="fw-bold mb-3">{{ bundle.name }}</h3>
+                    <p class="text-muted small mb-4">{{ bundle.description|truncatewords:20 }}</p>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <div class="pricing">
+                            <span class="fs-4 fw-bold text-primary">{{ bundle.price }}</span>
                         </div>
+                        <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ bundle.id }}">
+                            <input type="hidden" name="item_type" value="bundle">
+                            <button type="submit" class="btn btn-outline-primary rounded-pill px-4">
+                                <i class="bi bi-cart-plus me-1"></i> إضافة للسلة
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
-            {% empty %}
-            <div class="col-12 py-5">
-                <i class="bi bi-box-seam text-muted fs-1"></i>
-                <h4 class="text-muted mt-3">لا توجد باقات متاحة حالياً.</h4>
-            </div>
-            {% endfor %}
         </div>
+        {% empty %}
+        <div class="col-12 py-5">
+            <i class="bi bi-box-seam text-muted fs-1"></i>
+            <h4 class="text-muted mt-3">لا توجد باقات متاحة حالياً.</h4>
+        </div>
+        {% endfor %}
     </div>
+</div>
 {% endblock %}

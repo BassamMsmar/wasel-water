@@ -1,0 +1,143 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}إضافة طلب جديد{% endblock %}
+{% block page_title %}إضافة طلب يدوي{% endblock %}
+
+{% block admin_content %}
+<form method="post">
+    {% csrf_token %}
+    <div class="row">
+        <!-- Customer Details -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-header bg-dark text-white p-3">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-person me-2"></i> بيانات العميل والشحن</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">العميل (المستخدم)</label>
+                        {{ form.user }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">الاسم الكامل للشحن</label>
+                        {{ form.shipping_full_name }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">الجوال</label>
+                        {{ form.shipping_phone }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">المدينة</label>
+                        {{ form.shipping_city }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">العنوان التفصيلي</label>
+                        {{ form.shipping_address }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-header bg-dark text-white p-3">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-info-circle me-2"></i> حالة الطلب</h6>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <div class="mb-3">
+                         {{ form.status }}
+                    </div>
+                    <div class="form-check form-switch d-inline-block">
+                         {{ form.is_paid }}
+                         <label class="form-check-label ms-2" for="{{ form.is_paid.id_for_label }}">تم الدفع؟</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-dark text-white p-3">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-cart me-2"></i> عناصر الطلب</h6>
+                </div>
+                <div class="card-body p-4">
+                    {{ items.management_form }}
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle" id="items-table">
+                            <thead class="table-light">
+                                <tr class="small text-muted">
+                                    <th>المنتج</th>
+                                    <th>أو الحزمة (Bundle)</th>
+                                    <th>السعر</th>
+                                    <th>الكمية</th>
+                                    <th>حذف</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item_form in items %}
+                                <tr class="item-row">
+                                    <td>{{ item_form.product }}</td>
+                                    <td>{{ item_form.bundle }}</td>
+                                    <td style="width: 120px;">{{ item_form.price }}</td>
+                                    <td style="width: 100px;">{{ item_form.quantity }}</td>
+                                    <td class="text-center">
+                                         {% if item_form.instance.pk %}{{ item_form.DELETE }}{% endif %}
+                                         <button type="button" class="btn btn-outline-danger btn-sm border-0 remove-row">
+                                             <i class="bi bi-trash"></i>
+                                         </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" id="add-item" class="btn btn-outline-primary btn-sm rounded-pill mt-2">
+                        <i class="bi bi-plus"></i> إضافة عنصر آخر
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-4 text-end">
+                <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
+                    <i class="bi bi-save me-2"></i> إنشاء الطلب وحفظه
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    document.getElementById('add-item').addEventListener('click', function() {
+        var table = document.getElementById('items-table').getElementsByTagName('tbody')[0];
+        var rowCount = table.getElementsByClassName('item-row').length;
+        var newRow = table.getElementsByClassName('item-row')[0].cloneNode(true);
+        
+        // Update names and IDs
+        var inputs = newRow.getElementsByTagName('input');
+        var selects = newRow.getElementsByTagName('select');
+        
+        [...inputs, ...selects].forEach(element => {
+            var name = element.getAttribute('name');
+            var id = element.getAttribute('id');
+            if(name) element.setAttribute('name', name.replace('-0-', '-' + rowCount + '-'));
+            if(id) element.setAttribute('id', id.replace('-0-', '-' + rowCount + '-'));
+            element.value = '';
+        });
+
+        table.appendChild(newRow);
+        
+        // Update total forms
+        document.getElementById('id_items-TOTAL_FORMS').value = rowCount + 1;
+    });
+
+    document.addEventListener('click', function(e) {
+        if(e.target && e.target.classList.contains('remove-row') || e.target.closest('.remove-row')) {
+            var rows = document.getElementsByClassName('item-row');
+            if(rows.length > 1) {
+                var btn = e.target.classList.contains('remove-row') ? e.target : e.target.closest('.remove-row');
+                btn.closest('tr').remove();
+                document.getElementById('id_items-TOTAL_FORMS').value = document.getElementsByClassName('item-row').length;
+            }
+        }
+    });
+</script>
+{% endblock %}
