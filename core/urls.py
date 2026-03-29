@@ -1,4 +1,5 @@
 from django.urls import path
+from . import views
 from .views import (
     home, about, contact, privacy, tos, return_policy,
     AdminDashboardView, AdminProductListView, AdminProductCreateView, AdminProductUpdateView, AdminProductDeleteView,
