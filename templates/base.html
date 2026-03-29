@@ -94,7 +94,10 @@
     $(document).ready(function() {
         // Qty selector logic
         $(document).on('click', '.btn-plus, .btn-minus', function() {
-            var input = $(this).siblings('.qty-input');
+            var input = $(this).closest('.quantity-wrapper').find('.qty-input');
+            if (input.length === 0) {
+                input = $(this).siblings('.qty-input');
+            }
             var val = parseInt(input.val()) || 1;
             if ($(this).hasClass('btn-plus')) {
                 input.val(val + 1);
@@ -125,24 +128,14 @@
                             $('.cart-panel').html(response.cart_html);
                         }
                         
-                        // Checkmark Animation Toast
+                        // Auto-closing Success Animation
                         Swal.fire({
-                            title: 'تمت الإضافة للسلة بنجاح!',
+                            position: 'center',
                             icon: 'success',
-                            showCancelButton: true,
-                            confirmButtonColor: '#004d7a',
-                            cancelButtonColor: '#00b4d8',
-                            confirmButtonText: 'الدفع أو تعديل السلة <i class="bi bi-cart-check ms-1"></i>',
-                            cancelButtonText: 'متابعة التسوق',
-                            reverseButtons: true,
-                            customClass: {
-                                confirmButton: 'btn fw-bold px-4 rounded-pill',
-                                cancelButton: 'btn fw-bold px-4 rounded-pill text-white'
-                            }
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = "{% url 'cart:cart_detail' %}";
-                            }
+                            title: 'تمت الإضافة للسلة بنجاح',
+                            showConfirmButton: false,
+                            timer: 1000,
+                            backdrop: `rgba(0,0,0,0.4)`
                         });
                     }
                 },

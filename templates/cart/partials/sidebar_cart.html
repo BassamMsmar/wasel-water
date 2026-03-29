@@ -1,3 +1,24 @@
+<style>
+  .btn-remove-sidebar {
+    background: rgba(255, 71, 87, 0.1);
+    color: #ff4757;
+    border: none;
+    width: 28px; 
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center;
+    transition: all 0.3s ease;
+    padding: 0;
+    font-size: 0.85rem;
+  }
+  .btn-remove-sidebar:hover {
+    background: #ff4757;
+    color: #fff !important;
+    transform: scale(1.1) rotate(90deg);
+  }
+</style>
 {% if cart %}
 <div class="cart-panel-header">
   <h6>سلة التسوق</h6>
@@ -26,8 +47,8 @@
         <span class="cart-item-qty">الكمية: {{ item.quantity }}</span>
       </div>
     </div>
-    <button class="cart-item-remove-sidebar" aria-label="إزالة" data-item-id="{{ item.product.id }}" data-item-type="{{ item.item_type }}">
-      <i class="bi bi-x-lg"></i>
+    <button class="cart-item-remove-sidebar btn-remove-sidebar" aria-label="إزالة" data-item-id="{{ item.product.id }}" data-item-type="{{ item.item_type }}">
+      <i class="bi bi-trash3-fill"></i>
     </button>
   </div><!-- End Cart Item -->
   {% endfor %}

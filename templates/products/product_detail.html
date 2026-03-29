@@ -5,34 +5,7 @@
 
 {% block extra_head %}
 <style>
-  /* Premium Quantity Selector */
-  .quantity-selector {
-    display: inline-flex;
-    align-items: center;
-    background: #f8fbfb;
-    border-radius: 50px;
-    padding: 5px;
-    border: 1px solid rgba(0,0,0,0.05);
-  }
-  .quantity-btn {
-    background: #fff;
-    border: none;
-    width: 38px; height: 38px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    color: #004d7a;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    transition: all 0.2s;
-    font-size: 1.2rem;
-  }
-  .quantity-btn:hover { background: #004d7a; color: #fff; transform: scale(1.1); }
-  .quantity-input {
-    width: 50px; text-align: center; border: none; background: transparent; 
-    font-weight: bold; font-size: 1.2rem; color: #2c3e50;
-  }
-  .quantity-input::-webkit-outer-spin-button, .quantity-input::-webkit-inner-spin-button {
-    -webkit-appearance: none; margin: 0;
-  }
+  /* Add to Cart Button Profile */
   
   .add-cart-btn {
     background: linear-gradient(135deg, #004d7a 0%, #00b4d8 100%);
@@ -132,10 +105,10 @@
               {% csrf_token %}
               <input type="hidden" name="product_id" value="{{ product.id }}">
               <input type="hidden" name="item_type" value="product">
-              <div class="quantity-selector">
-                <button class="quantity-btn decrease" type="button"><i class="bi bi-dash"></i></button>
-                <input type="number" name="quantity" class="quantity-input" value="1" min="1">
-                <button class="quantity-btn increase" type="button"><i class="bi bi-plus"></i></button>
+              <div class="quantity-wrapper d-flex align-items-center border rounded-pill shadow-sm bg-white" style="height: 48px; width: 140px;">
+                <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-plus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.4rem; font-weight: bold;">+</button>
+                <input type="text" name="quantity" class="form-control text-center border-0 p-0 m-0 qty-input bg-transparent w-50 h-100" value="1" readonly style="font-weight: bold; font-size: 1.2rem; box-shadow: none;">
+                <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-minus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.4rem; font-weight: bold;">-</button>
               </div>
               <button type="submit" class="btn add-cart-btn flex-grow-1">
                 <i class="bi bi-bag-plus"></i> إضافة إلى السلة
@@ -220,29 +193,4 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const qtyContainer = document.querySelector('.quantity-selector');
-    if (qtyContainer) {
-      const decBtn = qtyContainer.querySelector('.decrease');
-      const incBtn = qtyContainer.querySelector('.increase');
-      const qtyInput = qtyContainer.querySelector('.quantity-input');
-      
-      if (decBtn && incBtn && qtyInput) {
-        decBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          let currentVal = parseInt(qtyInput.value) || 1;
-          if (currentVal > 1) {
-            qtyInput.value = currentVal - 1;
-          }
-        });
-        incBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          let currentVal = parseInt(qtyInput.value) || 1;
-          qtyInput.value = currentVal + 1;
-        });
-      }
-    }
-  });
-</script>
 {% endblock %}

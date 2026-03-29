@@ -182,16 +182,18 @@
                     <input type="hidden" name="item_type" value="product">
                     
                     <!-- Quantity & Cart button row -->
-                    <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
-                       <div class="input-group input-group-sm border rounded-pill overflow-hidden shadow-sm" style="max-width: 90px; background: #fff;">
-                         <button class="btn btn-light px-2 btn-plus text-primary fw-bold" type="button" aria-label="Increase" style="border-radius: 50px 0 0 50px;">+</button>
-                         <input type="number" name="quantity" class="form-control text-center border-0 p-0 qty-input bg-transparent" value="1" min="1" max="99" style="font-size: 0.95rem; font-weight: bold;">
-                         <button class="btn btn-light px-2 btn-minus text-primary fw-bold" type="button" aria-label="Decrease" style="border-radius: 0 50px 50px 0;">-</button>
-                       </div>
-                       
-                       <button type="submit" class="cart-prominent-btn border-0 py-1 px-3 rounded-pill bg-primary text-white d-flex align-items-center shadow-sm" aria-label="Add to cart" style="height: 31px;">
-                         <i class="bi bi-cart-plus ms-1"></i> السلة
-                       </button>
+                    <div class="d-flex align-items-center justify-content-center gap-2 mb-2 w-100">
+                      <!-- Quantity Selector -->
+                      <div class="quantity-wrapper d-flex align-items-center border rounded-pill shadow-sm" style="height: 32px; width: 95px; background: #fff;">
+                        <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-plus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.1rem; font-weight: bold;" aria-label="Increase">+</button>
+                        <input type="text" name="quantity" class="form-control text-center border-0 p-0 m-0 qty-input bg-transparent w-50 h-100" value="1" readonly style="font-weight: bold; font-size: 0.95rem; box-shadow: none;" aria-label="Quantity">
+                        <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-minus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.1rem; font-weight: bold;" aria-label="Decrease">-</button>
+                      </div>
+                      
+                      <!-- Submit -->
+                      <button type="submit" class="cart-prominent-btn border-0 p-0 rounded-pill bg-primary text-white d-flex align-items-center justify-content-center shadow-sm flex-grow-1" aria-label="Add to cart" style="height: 32px;">
+                        <i class="bi bi-cart-plus ms-1"></i>
+                      </button>
                     </div>
                   </form>
                   <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-link btn-sm text-decoration-none text-muted mt-1 d-block w-100 p-0 text-center">

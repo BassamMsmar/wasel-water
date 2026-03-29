@@ -95,6 +95,7 @@ def cart_add(request):
     cart = Cart(request)
     product_id = request.POST.get('product_id')
     item_type = request.POST.get('item_type', 'product') # Default to product
+    quantity = int(request.POST.get('quantity', 1))
     
     if not product_id:
         return JsonResponse({'error': 'No ID provided'}, status=400)
@@ -105,7 +106,7 @@ def cart_add(request):
         else:
             product = get_object_or_404(Product, id=product_id)
             
-        cart.add(product=product, item_type=item_type)
+        cart.add(product=product, quantity=quantity, override_quantity=False, item_type=item_type)
         
         # Generate the updated cart HTML
         cart_html = render_to_string('cart/partials/sidebar_cart.html', {'cart': cart}, request=request)
@@ -137,7 +138,7 @@ def cart_update(request):
         cart_html = render_to_string('cart/partials/sidebar_cart.html', {'cart': cart}, request=request)
         
         cart_key = f"{item_type}_{product_id}"
-        item_total = cart.cart[cart_key]['price'] * quantity if cart_key in cart.cart else 0
+        item_total = float(cart.cart[cart_key]['price']) * quantity if cart_key in cart.cart else 0
 
         return JsonResponse({
             'qty': len(cart), 

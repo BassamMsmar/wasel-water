@@ -56,54 +56,54 @@
     background: #fff;
   }
 
-  /* Summary Card Glassmorphism */
+  /* Summary Card Formal Light */
   .order-summary-premium {
-    background: linear-gradient(145deg, rgba(0,77,122,0.95) 0%, rgba(0,51,85,1) 100%);
-    border-radius: 24px;
+    background: #edf9fd; /* Light Cyan */
+    border-radius: 20px;
     padding: 2.5rem;
-    color: #fff;
-    box-shadow: 0 20px 40px rgba(0, 77, 122, 0.2);
+    color: #2c3e50;
+    box-shadow: 0 10px 30px rgba(0,180,216,0.06);
+    border: 1px solid rgba(0,180,216,0.15);
     position: relative;
-    overflow: hidden;
-  }
-  .order-summary-premium::before {
-    content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px;
-    background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(30px);
   }
   
   .summary-card-title {
-    font-weight: 800; font-size: 1.5rem; margin-bottom: 2rem;
+    font-weight: 800; font-size: 1.5rem; margin-bottom: 1.5rem;
     display: flex; align-items: center; gap: 10px;
+    color: var(--chk-primary);
+    border-bottom: 2px solid rgba(0,180,216,0.15);
+    padding-bottom: 1rem;
   }
   
   .summary-item-premium {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.2);
+    padding: 15px 0; border-bottom: 1px dashed rgba(0,180,216,0.2);
   }
   .summary-item-premium:last-child { border-bottom: none; }
-  .summary-item-name { font-size: 1rem; font-weight: 500; opacity: 0.95; display: block; }
-  .summary-item-qty { font-size: 0.85rem; opacity: 0.7; }
-  .summary-item-price { font-weight: 700; font-size: 1.1rem; }
+  .summary-item-name { font-size: 1rem; font-weight: 600; color: #1e2b3c; display: block; margin-bottom: 8px; }
+  .summary-item-qty { font-size: 0.85rem; color: #5a6a7a; }
+  .summary-item-price { font-weight: 800; font-size: 1.15rem; color: var(--chk-primary); }
   
   .summary-totals-premium {
-    margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.2);
+    margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid rgba(0,180,216,0.15);
   }
-  .total-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.05rem; opacity: 0.9; }
+  .total-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1.05rem; color: #445; font-weight: 600;}
   .total-row.grand {
-    font-size: 1.5rem; font-weight: 800; opacity: 1; margin-top: 15px; padding-top: 15px; border-top: 2px dashed rgba(255,255,255,0.3);
+    font-size: 1.5rem; font-weight: 800; color: var(--chk-primary); margin-top: 15px; padding-top: 15px; border-top: 2px dashed rgba(0,180,216,0.3);
   }
   
   .btn-confirm-order {
-    background: #fff; color: var(--chk-primary);
+    background: linear-gradient(135deg, var(--chk-primary) 0%, var(--chk-accent) 100%);
+    color: #fff;
     border: none; border-radius: 12px;
     padding: 16px; font-weight: 800; font-size: 1.2rem;
     width: 100%; transition: all 0.3s;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 20px rgba(0, 180, 216, 0.2);
     margin-top: 2rem;
   }
   .btn-confirm-order:hover {
-    transform: translateY(-3px); box-shadow: 0 15px 25px rgba(0,0,0,0.15);
-    background: var(--chk-accent); color: #fff;
+    transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0, 180, 216, 0.3);
+    color: #fff;
   }
 </style>
 {% endblock %}
@@ -202,12 +202,16 @@
             <div class="summary-body mt-4 position-relative z-1">
               <div class="summary-items">
                 {% for item in cart %}
-                <div class="summary-item-premium">
+                <div class="summary-item-premium cart-item" data-item-id="{{ item.product.id }}" data-item-type="{{ item.item_type }}">
                   <div class="item-info">
                     <span class="summary-item-name">{{ item.product.name }}</span>
-                    <span class="summary-item-qty">الكمية: {{ item.quantity }}</span>
+                    <div class="d-flex align-items-center mt-1 bg-light border rounded-pill px-2 py-1" style="width: fit-content;">
+                        <button class="btn btn-link p-0 text-dark fw-bold update-qty" data-action="decrease" type="button" style="text-decoration:none; width: 20px;">-</button>
+                        <input class="quantity-input border-0 text-center bg-transparent mx-1 fw-bold text-dark" style="width: 25px; font-size: 0.9rem;" value="{{ item.quantity }}" readonly>
+                        <button class="btn btn-link p-0 text-dark fw-bold update-qty" data-action="increase" type="button" style="text-decoration:none; width: 20px;">+</button>
+                    </div>
                   </div>
-                  <span class="summary-item-price">{{ item.total_price }}</span>
+                  <span class="summary-item-price line-total">{{ item.total_price }}</span>
                 </div>
                 {% endfor %}
               </div>
@@ -223,7 +227,7 @@
                 </div>
                 <div class="total-row grand">
                   <span>الإجمالي الواجب الدفع</span>
-                  <span>{{ cart.get_total_price }}</span>
+                  <span class="cart-total-price">{{ cart.get_total_price }}</span>
                 </div>
               </div>
             </div>
@@ -232,8 +236,8 @@
               <button type="submit" class="btn-confirm-order">
                 تأكيد وإتمام الطلب <i class="bi bi-check2-circle ms-2"></i>
               </button>
-              <p class="small text-center mt-3 mb-0" style="opacity: 0.7;">
-                بالنقر على تأكيد الطلب، فإنك توافق على <a href="#" class="text-white text-decoration-underline">الشروط والأحكام</a>.
+              <p class="small text-center mt-3 mb-0" style="opacity: 0.7; color: #555;">
+                بالنقر على تأكيد الطلب، فإنك توافق على <a href="#" class="text-primary text-decoration-underline">الشروط والأحكام</a>.
               </p>
             </div>
           </div>
@@ -244,4 +248,60 @@
   </div>
 </section>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  $(document).ready(function () {
+    // CSRF Token helper
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    // Update Quantity in Checkout Summary
+    $('.update-qty').on('click', function (e) {
+      e.preventDefault();
+      const row = $(this).closest('.cart-item');
+      const productId = row.data('item-id');
+      const itemType = row.data('item-type');
+      const input = row.find('.quantity-input');
+      let qty = parseInt(input.val());
+      const action = $(this).data('action');
+
+      if (action === 'increase') qty++;
+      else if (action === 'decrease' && qty > 1) qty--;
+      else return;
+
+      $.ajax({
+        url: "{% url 'cart:cart_update' %}",
+        method: "POST",
+        data: {
+          'product_id': productId,
+          'item_type': itemType,
+          'quantity': qty,
+          'csrfmiddlewaretoken': csrftoken
+        },
+        success: function (response) {
+          input.val(qty);
+          row.find('.line-total').text(response.item_total);
+          $('.cart-total-price').text(response.total_price);
+          // Also update base cart dot icon
+          $('.count-dot').text(response.qty);
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}
