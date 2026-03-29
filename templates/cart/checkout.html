@@ -135,43 +135,87 @@
         <div class="col-lg-7">
           <div class="checkout-block-premium">
             <h3 class="block-title-premium"><i class="bi bi-geo-alt-fill opacity-75"></i> معلومات الشحن والتوصيل</h3>
-            <div class="row g-4 mt-1">
-              <div class="col-md-6">
-                <label for="first_name" class="form-label-premium">الاسم الأول</label>
-                <input type="text" id="first_name" name="first_name" class="form-control form-control-premium" required placeholder="أدخل اسمك">
-              </div>
-              <div class="col-md-6">
-                <label for="last_name" class="form-label-premium">الاسم الأخير</label>
-                <input type="text" id="last_name" name="last_name" class="form-control form-control-premium" required placeholder="أدخل اسم العائلة">
-              </div>
-              <div class="col-12">
-                <label for="phone" class="form-label-premium">رقم الهاتف</label>
-                <div class="input-group">
-                  <span class="input-group-text bg-light border-0" style="border-radius: 0 12px 12px 0;"><i class="bi bi-telephone text-muted"></i></span>
-                  <input type="tel" id="phone" name="phone" class="form-control form-control-premium text-start" style="border-radius: 12px 0 0 12px;" dir="ltr" required placeholder="05x xxx xxxx">
+            {% if addresses %}
+            <div class="mb-4">
+              <label class="form-label-premium">اختر من عناوينك المحفوظة</label>
+              <div class="row g-3">
+                {% for addr in addresses %}
+                <div class="col-12">
+                  <div class="card border border-2 rounded-4 p-3 address-card {% if addr.is_default %}border-primary{% endif %}" style="cursor: pointer; transition: 0.3s; background: #fff;">
+                    <div class="form-check d-flex align-items-center mb-0">
+                      <input class="form-check-input ms-3 me-0 address-radio" type="radio" name="selected_address_id" id="addr_{{ addr.id }}" value="{{ addr.id }}" {% if addr.is_default %}checked{% endif %} style="transform: scale(1.2);">
+                      <label class="form-check-label w-100" for="addr_{{ addr.id }}" style="cursor: pointer;">
+                        <div class="d-flex justify-content-between align-items-center">
+                           <span class="fw-bold fs-6">{{ addr.city }} - {{ addr.neighborhood|default:'عنوان محفوظ' }}</span>
+                           {% if addr.is_default %}<span class="badge rounded-pill" style="background-color: var(--chk-accent);">الافتراضي</span>{% endif %}
+                        </div>
+                        <div class="text-muted small mt-1"><i class="bi bi-person me-1"></i> {{ addr.full_name }} | <i class="bi bi-telephone ms-2 me-1"></i> {{ addr.phone_number }}</div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+                <div class="col-12">
+                    <div class="card border border-2 border-dashed rounded-4 p-3 address-card text-center" id="btn-new-address" style="cursor: pointer; background: #fdfdfd;">
+                        <div class="form-check d-flex align-items-center justify-content-center mb-0">
+                          <input class="form-check-input ms-3 me-0 address-radio d-none" type="radio" name="selected_address_id" id="addr_new" value="" {% if not addresses %}checked{% endif %}>
+                          <label class="form-check-label text-primary fw-bold" for="addr_new" style="cursor: pointer;">
+                              <i class="bi bi-plus-circle me-1"></i> إدخال موقع جديد
+                          </label>
+                        </div>
+                    </div>
                 </div>
               </div>
-              <div class="col-12">
-                <label for="city" class="form-label-premium">المدينة</label>
-                <select id="city" name="city" class="form-select form-select-premium" required>
-                  <option value="" selected disabled>اختر مدينتك من القائمة</option>
-                  <option value="الرياض">الرياض</option>
-                  <option value="جدة">جدة</option>
-                  <option value="الدمام">الدمام</option>
-                  <option value="مكة">مكة المكرمة</option>
-                  <option value="المدينة المنورة">المدينة المنورة</option>
-                  <option value="أبها">أبها</option>
-                  <option value="الخبر">الخبر</option>
-                </select>
+            </div>
+            {% endif %}
+
+            <div id="new-address-form" {% if addresses and request.user.addresses.exists %}style="display: none;"{% endif %}>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="fw-bold fs-5" style="color: var(--chk-primary);">تفاصيل التوصيل</span>
+                <button type="button" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background: linear-gradient(135deg, #00b4d8, #004d7a);" onclick="$('#globalMapModal').modal('show');">
+                    <i class="bi bi-geo-alt-fill"></i> تحديد من الخريطة
+                </button>
               </div>
-              <div class="col-12">
-                <label for="address" class="form-label-premium">العنوان بالتفصيل</label>
-                <textarea id="address" name="address" class="form-control form-control-premium" rows="3" required placeholder="اسم الحي، الشارع، المبنى..."></textarea>
+              <input type="hidden" name="new_location_link" id="checkout-location-link" value="{{ request.session.temp_location|default:'' }}">
+              
+              <div class="row g-4 mt-1">
+                <div class="col-md-6">
+                  <label for="first_name" class="form-label-premium">الاسم الأول <span class="text-danger">*</span></label>
+                  <input type="text" id="first_name" name="first_name" class="form-control form-control-premium new-addr-input" required placeholder="أدخل اسمك">
+                </div>
+                <div class="col-md-6">
+                  <label for="last_name" class="form-label-premium">الاسم الأخير <span class="text-danger">*</span></label>
+                  <input type="text" id="last_name" name="last_name" class="form-control form-control-premium new-addr-input" required placeholder="أدخل اسم العائلة">
+                </div>
+                <div class="col-12">
+                  <label for="phone" class="form-label-premium">رقم الهاتف <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-0" style="border-radius: 0 12px 12px 0;"><i class="bi bi-telephone text-muted"></i></span>
+                    <input type="tel" id="phone" name="phone" class="form-control form-control-premium text-start new-addr-input" style="border-radius: 12px 0 0 12px;" dir="ltr" required placeholder="05x xxx xxxx">
+                  </div>
+                </div>
+                <div class="col-12">
+                  <label for="city" class="form-label-premium">المدينة <span class="text-danger">*</span></label>
+                  <select id="city" name="city" class="form-select form-select-premium new-addr-input" required>
+                    <option value="" selected disabled>اختر مدينتك من القائمة</option>
+                    <option value="الرياض">الرياض</option>
+                    <option value="جدة">جدة</option>
+                    <option value="الدمام">الدمام</option>
+                    <option value="مكة">مكة المكرمة</option>
+                    <option value="المدينة المنورة">المدينة المنورة</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label for="address" class="form-label-premium">العنوان التفصيلي <span class="text-danger">*</span></label>
+                  <textarea id="address" name="address" class="form-control form-control-premium new-addr-input" rows="2" required placeholder="اسم الحي، الشارع، المبنى..."></textarea>
+                </div>
               </div>
-              <div class="col-12">
-                <label for="note" class="form-label-premium">ملاحظات إضافية للمندوب (اختياري)</label>
-                <textarea id="note" name="note" class="form-control form-control-premium" rows="2" placeholder="أوقات التوصيل المفضلة، تفاصيل إضافية للعنوان..."></textarea>
-              </div>
+            </div>
+
+            <!-- Note section is always visible -->
+            <div class="mt-4">
+               <label for="note" class="form-label-premium">ملاحظات إضافية للمندوب (اختياري)</label>
+               <textarea id="note" name="note" class="form-control form-control-premium" rows="2" placeholder="أوقات التوصيل المفضلة، تفاصيل إضافية للعنوان..."></textarea>
             </div>
           </div>
           
@@ -269,6 +313,43 @@
       return cookieValue;
     }
     const csrftoken = getCookie('csrftoken');
+
+    // Toggle Address selection
+    function toggleNewAddressForm() {
+        const val = $('input[name="selected_address_id"]:checked').val();
+        const formDiv = $('#new-address-form');
+        const inputs = formDiv.find('.new-addr-input');
+        
+        if (val === "" || val === undefined) {
+            formDiv.slideDown(300);
+            inputs.prop('disabled', false).prop('required', true);
+            
+            // Revert address card borders
+            $('.address-card').removeClass('border-primary shadow-sm');
+            $('#btn-new-address').addClass('border-primary shadow-sm').removeClass('border-dashed');
+        } else {
+            formDiv.slideUp(300);
+            inputs.prop('disabled', true).prop('required', false);
+            
+            // Revert borders and highlight selected
+            $('.address-card').removeClass('border-primary shadow-sm');
+            $('#btn-new-address').addClass('border-dashed').removeClass('border-primary shadow-sm');
+            $('#addr_' + val).closest('.address-card').addClass('border-primary shadow-sm');
+        }
+    }
+    
+    // Initialize
+    toggleNewAddressForm();
+    
+    $('.address-radio').on('change', function() {
+        toggleNewAddressForm();
+    });
+    
+    // If modal triggers and user saves location, update hidden field and show form
+    $(document).on('locationSaved', function(e, link) {
+        $('#checkout-location-link').val(link);
+        $('#addr_new').prop('checked', true).trigger('change');
+    });
 
     // Update Quantity in Checkout Summary
     $('.update-qty').on('click', function (e) {

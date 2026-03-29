@@ -176,10 +176,10 @@
               
               <div class="d-flex gap-2 justify-content-center align-items-center">
                 <!-- Quantity Selector -->
-                <div class="input-group input-group-sm rounded-pill border shadow-sm" style="max-width: 90px; background: #fff;">
-                  <button class="btn btn-light px-2 btn-plus text-primary fw-bold" type="button" aria-label="Increase" style="border-radius: 50px 0 0 50px;">+</button>
-                  <input type="number" name="quantity" class="form-control text-center border-0 p-0 qty-input" value="1" min="1" max="99" style="font-size: 0.95rem; font-weight: bold; min-width: 30px;" aria-label="Quantity">
-                  <button class="btn btn-light px-2 btn-minus text-primary fw-bold" type="button" aria-label="Decrease" style="border-radius: 0 50px 50px 0;">-</button>
+                <div class="quantity-wrapper d-flex align-items-center border rounded-pill shadow-sm" style="height: 32px; width: 95px; background: #fff;">
+                  <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-plus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.1rem; font-weight: bold;" aria-label="Increase">+</button>
+                  <input type="text" name="quantity" class="form-control text-center border-0 p-0 m-0 qty-input bg-transparent w-50 h-100" value="1" readonly style="font-weight: bold; font-size: 0.95rem; box-shadow: none;" aria-label="Quantity">
+                  <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-minus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.1rem; font-weight: bold;" aria-label="Decrease">-</button>
                 </div>
                 
                 <!-- Submit -->
@@ -231,10 +231,10 @@
               
               <div class="d-flex gap-2 justify-content-center align-items-center">
                 <!-- Quantity Selector -->
-                <div class="input-group input-group-sm rounded-pill border shadow-sm" style="max-width: 90px; background: #fff;">
-                  <button class="btn btn-light px-2 btn-plus text-primary fw-bold" type="button" aria-label="Increase" style="border-radius: 50px 0 0 50px;">+</button>
-                  <input type="number" name="quantity" class="form-control text-center border-0 p-0 qty-input" value="1" min="1" max="99" style="font-size: 0.95rem; font-weight: bold; min-width: 30px;" aria-label="Quantity">
-                  <button class="btn btn-light px-2 btn-minus text-primary fw-bold" type="button" aria-label="Decrease" style="border-radius: 0 50px 50px 0;">-</button>
+                <div class="quantity-wrapper d-flex align-items-center border rounded-pill shadow-sm" style="height: 32px; width: 95px; background: #fff;">
+                  <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-plus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.1rem; font-weight: bold;" aria-label="Increase">+</button>
+                  <input type="text" name="quantity" class="form-control text-center border-0 p-0 m-0 qty-input bg-transparent w-50 h-100" value="1" readonly style="font-weight: bold; font-size: 0.95rem; box-shadow: none;" aria-label="Quantity">
+                  <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-minus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.1rem; font-weight: bold;" aria-label="Decrease">-</button>
                 </div>
                 
                 <!-- Submit -->
@@ -259,5 +259,23 @@
   </div>
 </section>
 
+{% block extra_js %}
+{{ block.super }}
+{% if not request.session.temp_location %}
+  {% if not user.is_authenticated or not user.addresses.exists %}
+  <script>
+      $(document).ready(function() {
+          // Check if we haven't prompted them this session (using a simple local flag)
+          if(!sessionStorage.getItem('mapPrompted')) {
+              setTimeout(function() {
+                  $('#globalMapModal').modal('show');
+                  sessionStorage.setItem('mapPrompted', 'true');
+              }, 1500); // give the page 1.5 seconds to load visually
+          }
+      });
+  </script>
+  {% endif %}
+{% endif %}
+{% endblock %}
 
 {% endblock %}

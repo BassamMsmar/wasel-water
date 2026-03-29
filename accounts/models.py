@@ -34,6 +34,7 @@ class Address(models.Model):
     building_number = models.CharField(_("Building Number"), max_length=20, blank=True, null=True)
     apartment_number = models.CharField(_("Apartment Number"), max_length=20, blank=True, null=True)
     image_of_building = models.ImageField(_("Image of Building"), upload_to='address_images/', null=True, blank=True)
+    location_link = models.URLField(_("Map Link"), max_length=500, blank=True, null=True)
     
     address_type = models.CharField(_("Address Type"), max_length=10, choices=ADDRESS_TYPE_CHOICES, default='home')
     is_default = models.BooleanField(_("Default Address"), default=False)

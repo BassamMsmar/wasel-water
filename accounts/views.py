@@ -6,14 +6,43 @@ from django.urls import reverse_lazy
 from .models import Address, Customer
 from .forms import AddressForm, UserSignUpForm
 
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+import json
+
+@require_POST
+def save_temp_location(request):
+    try:
+        data = json.loads(request.body)
+        location_link = data.get('location_link')
+        if location_link:
+            request.session['temp_location'] = location_link
+            return JsonResponse({'success': True})
+        return JsonResponse({'success': False, 'error': 'No link provided'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
 class SignUpView(CreateView):
     form_class = UserSignUpForm
     success_url = reverse_lazy('login')
     template_name = 'registration/signup.html'
 
     def form_valid(self, form):
+        response = super().form_valid(form)
+        user = self.object
+        temp_location = self.request.session.get('temp_location')
+        if temp_location:
+            Address.objects.create(
+                user=user,
+                full_name=user.get_full_name() or user.username,
+                phone_number="",
+                city="jeddah - جدة",
+                location_link=temp_location,
+                is_default=True
+            )
+            del self.request.session['temp_location']
         messages.success(self.request, 'تم إنشاء الحساب بنجاح، يمكنك الآن تسجيل الدخول')
-        return super().form_valid(form)
+        return response
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/dashboard.html'
