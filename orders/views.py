@@ -40,11 +40,23 @@ class PaymentSelectionView(LoginRequiredMixin, DetailView):
     context_object_name = 'order'
 
     def get_queryset(self):
-         return Order.objects.filter(user=self.request.user, status='pending')
+         return Order.objects.filter(user=self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.status != 'pending':
+            messages.info(request, "تمت معالجة بيانات الدفع لهذا الطلب مسبقاً.")
+            return redirect('orders:detail', pk=self.object.pk)
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
 
 class CompletePaymentView(LoginRequiredMixin, View):
     def post(self, request, pk):
-        order = get_object_or_404(Order, pk=pk, user=request.user, status='pending')
+        order = get_object_or_404(Order, pk=pk, user=request.user)
+        if order.status != 'pending':
+            messages.info(request, "تمت معالجة بيانات الدفع لهذا الطلب مسبقاً.")
+            return redirect('orders:detail', pk=order.pk)
+            
         payment_method = request.POST.get('payment_method')
         
         if payment_method == 'cod':
