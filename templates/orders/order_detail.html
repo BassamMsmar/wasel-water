@@ -147,10 +147,8 @@
                             <div class="detail-card-premium shadow-sm">
                                 <h5 class="fw-bold mb-3"><i class="bi bi-credit-card-fill text-muted opacity-50 me-2" style="color: var(--dash-primary);"></i> معلومات
                                     الدفع</h5>
-                                <p class="mb-2 text-secondary"><strong class="text-dark">طريقة الدفع:</strong> {{ order.get_payment_method_display|default:"غير
-                                    محدد" }}</p>
-                                <p class="mb-0 text-secondary"><strong class="text-dark">حالة الدفع:</strong> {% if order.paid %}<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> مدفوع</span>{% else %}<span class="text-warning fw-bold"><i class="bi bi-clock-fill"></i> بانتظار الدفع</span>{%
-                                    endif %}</p>
+                                <p class="mb-2 text-secondary"><strong class="text-dark">طريقة الدفع:</strong> {{ order.get_payment_method_display|default:"غير محدد" }}</p>
+                                <p class="mb-0 text-secondary"><strong class="text-dark">حالة الدفع:</strong> {% if order.paid %}<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> مدفوع</span>{% else %}<span class="text-warning fw-bold"><i class="bi bi-clock-fill"></i> بانتظار الدفع</span>{% endif %}</p>
                                 {% if not order.paid and order.status != 'cancelled' %}
                                 <a href="{% url 'orders:payment_selection' order.id %}"
                                     class="btn text-white mt-3 rounded-pill px-4 shadow-sm fw-bold w-100" style="background: linear-gradient(135deg, var(--dash-primary), var(--dash-accent));">إكمال الدفع الآن</a>

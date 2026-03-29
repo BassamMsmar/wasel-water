@@ -15,7 +15,7 @@
         <div class="headline-block">
           <span class="tagline">{{ company.title|default:"مجموعة متميزة" }}</span>
           <h1 class="main-heading">{{ company.name|default:"ارتقِ بأسلوب حياتك اليومي" }}</h1>
-<p class="lead-text">{{ company.description|default:"نقدم لكم أفضل المنتجات بأعلى جودة وأنسب الأسعار..." }}</p>
+<p class="lead-text">{{ company.description|default:"مصدركم الموثوق للمياه النقية ومنتجات الحياة العصرية بأعلى معايير الجودة."|safe }}</p>
         </div>
       </div>
     </div>
@@ -39,20 +39,30 @@
               {% endif %}
             </div>
             
-            <!-- Formal Buttons -->
-            <div class="d-flex gap-2 justify-content-center mt-3">
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form m-0 w-50">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ product.id }}">
-                <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="btn btn-primary w-100 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm">
-                  <i class="bi bi-cart-plus"></i> السلة
+            <!-- Formal Buttons & Quantity -->
+            <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form mt-3" style="width: 100%;">
+              {% csrf_token %}
+              <input type="hidden" name="product_id" value="{{ product.id }}">
+              <input type="hidden" name="item_type" value="product">
+              
+              <div class="d-flex gap-2 justify-content-center align-items-center">
+                <!-- Quantity Selector -->
+                <div class="input-group input-group-sm rounded-pill border shadow-sm" style="max-width: 90px; background: #fff;">
+                  <button class="btn btn-light px-2 btn-plus text-primary fw-bold" type="button" aria-label="Increase" style="border-radius: 50px 0 0 50px;">+</button>
+                  <input type="number" name="quantity" class="form-control text-center border-0 p-0 qty-input" value="1" min="1" max="99" style="font-size: 0.95rem; font-weight: bold; min-width: 30px;" aria-label="Quantity">
+                  <button class="btn btn-light px-2 btn-minus text-primary fw-bold" type="button" aria-label="Decrease" style="border-radius: 0 50px 50px 0;">-</button>
+                </div>
+                
+                <!-- Submit -->
+                <button type="submit" class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center flex-grow-1 shadow-sm" style="height: 31px; border: none;">
+                  <i class="bi bi-cart-plus pb-1"></i>
                 </button>
-              </form>
-              <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-light border w-50 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm text-dark">
-                <i class="bi bi-eye"></i> تفاصيل
-              </a>
-            </div>
+              </div>
+            </form>
+            
+            <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-light border w-100 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm text-dark mt-2">
+              <i class="bi bi-eye"></i> تفاصيل المنتج
+            </a>
           </div>
         </div>
       </div>
@@ -62,57 +72,75 @@
 </section>
 
 <!-- 3. Shop by Category Section -->
-<section id="categories" class="promo-cards section light-background">
+<section id="categories" class="promo-cards section pt-5 pb-4">
   <div class="container" data-aos="fade-up" data-aos-delay="100">
-    <div class="section-title text-center mb-5">
-      <h2 class="fw-bold fs-1">تصفح العروض</h2>
+    <div class="section-title text-center mb-4">
+      <h3 class="fw-bold text-dark">تصفح العروض والأقسام</h3>
     </div>
-    <div class="row g-4 justify-content-center">
+    <div class="row g-3 justify-content-center">
       {% for category in categories %}
       {% if category.slug %}
-      <div class="col-lg-3 col-md-6 col-6">
-        <div class="collection-tile shadow-sm rounded-4 overflow-hidden" data-aos="fade-up"
-          data-aos-delay="{{ forloop.counter }}00">
+      <div class="col-lg-3 col-md-4 col-6">
+        <div class="collection-tile bg-white shadow-sm rounded-4 overflow-hidden position-relative" data-aos="fade-up"
+          data-aos-delay="{{ forloop.counter }}00" style="border: 1px solid #f1f3f5; transition: transform 0.3s ease;">
           {% if category.image %}
-          <img src="{{ category.image.url }}" alt="{{ category.name }}" loading="lazy" class="img-fluid">
-          {% endif %}
-          <div class="tile-content text-center">
-            <h4 class="fw-bold mb-1">{{ category.name }}</h4>
-            <span class="item-count badge bg-white text-dark rounded-pill shadow-sm mb-3 px-3">{{ category.product_category.count }} منتج</span>
-            <a href="{% url 'products:category_detail' category.slug %}" class="tile-link">تصفح الآن <i
-                class="bi bi-chevron-left ms-1"></i></a>
+          <div style="height: 140px; background-color: #ffffff; display: flex; align-items: center; justify-content: center; padding: 15px;">
+            <img src="{{ category.image.url }}" alt="{{ category.name }}" loading="lazy" class="img-fluid" style="max-height: 100%; object-fit: contain;">
           </div>
+          {% endif %}
+          <div class="p-3 text-center border-top" style="background-color: #fdfdfd;">
+            <h6 class="fw-bold mb-1 text-dark">{{ category.name }}</h6>
+            <span class="badge rounded-pill mt-1 px-3 py-1 fw-normal" style="background: rgba(0, 180, 216, 0.1); color: #004d7a; font-size: 0.8rem;">{{ category.product_category.count }} منتج</span>
+          </div>
+          <a href="{% url 'products:category_detail' category.slug %}" class="stretched-link"></a>
         </div>
       </div>
       {% endif %}
       {% endfor %}
     </div>
   </div>
+  <style>
+    .collection-tile:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+      border-color: rgba(0, 180, 216, 0.3) !important;
+    }
+  </style>
 </section>
 
 <!-- 5. Brands Section -->
-<section id="brands" class="brands section light-background pb-5">
+<section id="brands" class="brands section py-5" style="background-color: #f4f9f9; border-top: 1px solid rgba(0,180,216,0.1); border-bottom: 1px solid rgba(0,180,216,0.1);">
   <div class="container" data-aos="fade-up">
     <div class="section-title text-center mb-5">
-      <h2 class="fw-bold">تسوق حسب الماركة</h2>
-      <p class="text-muted">نعمل مع أفضل العلامات التجارية لضمان جودتك</p>
+      <h2 class="fw-bold" style="color: #004d7a;">العلامات التجارية الموثوقة</h2>
+      <p class="text-muted fs-5">نضمن لك الجودة عبر شراكاتنا مع أفضل الماركات العالمية والمحلية</p>
     </div>
     <div class="row g-4 align-items-center justify-content-center">
       {% for brand in brands %}
       <div class="col-lg-2 col-md-3 col-4" data-aos="zoom-in" data-aos-delay="{{ forloop.counter }}00">
         <a href="{% url 'products:brand_detail' brand.slug %}"
-          class="brand-item d-block text-center p-3 shadow-sm rounded-4 bg-white border border-0">
+          class="brand-item d-flex align-items-center justify-content-center bg-white shadow-sm rounded-4" style="height: 120px; border: 2px solid transparent; transition: all 0.3s ease; padding: 15px;">
           {% if brand.image %}
           <img src="{{ brand.image.url }}" alt="{{ brand.name }}" class="img-fluid brand-logo"
-            style="max-height: 55px; filter: grayscale(100%); transition: all 0.3s ease;">
+            style="max-height: 75px; object-fit: contain; transition: transform 0.3s ease;">
           {% else %}
-          <span class="fw-bold text-primary">{{ brand.name }}</span>
+          <span class="fw-bold text-primary fs-5">{{ brand.name }}</span>
           {% endif %}
         </a>
       </div>
       {% endfor %}
     </div>
   </div>
+  <style>
+    .brand-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 77, 122, 0.1) !important;
+      border-color: rgba(0, 180, 216, 0.3) !important;
+    }
+    .brand-item:hover .brand-logo {
+      transform: scale(1.08);
+    }
+  </style>
 </section>
 
 
@@ -140,20 +168,30 @@
               <span class="price text-primary fw-bold" style="font-size: 1.15rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
             </div>
             
-            <!-- Formal Buttons -->
-            <div class="d-flex gap-2 justify-content-center mt-3">
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form m-0 w-50">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ product.id }}">
-                <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="btn btn-primary w-100 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm">
-                  <i class="bi bi-cart-plus"></i> السلة
+            <!-- Formal Buttons & Quantity -->
+            <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form mt-3" style="width: 100%;">
+              {% csrf_token %}
+              <input type="hidden" name="product_id" value="{{ product.id }}">
+              <input type="hidden" name="item_type" value="product">
+              
+              <div class="d-flex gap-2 justify-content-center align-items-center">
+                <!-- Quantity Selector -->
+                <div class="input-group input-group-sm rounded-pill border shadow-sm" style="max-width: 90px; background: #fff;">
+                  <button class="btn btn-light px-2 btn-plus text-primary fw-bold" type="button" aria-label="Increase" style="border-radius: 50px 0 0 50px;">+</button>
+                  <input type="number" name="quantity" class="form-control text-center border-0 p-0 qty-input" value="1" min="1" max="99" style="font-size: 0.95rem; font-weight: bold; min-width: 30px;" aria-label="Quantity">
+                  <button class="btn btn-light px-2 btn-minus text-primary fw-bold" type="button" aria-label="Decrease" style="border-radius: 0 50px 50px 0;">-</button>
+                </div>
+                
+                <!-- Submit -->
+                <button type="submit" class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center flex-grow-1 shadow-sm" style="height: 31px; border: none;">
+                  <i class="bi bi-cart-plus pb-1"></i>
                 </button>
-              </form>
-              <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-light border w-50 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm text-dark">
-                <i class="bi bi-eye"></i> تفاصيل
-              </a>
-            </div>
+              </div>
+            </form>
+            
+            <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-light border w-100 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm text-dark mt-2">
+              <i class="bi bi-eye"></i> تفاصيل المنتج
+            </a>
           </div>
         </div>
       </div>
@@ -185,20 +223,30 @@
               <span class="price text-primary fw-bold" style="font-size: 1.15rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
             </div>
             
-            <!-- Formal Buttons -->
-            <div class="d-flex gap-2 justify-content-center mt-3">
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form m-0 w-50">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ product.id }}">
-                <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="btn btn-primary w-100 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm">
-                  <i class="bi bi-cart-plus"></i> السلة
+            <!-- Formal Buttons & Quantity -->
+            <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form mt-3" style="width: 100%;">
+              {% csrf_token %}
+              <input type="hidden" name="product_id" value="{{ product.id }}">
+              <input type="hidden" name="item_type" value="product">
+              
+              <div class="d-flex gap-2 justify-content-center align-items-center">
+                <!-- Quantity Selector -->
+                <div class="input-group input-group-sm rounded-pill border shadow-sm" style="max-width: 90px; background: #fff;">
+                  <button class="btn btn-light px-2 btn-plus text-primary fw-bold" type="button" aria-label="Increase" style="border-radius: 50px 0 0 50px;">+</button>
+                  <input type="number" name="quantity" class="form-control text-center border-0 p-0 qty-input" value="1" min="1" max="99" style="font-size: 0.95rem; font-weight: bold; min-width: 30px;" aria-label="Quantity">
+                  <button class="btn btn-light px-2 btn-minus text-primary fw-bold" type="button" aria-label="Decrease" style="border-radius: 0 50px 50px 0;">-</button>
+                </div>
+                
+                <!-- Submit -->
+                <button type="submit" class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center flex-grow-1 shadow-sm" style="height: 31px; border: none;">
+                  <i class="bi bi-cart-plus pb-1"></i>
                 </button>
-              </form>
-              <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-light border w-50 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm text-dark">
-                <i class="bi bi-eye"></i> تفاصيل
-              </a>
-            </div>
+              </div>
+            </form>
+            
+            <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-light border w-100 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm text-dark mt-2">
+              <i class="bi bi-eye"></i> تفاصيل المنتج
+            </a>
           </div>
         </div>
       </div>
