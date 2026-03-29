@@ -67,13 +67,15 @@
                                     <span class="badge bg-primary-subtle text-primary rounded-pill">الافتراضي</span>
                                     {% endif %}
                                 </div>
-                                <p class="text-muted mb-1">{{ address.address_line1 }}</p>
-                                {% if address.address_line2 %}
-                                <p class="text-muted mb-1">{{ address.address_line2 }}</p>
-                                {% endif %}
-                                <p class="text-muted mb-1">{{ address.city }}, {{ address.state|default:"" }} {{
-                                    address.zip_code|default:"" }}</p>
-                                <p class="text-muted mb-4">{{ address.phone_number }}</p>
+                                <div class="mb-3">
+                                    <span class="badge {% if address.address_type == 'home' %}bg-info{% elif address.address_type == 'work' %}bg-warning text-dark{% else %}bg-secondary{% endif %} rounded-pill small mb-2">
+                                        {{ address.get_address_type_display }}
+                                    </span>
+                                </div>
+                                <p class="text-muted mb-1"><i class="bi bi-geo-alt-fill me-1"></i> {{ address.street|default:"" }}، {{ address.neighborhood|default:"" }}</p>
+                                <p class="text-muted mb-1"><i class="bi bi-building me-1"></i> المبنى: {{ address.building_number|default:"-" }}{% if address.apartment_number %}، شقة: {{ address.apartment_number }}{% endif %}</p>
+                                <p class="text-muted mb-1"><i class="bi bi-map me-1"></i> {{ address.get_city_display }}</p>
+                                <p class="text-muted mb-4"><i class="bi bi-telephone me-1"></i> {{ address.phone_number }}</p>
 
                                 <div class="d-flex gap-2 mt-auto">
                                     <a href="{% url 'accounts:address_update' address.id %}"

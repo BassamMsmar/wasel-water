@@ -3,11 +3,117 @@
 
 {% block title %}إتمام الشراء - {{ company.name|default:"متاجر 360" }}{% endblock %}
 
+{% block extra_head %}
+<style>
+  :root {
+    --chk-primary: #004d7a;
+    --chk-accent: #00b4d8;
+    --chk-bg: #f8fbfb;
+  }
+  
+  .checkout-wrapper {
+    background-color: var(--chk-bg);
+    padding-bottom: 5rem;
+  }
+
+  /* Page Title */
+  .page-title.light-background {
+    background: linear-gradient(135deg, rgba(0,77,122,0.05) 0%, rgba(0,180,216,0.1) 100%);
+    border-bottom: 1px solid rgba(0,180,216,0.1);
+    padding: 2.5rem 0;
+  }
+
+  /* Checkout Form Block */
+  .checkout-block-premium {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .block-title-premium {
+    font-weight: 800;
+    color: var(--chk-primary);
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  
+  /* Premium Inputs */
+  .form-label-premium {
+    font-weight: 600; color: #495057; font-size: 0.95rem; margin-bottom: 8px;
+  }
+  .form-control-premium, .form-select-premium {
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+    padding: 12px 15px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    background: #fdfdfd;
+  }
+  .form-control-premium:focus, .form-select-premium:focus {
+    border-color: var(--chk-accent);
+    box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.1);
+    background: #fff;
+  }
+
+  /* Summary Card Glassmorphism */
+  .order-summary-premium {
+    background: linear-gradient(145deg, rgba(0,77,122,0.95) 0%, rgba(0,51,85,1) 100%);
+    border-radius: 24px;
+    padding: 2.5rem;
+    color: #fff;
+    box-shadow: 0 20px 40px rgba(0, 77, 122, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  .order-summary-premium::before {
+    content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px;
+    background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(30px);
+  }
+  
+  .summary-card-title {
+    font-weight: 800; font-size: 1.5rem; margin-bottom: 2rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  
+  .summary-item-premium {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px dashed rgba(255,255,255,0.2);
+  }
+  .summary-item-premium:last-child { border-bottom: none; }
+  .summary-item-name { font-size: 1rem; font-weight: 500; opacity: 0.95; display: block; }
+  .summary-item-qty { font-size: 0.85rem; opacity: 0.7; }
+  .summary-item-price { font-weight: 700; font-size: 1.1rem; }
+  
+  .summary-totals-premium {
+    margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.2);
+  }
+  .total-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1.05rem; opacity: 0.9; }
+  .total-row.grand {
+    font-size: 1.5rem; font-weight: 800; opacity: 1; margin-top: 15px; padding-top: 15px; border-top: 2px dashed rgba(255,255,255,0.3);
+  }
+  
+  .btn-confirm-order {
+    background: #fff; color: var(--chk-primary);
+    border: none; border-radius: 12px;
+    padding: 16px; font-weight: 800; font-size: 1.2rem;
+    width: 100%; transition: all 0.3s;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    margin-top: 2rem;
+  }
+  .btn-confirm-order:hover {
+    transform: translateY(-3px); box-shadow: 0 15px 25px rgba(0,0,0,0.15);
+    background: var(--chk-accent); color: #fff;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
+<div class="checkout-wrapper">
 <!-- Page Title -->
 <div class="page-title light-background">
   <div class="container d-lg-flex justify-content-between align-items-center">
-    <h1 class="mb-2 mb-lg-0">إتمام الشراء</h1>
+    <h1 class="mb-2 mb-lg-0 fw-bold" style="color: var(--chk-primary);">إتمام الشراء</h1>
     <nav class="breadcrumbs">
       <ol>
         <li><a href="{% url 'home' %}">الرئيسية</a></li>
@@ -19,7 +125,7 @@
 </div><!-- End Page Title -->
 
 <!-- Checkout Section -->
-<section id="checkout" class="checkout section">
+<section id="checkout" class="checkout section pt-5">
   <div class="container" data-aos="fade-up" data-aos-delay="100">
     <form method="POST" action="{% url 'cart:checkout' %}" class="checkout-form">
       {% csrf_token %}
@@ -27,81 +133,107 @@
 
         <!-- Billing/Shipping Details -->
         <div class="col-lg-7">
-          <div class="checkout-block">
-            <h3 class="block-title">معلومات الشحن</h3>
-            <div class="row g-3 mt-3">
+          <div class="checkout-block-premium">
+            <h3 class="block-title-premium"><i class="bi bi-geo-alt-fill opacity-75"></i> معلومات الشحن والتوصيل</h3>
+            <div class="row g-4 mt-1">
               <div class="col-md-6">
-                <label for="first_name" class="form-label">الاسم الأول</label>
-                <input type="text" id="first_name" name="first_name" class="form-control" required>
+                <label for="first_name" class="form-label-premium">الاسم الأول</label>
+                <input type="text" id="first_name" name="first_name" class="form-control form-control-premium" required placeholder="أدخل اسمك">
               </div>
               <div class="col-md-6">
-                <label for="last_name" class="form-label">الاسم الأخير</label>
-                <input type="text" id="last_name" name="last_name" class="form-control" required>
+                <label for="last_name" class="form-label-premium">الاسم الأخير</label>
+                <input type="text" id="last_name" name="last_name" class="form-control form-control-premium" required placeholder="أدخل اسم العائلة">
               </div>
               <div class="col-12">
-                <label for="phone" class="form-label">رقم الهاتف</label>
-                <input type="tel" id="phone" name="phone" class="form-control" required>
+                <label for="phone" class="form-label-premium">رقم الهاتف</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-0" style="border-radius: 0 12px 12px 0;"><i class="bi bi-telephone text-muted"></i></span>
+                  <input type="tel" id="phone" name="phone" class="form-control form-control-premium text-start" style="border-radius: 12px 0 0 12px;" dir="ltr" required placeholder="05x xxx xxxx">
+                </div>
               </div>
               <div class="col-12">
-                <label for="city" class="form-label">المدينة</label>
-                <select id="city" name="city" class="form-select" required>
-                  <option value="" selected disabled>اختر المدينة</option>
+                <label for="city" class="form-label-premium">المدينة</label>
+                <select id="city" name="city" class="form-select form-select-premium" required>
+                  <option value="" selected disabled>اختر مدينتك من القائمة</option>
                   <option value="الرياض">الرياض</option>
                   <option value="جدة">جدة</option>
                   <option value="الدمام">الدمام</option>
-                  <option value="مكة">مكة</option>
+                  <option value="مكة">مكة المكرمة</option>
                   <option value="المدينة المنورة">المدينة المنورة</option>
+                  <option value="أبها">أبها</option>
+                  <option value="الخبر">الخبر</option>
                 </select>
               </div>
               <div class="col-12">
-                <label for="address" class="form-label">العنوان بالتفصيل</label>
-                <textarea id="address" name="address" class="form-control" rows="3" required></textarea>
+                <label for="address" class="form-label-premium">العنوان بالتفصيل</label>
+                <textarea id="address" name="address" class="form-control form-control-premium" rows="3" required placeholder="اسم الحي، الشارع، المبنى..."></textarea>
               </div>
               <div class="col-12">
-                <label for="note" class="form-label">ملاحظات إضافية (اختياري)</label>
-                <textarea id="note" name="note" class="form-control" rows="2"></textarea>
+                <label for="note" class="form-label-premium">ملاحظات إضافية للمندوب (اختياري)</label>
+                <textarea id="note" name="note" class="form-control form-control-premium" rows="2" placeholder="أوقات التوصيل المفضلة، تفاصيل إضافية للعنوان..."></textarea>
               </div>
             </div>
+          </div>
+          
+          <!-- Trust Badges Under Form -->
+          <div class="mt-4 text-center">
+             <div class="d-inline-flex gap-4 p-3 rounded-4" style="background: rgba(32, 201, 151, 0.1); border: 1px dashed rgba(32, 201, 151, 0.4);">
+                <div class="d-flex align-items-center gap-2 text-success">
+                  <i class="bi bi-shield-check fs-4"></i>
+                  <span class="fw-bold">دفع آمن</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 text-success">
+                  <i class="bi bi-truck fs-4"></i>
+                  <span class="fw-bold">توصيل سريع</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 text-success">
+                  <i class="bi bi-arrow-return-left fs-4"></i>
+                  <span class="fw-bold">استرجاع سهل</span>
+                </div>
+             </div>
           </div>
         </div>
 
         <!-- Order Summary -->
         <div class="col-lg-5">
-          <div class="order-summary-card">
-            <h3 class="card-title">ملخص الطلب</h3>
-            <div class="summary-body mt-4">
+          <div class="order-summary-premium sticky-top" style="top: 100px;">
+            <h3 class="summary-card-title"><i class="bi bi-receipt"></i> ملخص الطلب</h3>
+            
+            <div class="summary-body mt-4 position-relative z-1">
               <div class="summary-items">
                 {% for item in cart %}
-                <div class="summary-item d-flex justify-content-between align-items-center mb-3">
+                <div class="summary-item-premium">
                   <div class="item-info">
-                    <span class="item-name">{{ item.product.name }}</span>
-                    <span class="item-qty text-muted ms-2">x{{ item.quantity }}</span>
+                    <span class="summary-item-name">{{ item.product.name }}</span>
+                    <span class="summary-item-qty">الكمية: {{ item.quantity }}</span>
                   </div>
-                  <span class="item-total">{{ item.total_price }}</span>
+                  <span class="summary-item-price">{{ item.total_price }}</span>
                 </div>
                 {% endfor %}
               </div>
-              <hr>
-              <div class="summary-totals">
-                <div class="d-flex justify-content-between mb-2">
+              
+              <div class="summary-totals-premium">
+                <div class="total-row">
                   <span>المجموع الفرعي</span>
                   <span>{{ cart.get_total_price }}</span>
                 </div>
-                <div class="d-flex justify-content-between mb-2 text-success">
-                  <span>الشحن</span>
-                  <span>مجاني</span>
+                <div class="total-row text-info">
+                  <span>رسوم التوصيل</span>
+                  <span>مجاناً <i class="bi bi-check-circle-fill ms-1"></i></span>
                 </div>
-                <hr>
-                <div class="d-flex justify-content-between fw-bold fs-5">
-                  <span>الإجمالي</span>
+                <div class="total-row grand">
+                  <span>الإجمالي الواجب الدفع</span>
                   <span>{{ cart.get_total_price }}</span>
                 </div>
               </div>
             </div>
-            <div class="summary-footer mt-4">
-              <button type="submit" class="btn btn-primary w-100 btn-lg">تأكيد الطلب</button>
-              <p class="text-muted small text-center mt-3">
-                بالنقر على تأكيد الطلب، فإنك توافق على الشروط والأحكام الخاصة بنا.
+            
+            <div class="summary-footer mt-4 position-relative z-1">
+              <button type="submit" class="btn-confirm-order">
+                تأكيد وإتمام الطلب <i class="bi bi-check2-circle ms-2"></i>
+              </button>
+              <p class="small text-center mt-3 mb-0" style="opacity: 0.7;">
+                بالنقر على تأكيد الطلب، فإنك توافق على <a href="#" class="text-white text-decoration-underline">الشروط والأحكام</a>.
               </p>
             </div>
           </div>
@@ -111,4 +243,5 @@
     </form>
   </div>
 </section>
+</div>
 {% endblock %}

@@ -3,10 +3,73 @@
 
 {% block title %}{{ title|default:"إضافة عنوان" }} - {{ company.name|default:"متاجر 360" }}{% endblock %}
 
+{% block extra_head %}
+<style>
+  :root {
+    --dash-primary: #004d7a;
+    --dash-accent: #00b4d8;
+    --dash-bg: #f4f9f9;
+  }
+  .page-title.light-background {
+    background: linear-gradient(135deg, rgba(0,77,122,0.05) 0%, rgba(0,180,216,0.1) 100%);
+    border-bottom: 1px solid rgba(0,180,216,0.1);
+    padding: 2.5rem 0;
+  }
+  .account-sidebar-premium {
+    background: linear-gradient(180deg, var(--dash-primary) 0%, #003355 100%);
+    border-radius: 24px;
+    padding: 2.5rem 1.5rem;
+    color: #fff;
+    box-shadow: 0 20px 40px rgba(0, 77, 122, 0.15);
+  }
+  .account-nav-premium .nav-link {
+    color: rgba(255,255,255,0.8);
+    padding: 12px 20px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+  .account-nav-premium .nav-link:hover, .account-nav-premium .nav-link.active {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    transform: translateX(-5px);
+  }
+  .account-nav-premium hr { border-color: rgba(255,255,255,0.1); margin: 15px 0; }
+  .account-nav-premium .text-danger { color: #ff6b6b !important; }
+  .account-nav-premium .text-danger:hover { background: rgba(255, 107, 107, 0.1); color: #ff6b6b !important; }
+  
+  .dashboard-section-panel {
+    background: #fff;
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.02);
+  }
+  
+  .form-control-premium {
+    border-radius: 12px;
+    padding: 12px 18px;
+    border: 1px solid #dee2e6;
+    background-color: #fdfdfd;
+    transition: all 0.3s ease;
+  }
+  .form-control-premium:focus {
+    background-color: #fff;
+    border-color: var(--dash-accent);
+    box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.1);
+  }
+  .form-label-premium {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="page-title light-background">
     <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">{{ title|default:"إدارة العناوين" }}</h1>
+        <h1 class="mb-2 mb-lg-0 fw-bold" style="color: var(--dash-primary);">{{ title|default:"إدارة العناوين" }}</h1>
         <nav class="breadcrumbs">
             <ol>
                 <li><a href="{% url 'home' %}">الرئيسية</a></li>
@@ -18,31 +81,31 @@
     </div>
 </div>
 
-<section id="address-form" class="address-form section">
-    <div class="container">
+<section id="address-form" class="address-form section pt-5 pb-5" style="background-color: var(--dash-bg);">
+    <div class="container" data-aos="fade-up">
         <div class="row g-4">
 
             <!-- Sidebar Navigation -->
             <div class="col-lg-3">
-                <div class="account-sidebar p-4 bg-white shadow-sm rounded-4">
-                    <nav id="account-nav" class="account-nav">
+                <div class="account-sidebar-premium">
+                    <nav id="account-nav" class="account-nav-premium">
                         <ul class="list-unstyled mb-0">
                             <li class="mb-2"><a href="{% url 'accounts:dashboard' %}"
-                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i
-                                        class="bi bi-speedometer2"></i> لوحة التحكم</a></li>
+                                    class="nav-link d-flex align-items-center gap-3"><i
+                                        class="bi bi-speedometer2 fs-5"></i> لوحة التحكم</a></li>
                             <li class="mb-2"><a href="{% url 'orders:order_list' %}"
-                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i
-                                        class="bi bi-bag-check"></i> طلباتي</a></li>
+                                    class="nav-link d-flex align-items-center gap-3"><i
+                                        class="bi bi-bag-check fs-5"></i> طلباتي</a></li>
                             <li class="mb-2"><a href="{% url 'accounts:address_list' %}"
-                                    class="nav-link active py-2 px-3 rounded-3 d-flex align-items-center gap-2"><i
-                                        class="bi bi-geo-alt"></i> عناويني</a></li>
+                                    class="nav-link active d-flex align-items-center gap-3"><i
+                                        class="bi bi-geo-alt fs-5"></i> عناويني</a></li>
                             <li class="mb-2"><a href="{% url 'accounts:profile_detail' %}"
-                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i
-                                        class="bi bi-person-gear"></i> تفاصيل الحساب</a></li>
+                                    class="nav-link d-flex align-items-center gap-3"><i
+                                        class="bi bi-person-gear fs-5"></i> تفاصيل الحساب</a></li>
                             <hr>
                             <li><a href="{% url 'logout' %}"
-                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-danger"><i
-                                        class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
+                                    class="nav-link d-flex align-items-center gap-3 text-danger"><i
+                                        class="bi bi-box-arrow-right fs-5"></i> تسجيل الخروج</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -50,19 +113,20 @@
 
             <!-- Address Form Content -->
             <div class="col-lg-9">
-                <div class="address-form-content p-4 p-md-5 bg-white shadow-sm rounded-4">
-                    <h4 class="fw-bold mb-4">{{ title|default:"تفاصيل العنوان" }}</h4>
+                <div class="dashboard-section-panel">
+                    <h4 class="fw-bold mb-4 pb-3 border-bottom" style="color: var(--dash-primary);"><i class="bi bi-pin-map-fill me-2 text-muted opacity-50"></i>{{ title|default:"تفاصيل العنوان" }}</h4>
 
-                    <form method="POST">
+                    <form method="POST" class="mt-4">
                         {% csrf_token %}
                         <div class="row g-4">
                             {% for field in form %}
-                            <div
-                                class="col-md-{% if field.name == 'address_line1' or field.name == 'address_line2' or field.name == 'note' %}12{% else %}6{% endif %}">
-                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                                {{ field }}
+                            <div class="col-md-{% if field.name == 'neighborhood' or field.name == 'street' or field.name == 'image_of_building' or field.name == 'note' %}12{% else %}6{% endif %}">
+                                <label for="{{ field.id_for_label }}" class="form-label form-label-premium">{{ field.label }}</label>
+                                
+                                {{ field }} <!-- Standard form field, let JS add styles -->
+                                
                                 {% if field.errors %}
-                                <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+                                <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle"></i> {{ field.errors.0 }}</div>
                                 {% endif %}
                                 {% if field.help_text %}
                                 <div class="text-muted small mt-1">{{ field.help_text }}</div>
@@ -71,10 +135,14 @@
                             {% endfor %}
 
                             <div class="col-12 mt-5">
-                                <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-pill">حفظ
-                                    العنوان</button>
-                                <a href="{% url 'accounts:address_list' %}"
-                                    class="btn btn-light border px-4 py-2 rounded-pill ms-2 text-secondary text-decoration-none d-inline-block">إلغاء</a>
+                                <hr class="border-secondary opacity-25 mb-4">
+                                <div class="d-flex justify-content-end gap-3">
+                                    <a href="{% url 'accounts:address_list' %}"
+                                        class="btn border px-5 py-3 fw-bold rounded-pill text-secondary text-decoration-none shadow-sm" style="background: #f1f3f5;">إلغاء</a>
+                                    <button type="submit" class="btn text-white px-5 py-3 fw-bold rounded-pill shadow" style="background: linear-gradient(135deg, var(--dash-primary), var(--dash-accent)); font-size: 1.1rem;">
+                                        حفظ العنوان <i class="bi bi-check2-circle ms-1"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -84,4 +152,16 @@
         </div>
     </div>
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const inputs = document.querySelectorAll('.address-form input, .address-form select, .address-form textarea');
+        inputs.forEach(input => {
+            if(input.type !== 'checkbox' && input.type !== 'radio' && input.type !== 'hidden') {
+                input.classList.add('form-control-premium');
+                input.classList.add('form-control');
+            }
+        });
+    });
+</script>
 {% endblock %}

@@ -29,25 +29,29 @@
               <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
             </a>
             <span class="label {% if product.flag == 'sale' %}hot{% endif %}">{{ product.get_flag_display|default:product.flag }}</span>
-            <div class="quick-actions-overlay">
-              <a href="{% url 'products:product_detail' product.slug %}" class="action-link" title="عرض التفاصيل"><i
-                  class="bi bi-eye"></i></a>
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-inline">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ product.id }}">
-                <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="action-link border-0 bg-transparent" title="إضافة للسلة"><i
-                    class="bi bi-bag-plus"></i></button>
-              </form>
-            </div>
           </div>
-          <div class="card-details">
-            <h4><a href="{% url 'products:product_detail' product.slug %}" class="text-dark">{{ product.name }}</a></h4>
-            <div class="pricing">
-              <span class="now fw-bold text-primary">{{ product.new_price }} ر.س</span>
+          <div class="card-details p-3 text-center">
+            <h5 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark text-decoration-none fw-bold">{{ product.name }}</a></h5>
+            <div class="pricing mb-3">
+              <span class="now fw-bold text-primary" style="font-size: 1.15rem;">{{ product.new_price }} ر.س</span>
               {% if product.old_price > product.new_price %}
               <span class="was text-muted text-decoration-line-through small ms-2">{{ product.old_price }}</span>
               {% endif %}
+            </div>
+            
+            <!-- Formal Buttons -->
+            <div class="d-flex gap-2 justify-content-center mt-3">
+              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form m-0 w-50">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="item_type" value="product">
+                <button type="submit" class="btn btn-primary w-100 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm">
+                  <i class="bi bi-cart-plus"></i> السلة
+                </button>
+              </form>
+              <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-light border w-50 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm text-dark">
+                <i class="bi bi-eye"></i> تفاصيل
+              </a>
             </div>
           </div>
         </div>
@@ -86,48 +90,6 @@
   </div>
 </section>
 
-
-
-<!-- 4. Dynamic Sections (Most Sold, etc.) -->
-{% for section in sections %}
-<section id="section-{{ section.id }}" class="section">
-  <div class="container section-title" data-aos="fade-up">
-    <h2 class="fw-bold">{{ section.title }}</h2>
-  </div>
-  <div class="container" data-aos="fade-up" data-aos-delay="100">
-    <div class="row g-4">
-      {% for product in section.items %}
-      <div class="col-lg-3 col-md-6 col-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
-        <div class="item-card shadow-sm border-0 rounded-4 overflow-hidden">
-          <div class="item-img position-relative">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
-            {% if product.flag %}
-            <span class="tag tag-{{ product.flag }}">{{ product.get_flag_display|default:product.flag }}</span>
-            {% endif %}
-            <div class="quick-actions">
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-inline">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ product.id }}">
-                <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="cart-prominent-btn border-0" title="إضافة للسلة"><i class="bi bi-cart-plus"></i></button>
-              </form>
-              <a href="{% url 'products:product_detail' product.slug %}" title="عرض التفاصيل"><i class="bi bi-eye"></i></a>
-            </div>
-          </div>
-          <div class="item-details p-3 text-center">
-            <h6 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark fw-bold">{{ product.name }}</a></h6>
-            <div class="pricing">
-              <span class="price text-primary fw-bold" style="font-size: 1.2rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-{% endfor %}
-
 <!-- 5. Brands Section -->
 <section id="brands" class="brands section light-background pb-5">
   <div class="container" data-aos="fade-up">
@@ -153,6 +115,56 @@
   </div>
 </section>
 
+
+
+<!-- 4. Dynamic Sections (Most Sold, etc.) -->
+{% for section in sections %}
+<section id="section-{{ section.id }}" class="section">
+  <div class="container section-title" data-aos="fade-up">
+    <h2 class="fw-bold">{{ section.title }}</h2>
+  </div>
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-4">
+      {% for product in section.items %}
+      <div class="col-lg-3 col-md-6 col-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
+        <div class="item-card shadow-sm border-0 rounded-4 overflow-hidden">
+          <div class="item-img position-relative">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+            {% if product.flag %}
+            <span class="tag tag-{{ product.flag }}">{{ product.get_flag_display|default:product.flag }}</span>
+            {% endif %}
+          </div>
+          <div class="item-details p-3 text-center">
+            <h6 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark fw-bold text-decoration-none">{{ product.name }}</a></h6>
+            <div class="pricing mb-3">
+              <span class="price text-primary fw-bold" style="font-size: 1.15rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
+            </div>
+            
+            <!-- Formal Buttons -->
+            <div class="d-flex gap-2 justify-content-center mt-3">
+              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form m-0 w-50">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="item_type" value="product">
+                <button type="submit" class="btn btn-primary w-100 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm">
+                  <i class="bi bi-cart-plus"></i> السلة
+                </button>
+              </form>
+              <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-light border w-50 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm text-dark">
+                <i class="bi bi-eye"></i> تفاصيل
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endfor %}
+
+
+
 <!-- 6. All Products Section -->
 <section id="all-products" class="section pt-5">
   <div class="container section-title text-center mb-5" data-aos="fade-up">
@@ -166,20 +178,26 @@
         <div class="item-card shadow-sm border-0 rounded-4 overflow-hidden">
           <div class="item-img">
             <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
-            <div class="quick-actions">
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-inline">
+          </div>
+          <div class="item-details p-3 text-center">
+            <h6 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark fw-bold text-decoration-none">{{ product.name }}</a></h6>
+            <div class="pricing mb-3">
+              <span class="price text-primary fw-bold" style="font-size: 1.15rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
+            </div>
+            
+            <!-- Formal Buttons -->
+            <div class="d-flex gap-2 justify-content-center mt-3">
+              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form m-0 w-50">
                 {% csrf_token %}
                 <input type="hidden" name="product_id" value="{{ product.id }}">
                 <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="cart-prominent-btn border-0" title="إضافة للسلة"><i class="bi bi-cart-plus"></i></button>
+                <button type="submit" class="btn btn-primary w-100 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm">
+                  <i class="bi bi-cart-plus"></i> السلة
+                </button>
               </form>
-              <a href="{% url 'products:product_detail' product.slug %}" title="عرض التفاصيل"><i class="bi bi-eye"></i></a>
-            </div>
-          </div>
-          <div class="item-details p-3 text-center">
-            <h6 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark fw-bold">{{ product.name }}</a></h6>
-            <div class="pricing">
-              <span class="price text-primary fw-bold" style="font-size: 1.2rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
+              <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-light border w-50 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm text-dark">
+                <i class="bi bi-eye"></i> تفاصيل
+              </a>
             </div>
           </div>
         </div>

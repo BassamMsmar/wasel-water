@@ -3,10 +3,75 @@
 
 {% block title %}تفاصيل الطلب #{{ order.id }} - {{ company.name|default:"متاجر 360" }}{% endblock %}
 
+{% block extra_head %}
+<style>
+  :root {
+    --dash-primary: #004d7a;
+    --dash-accent: #00b4d8;
+    --dash-bg: #f4f9f9;
+  }
+  .page-title.light-background {
+    background: linear-gradient(135deg, rgba(0,77,122,0.05) 0%, rgba(0,180,216,0.1) 100%);
+    border-bottom: 1px solid rgba(0,180,216,0.1);
+    padding: 2.5rem 0;
+  }
+  .account-sidebar-premium {
+    background: linear-gradient(180deg, var(--dash-primary) 0%, #003355 100%);
+    border-radius: 24px;
+    padding: 2.5rem 1.5rem;
+    color: #fff;
+    box-shadow: 0 20px 40px rgba(0, 77, 122, 0.15);
+  }
+  .account-nav-premium .nav-link {
+    color: rgba(255,255,255,0.8);
+    padding: 12px 20px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+  .account-nav-premium .nav-link:hover, .account-nav-premium .nav-link.active {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    transform: translateX(-5px);
+  }
+  .account-nav-premium hr { border-color: rgba(255,255,255,0.1); margin: 15px 0; }
+  .account-nav-premium .text-danger { color: #ff6b6b !important; }
+  .account-nav-premium .text-danger:hover { background: rgba(255, 107, 107, 0.1); color: #ff6b6b !important; }
+  
+  .dashboard-section-panel {
+    background: #fff;
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.02);
+  }
+  .detail-card-premium {
+    background: #fdfdfd;
+    border: 1px solid #f1f3f5;
+    border-radius: 16px;
+    padding: 20px;
+    height: 100%;
+  }
+  
+  .table-premium { border-collapse: separate; border-spacing: 0 10px; }
+  .table-premium th { color: #adb5bd; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.5px; padding: 10px 20px; border-bottom: none; background-color: transparent; }
+  .table-premium td { background: #fdfdfd; padding: 18px 20px; vertical-align: middle; border-top: 1px solid #f1f3f5; border-bottom: 1px solid #f1f3f5; }
+  .table-premium td:first-child { border-right: 1px solid #f1f3f5; border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+  .table-premium td:last-child { border-left: 1px solid #f1f3f5; border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+  
+  .table-premium tfoot td {
+    background: transparent; border: none; font-size: 1.05rem; padding: 10px 20px;
+  }
+  .table-premium tfoot tr:last-child td {
+    border-top: 2px dashed #f1f3f5; padding-top: 20px; font-weight: 800; font-size: 1.25rem; color: var(--dash-primary);
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="page-title light-background">
     <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">تفاصيل الطلب</h1>
+        <h1 class="mb-2 mb-lg-0 fw-bold" style="color: var(--dash-primary);">تفاصيل الطلب</h1>
         <nav class="breadcrumbs">
             <ol>
                 <li><a href="{% url 'home' %}">الرئيسية</a></li>
@@ -18,31 +83,31 @@
     </div>
 </div>
 
-<section id="order-detail" class="order-detail section">
-    <div class="container">
+<section id="order-detail" class="order-detail section pt-5 pb-5" style="background-color: var(--dash-bg);">
+    <div class="container" data-aos="fade-up">
         <div class="row g-4">
 
             <!-- Sidebar Navigation -->
             <div class="col-lg-3">
-                <div class="account-sidebar p-4 bg-white shadow-sm rounded-4">
-                    <nav id="account-nav" class="account-nav">
+                <div class="account-sidebar-premium">
+                    <nav id="account-nav" class="account-nav-premium">
                         <ul class="list-unstyled mb-0">
                             <li class="mb-2"><a href="{% url 'accounts:dashboard' %}"
-                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i
-                                        class="bi bi-speedometer2"></i> لوحة التحكم</a></li>
+                                    class="nav-link d-flex align-items-center gap-3"><i
+                                        class="bi bi-speedometer2 fs-5"></i> لوحة التحكم</a></li>
                             <li class="mb-2"><a href="{% url 'orders:order_list' %}"
-                                    class="nav-link active py-2 px-3 rounded-3 d-flex align-items-center gap-2"><i
-                                        class="bi bi-bag-check"></i> طلباتي</a></li>
+                                    class="nav-link active d-flex align-items-center gap-3"><i
+                                        class="bi bi-bag-check fs-5"></i> طلباتي</a></li>
                             <li class="mb-2"><a href="{% url 'accounts:address_list' %}"
-                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i
-                                        class="bi bi-geo-alt"></i> عناويني</a></li>
+                                    class="nav-link d-flex align-items-center gap-3"><i
+                                        class="bi bi-geo-alt fs-5"></i> عناويني</a></li>
                             <li class="mb-2"><a href="{% url 'accounts:profile_detail' %}"
-                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i
-                                        class="bi bi-person-gear"></i> تفاصيل الحساب</a></li>
+                                    class="nav-link d-flex align-items-center gap-3"><i
+                                        class="bi bi-person-gear fs-5"></i> تفاصيل الحساب</a></li>
                             <hr>
                             <li><a href="{% url 'logout' %}"
-                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-danger"><i
-                                        class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
+                                    class="nav-link d-flex align-items-center gap-3 text-danger"><i
+                                        class="bi bi-box-arrow-right fs-5"></i> تسجيل الخروج</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -51,16 +116,15 @@
             <!-- Order Detail Content -->
             <div class="col-lg-9">
                 <div class="order-detail-content">
+                    
                     <!-- Order Status Header -->
-                    <div
-                        class="order-header p-4 bg-white shadow-sm rounded-4 mb-4 d-md-flex justify-content-between align-items-center">
+                    <div class="dashboard-section-panel mb-4 p-4 d-md-flex justify-content-between align-items-center" style="border-left: 5px solid var(--dash-primary);">
                         <div>
-                            <h3 class="fw-bold mb-1">الطلب #{{ order.id }}</h3>
-                            <p class="text-muted mb-0">تم الطلب في {{ order.created_at|date:"Y-m-d H:i" }}</p>
+                            <h3 class="fw-bold mb-1" style="color: var(--dash-primary);">الطلب #{{ order.id }}</h3>
+                            <p class="text-muted mb-0"><i class="bi bi-calendar3 me-1"></i> تم الطلب في {{ order.created_at|date:"Y-m-d H:i" }}</p>
                         </div>
                         <div class="mt-3 mt-md-0">
-                            <span
-                                class="badge fs-6 px-3 py-2 rounded-pill {% if order.status == 'delivered' %}bg-success{% elif order.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %}">
+                            <span class="badge fs-6 px-4 py-2 rounded-pill shadow-sm {% if order.status == 'delivered' %}bg-success{% elif order.status == 'cancelled' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
                                 {{ order.get_status_display }}
                             </span>
                         </div>
@@ -69,38 +133,38 @@
                     <div class="row g-4 mb-4">
                         <!-- Shipping Address -->
                         <div class="col-md-6">
-                            <div class="p-4 bg-white shadow-sm rounded-4 h-100">
-                                <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt text-primary me-2"></i> عنوان الشحن
+                            <div class="detail-card-premium shadow-sm">
+                                <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt-fill text-muted opacity-50 me-2" style="color: var(--dash-primary);"></i> عنوان الشحن
                                 </h5>
-                                <p class="mb-1 fw-bold">{{ order.shipping_full_name }}</p>
-                                <p class="mb-1 text-muted">{{ order.shipping_address }}</p>
-                                <p class="mb-1 text-muted">{{ order.shipping_city }}</p>
-                                <p class="mb-0 text-muted">{{ order.shipping_phone }}</p>
+                                <p class="mb-1 text-dark fs-5 fw-bold">{{ order.shipping_full_name }}</p>
+                                <p class="mb-1 text-secondary">{{ order.shipping_address }}</p>
+                                <p class="mb-1 text-secondary">{{ order.shipping_city }}</p>
+                                <p class="mb-0 text-secondary"><i class="bi bi-telephone-fill me-1 small"></i> {{ order.shipping_phone }}</p>
                             </div>
                         </div>
                         <!-- Payment Info -->
                         <div class="col-md-6">
-                            <div class="p-4 bg-white shadow-sm rounded-4 h-100">
-                                <h5 class="fw-bold mb-3"><i class="bi bi-credit-card text-primary me-2"></i> معلومات
+                            <div class="detail-card-premium shadow-sm">
+                                <h5 class="fw-bold mb-3"><i class="bi bi-credit-card-fill text-muted opacity-50 me-2" style="color: var(--dash-primary);"></i> معلومات
                                     الدفع</h5>
-                                <p class="mb-1 text-muted">طريقة الدفع: {{ order.get_payment_method_display|default:"غير
+                                <p class="mb-2 text-secondary"><strong class="text-dark">طريقة الدفع:</strong> {{ order.get_payment_method_display|default:"غير
                                     محدد" }}</p>
-                                <p class="mb-0 text-muted">حالة الدفع: {% if order.paid %}مدفوع{% else %}بانتظار الدفع{%
+                                <p class="mb-0 text-secondary"><strong class="text-dark">حالة الدفع:</strong> {% if order.paid %}<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> مدفوع</span>{% else %}<span class="text-warning fw-bold"><i class="bi bi-clock-fill"></i> بانتظار الدفع</span>{%
                                     endif %}</p>
                                 {% if not order.paid and order.status != 'cancelled' %}
                                 <a href="{% url 'orders:payment_selection' order.id %}"
-                                    class="btn btn-sm btn-primary mt-3 rounded-pill px-4">إكمال الدفع الآن</a>
+                                    class="btn text-white mt-3 rounded-pill px-4 shadow-sm fw-bold w-100" style="background: linear-gradient(135deg, var(--dash-primary), var(--dash-accent));">إكمال الدفع الآن</a>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
 
                     <!-- Order Items -->
-                    <div class="order-items p-4 bg-white shadow-sm rounded-4 mb-4">
-                        <h5 class="fw-bold mb-4">منتجات الطلب</h5>
+                    <div class="dashboard-section-panel">
+                        <h4 class="fw-bold mb-4 pb-2 border-bottom" style="color: var(--dash-primary);"><i class="bi bi-basket-fill text-muted opacity-50 me-2"></i> منتجات الطلب</h4>
                         <div class="table-responsive">
-                            <table class="table align-middle">
-                                <thead class="table-light">
+                            <table class="table table-premium align-middle mt-3">
+                                <thead>
                                     <tr>
                                         <th>المنتج</th>
                                         <th class="text-center">الكمية</th>
@@ -114,37 +178,45 @@
                                         <td>
                                             <div class="d-flex align-items-center gap-3">
                                                 {% if item.product.image %}
-                                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
-                                                    class="img-fluid rounded" style="width: 50px;">
+                                                <div style="width:60px; height:60px; background:#fff; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:5px; border:1px solid #eee;">
+                                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
+                                                        class="img-fluid" style="max-height:100%;">
+                                                </div>
                                                 {% elif item.bundle.image %}
-                                                <img src="{{ item.bundle.image.url }}" alt="{{ item.bundle.name }}"
-                                                    class="img-fluid rounded" style="width: 50px;">
+                                                <div style="width:60px; height:60px; background:#fff; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:5px; border:1px solid #eee;">
+                                                    <img src="{{ item.bundle.image.url }}" alt="{{ item.bundle.name }}"
+                                                        class="img-fluid" style="max-height:100%;">
+                                                </div>
                                                 {% endif %}
                                                 <div>
-                                                    <span class="d-block fw-bold">{% if item.product %}{{
-                                                        item.product.name }}{% else %}{{ item.bundle.name }}{% endif
-                                                        %}</span>
+                                                    <span class="d-block fw-bold fs-6 text-dark">
+                                                        {% if item.product %}
+                                                            {{ item.product.name }}
+                                                        {% else %}
+                                                            {{ item.bundle.name }}
+                                                        {% endif %}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="text-center">{{ item.quantity }}</td>
-                                        <td class="text-end">{{ item.price }}</td>
-                                        <td class="text-end fw-bold">{{ item.get_total_price }}</td>
+                                        <td class="text-center fw-bold">{{ item.quantity }}</td>
+                                        <td class="text-end text-muted">{{ item.price }}</td>
+                                        <td class="text-end fw-bold text-dark">{{ item.get_total_price }}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
-                                <tfoot class="border-top-0">
+                                <tfoot>
                                     <tr>
-                                        <td colspan="3" class="text-end py-3">المجموع الفرعي:</td>
-                                        <td class="text-end py-3">{{ order.total_price }}</td>
+                                        <td colspan="3" class="text-end">المجموع الفرعي:</td>
+                                        <td class="text-end fw-bold">{{ order.total_price }}</td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3" class="text-end border-0 py-0">الشحن:</td>
-                                        <td class="text-end border-0 py-0 text-success">مجاني</td>
+                                        <td colspan="3" class="text-end">الشحن:</td>
+                                        <td class="text-end text-success fw-bold"><i class="bi bi-check-circle-fill"></i> مجاني</td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3" class="text-end fs-5 fw-bold py-3">الإجمالي:</td>
-                                        <td class="text-end fs-5 fw-bold py-3">{{ order.total_price }}</td>
+                                        <td colspan="3" class="text-end">الإجمالي:</td>
+                                        <td class="text-end">{{ order.total_price }} ر.س</td>
                                     </tr>
                                 </tfoot>
                             </table>

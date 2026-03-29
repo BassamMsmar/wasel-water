@@ -212,7 +212,7 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const importForm = document.querySelector('form[action="{% url \'products:import_products_excel\' %}"]');
+  const importForm = document.querySelector('form[action="{% url 'products:import_products_excel' %}"]');
   const importBtn = document.getElementById('importSubmitBtn');
   
   if (importForm && importBtn) {
