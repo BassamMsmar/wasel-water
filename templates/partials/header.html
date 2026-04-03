@@ -108,47 +108,13 @@
             </div>
           </div>
 
-          <!-- Mobile Navigation Toggle -->
-          <i class="mobile-nav-toggle d-xl-none bi bi-list me-0"></i>
 
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Navigation -->
-  <div class="header-nav">
-    <div class="container-fluid container-xl position-relative">
-      <nav id="navmenu" class="navmenu">
-        <ul class="d-flex justify-content-center">
-          <li><a href="{% url 'home' %}">الرئيسية</a></li>
-          <li><a href="{% url 'products:product_list' %}">المتجر</a></li>
-          <li class="dropdown"><a href="#"><span>الأصناف</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              {% for category in categories %}
-              {% if category.slug %}
-              <li><a href="{% url 'products:category_detail' category.slug %}">{{ category.name }}</a></li>
-              {% endif %}
-              {% endfor %}
-            </ul>
-          </li>
-          <li class="dropdown"><a href="{% url 'products:brand_list' %}"><span>الماركات</span> <i
-                class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              {% for brand in brands %}
-              {% if brand.slug %}
-              <li><a href="{% url 'products:brand_detail' brand.slug %}">{{ brand.name }}</a></li>
-              {% endif %}
-              {% endfor %}
-            </ul>
-          </li>
-          <li><a href="{% url 'products:bundle_list' %}">الباقات</a></li>
-          <li><a href="{% url 'settings:about' %}">عن الشركة</a></li>
-          <li><a href="{% url 'settings:contact' %}">اتصل بنا</a></li>
-        </ul>
-      </nav>
-    </div>
-  </div>
+
 
   <!-- Mobile Search Form -->
   <div class="collapse" id="mobileSearch">

@@ -36,7 +36,7 @@
                     <form method="POST" action="{% url 'login' %}">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="id_username" class="form-label text-secondary">اسم المستخدم</label>
+                            <label for="id_username" class="form-label text-secondary">اسم المستخدم / البريد الإلكتروني / رقم الهاتف</label>
                             <input type="text" name="username" id="id_username"
                                 class="form-control form-control-lg border-2" required autofocus>
                         </div>

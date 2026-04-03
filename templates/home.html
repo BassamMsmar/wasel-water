@@ -23,37 +23,39 @@
     <div class="row g-4 justify-content-center">
       {% for product in latest_products|slice:":3" %}
       <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:1 }}00">
-        <div class="showcase-card shadow-sm {% if forloop.counter == 2 %}elevated{% endif %}">
-          <div class="card-visual">
-            <a href="{% url 'products:product_detail' product.slug %}">
-              <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
-            </a>
-            <span class="label {% if product.flag == 'sale' %}hot{% endif %}">{{ product.get_flag_display|default:product.flag }}</span>
-            <div class="quick-actions-overlay">
-              <a href="{% url 'products:product_detail' product.slug %}" class="action-link" title="عرض التفاصيل"><i
-                  class="bi bi-eye"></i></a>
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-inline">
+        <div class="pcard">
+          <a href="{% url 'products:product_detail' product.slug %}" class="pcard-img-wrap">
+            <img src="{{ product.image.url }}" class="pcard-img" alt="{{ product.name }}">
+            {% if product.flag %}
+            <span class="pcard-badge pcard-badge--{{ product.flag }}">{{ product.get_flag_display|default:product.flag }}</span>
+            {% endif %}
+          </a>
+          <div class="pcard-body">
+            <p class="pcard-brand">{{ product.brand.name|default:"" }}</p>
+            <h5 class="pcard-name"><a href="{% url 'products:product_detail' product.slug %}">{{ product.name }}</a></h5>
+            <div class="pcard-footer">
+              <div class="pcard-price">
+                <span class="pcard-new-price">{{ product.new_price }} ر.س</span>
+                {% if product.old_price > product.new_price %}
+                <del class="pcard-old-price">{{ product.old_price }} ر.س</del>
+                {% endif %}
+              </div>
+              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form">
                 {% csrf_token %}
                 <input type="hidden" name="product_id" value="{{ product.id }}">
                 <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="action-link border-0 bg-transparent" title="إضافة للسلة"><i
-                    class="bi bi-bag-plus"></i></button>
+                <button type="submit" class="pcard-add-btn" title="أضف للسلة">
+                  <i class="bi bi-cart-plus"></i>
+                  <span>أضف للسلة</span>
+                </button>
               </form>
-            </div>
-          </div>
-          <div class="card-details">
-            <h4><a href="{% url 'products:product_detail' product.slug %}" class="text-dark">{{ product.name }}</a></h4>
-            <div class="pricing">
-              <span class="now fw-bold text-primary">{{ product.new_price }} ر.س</span>
-              {% if product.old_price > product.new_price %}
-              <span class="was text-muted text-decoration-line-through small ms-2">{{ product.old_price }}</span>
-              {% endif %}
             </div>
           </div>
         </div>
       </div>
       {% endfor %}
     </div>
+
   </div>
 </section>
 
@@ -90,34 +92,41 @@
 
 <!-- 4. Dynamic Sections (Most Sold, etc.) -->
 {% for section in sections %}
-<section id="section-{{ section.id }}" class="section">
-  <div class="container section-title" data-aos="fade-up">
-    <h2 class="fw-bold">{{ section.title }}</h2>
-  </div>
-  <div class="container" data-aos="fade-up" data-aos-delay="100">
-    <div class="row g-4">
+<section id="section-{{ section.id }}" class="home-section">
+  <div class="container">
+    <div class="section-header d-flex align-items-center justify-content-between mb-4">
+      <h2 class="section-heading">{{ section.title }}</h2>
+      <a href="{% url 'products:product_list' %}" class="section-view-all">عرض الكل <i class="bi bi-chevron-left"></i></a>
+    </div>
+    <div class="products-scroll-row">
       {% for product in section.items %}
-      <div class="col-lg-3 col-md-6 col-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
-        <div class="item-card shadow-sm border-0 rounded-4 overflow-hidden">
-          <div class="item-img position-relative">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+      <div class="product-scroll-item">
+        <div class="pcard">
+          <a href="{% url 'products:product_detail' product.slug %}" class="pcard-img-wrap">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="pcard-img" loading="lazy">
             {% if product.flag %}
-            <span class="tag tag-{{ product.flag }}">{{ product.get_flag_display|default:product.flag }}</span>
+            <span class="pcard-badge pcard-badge--{{ product.flag }}">{{ product.get_flag_display|default:product.flag }}</span>
             {% endif %}
-            <div class="quick-actions">
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-inline">
+          </a>
+          <div class="pcard-body">
+            <p class="pcard-brand">{{ product.brand.name|default:"" }}</p>
+            <h6 class="pcard-name"><a href="{% url 'products:product_detail' product.slug %}">{{ product.name }}</a></h6>
+            <div class="pcard-footer">
+              <div class="pcard-price">
+                <span class="pcard-new-price">{{ product.new_price|floatformat:0 }} ر.س</span>
+                {% if product.old_price > product.new_price %}
+                <del class="pcard-old-price">{{ product.old_price|floatformat:0 }} ر.س</del>
+                {% endif %}
+              </div>
+              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form">
                 {% csrf_token %}
                 <input type="hidden" name="product_id" value="{{ product.id }}">
                 <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="cart-prominent-btn border-0" title="إضافة للسلة"><i class="bi bi-cart-plus"></i></button>
+                <button type="submit" class="pcard-add-btn" title="أضف للسلة">
+                  <i class="bi bi-cart-plus"></i>
+                  <span>أضف للسلة</span>
+                </button>
               </form>
-              <a href="{% url 'products:product_detail' product.slug %}" title="عرض التفاصيل"><i class="bi bi-eye"></i></a>
-            </div>
-          </div>
-          <div class="item-details p-3 text-center">
-            <h6 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark fw-bold">{{ product.name }}</a></h6>
-            <div class="pricing">
-              <span class="price text-primary fw-bold" style="font-size: 1.2rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
             </div>
           </div>
         </div>
@@ -154,32 +163,38 @@
 </section>
 
 <!-- 6. All Products Section -->
-<section id="all-products" class="section pt-5">
-  <div class="container section-title text-center mb-5" data-aos="fade-up">
-    <h2 class="fw-bold">كل المنتجات</h2>
-    <p class="text-muted">اكتشف تشكيلتنا الكاملة من المنتجات المختارة</p>
-  </div>
-  <div class="container" data-aos="fade-up" data-aos-delay="100">
-    <div class="row g-4">
+<section id="all-products" class="home-section">
+  <div class="container">
+    <div class="section-header d-flex align-items-center justify-content-between mb-4">
+      <h2 class="section-heading">جميع المنتجات</h2>
+      <a href="{% url 'products:product_list' %}" class="section-view-all">عرض الكل <i class="bi bi-chevron-left"></i></a>
+    </div>
+    <div class="row g-3">
       {% for product in all_products %}
-      <div class="col-lg-3 col-md-4 col-6">
-        <div class="item-card shadow-sm border-0 rounded-4 overflow-hidden">
-          <div class="item-img">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
-            <div class="quick-actions">
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-inline">
+      <div class="col-lg-2 col-md-3 col-6">
+        <div class="pcard">
+          <a href="{% url 'products:product_detail' product.slug %}" class="pcard-img-wrap">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="pcard-img" loading="lazy">
+          </a>
+          <div class="pcard-body">
+            <p class="pcard-brand">{{ product.brand.name|default:"" }}</p>
+            <h6 class="pcard-name"><a href="{% url 'products:product_detail' product.slug %}">{{ product.name }}</a></h6>
+            <div class="pcard-footer">
+              <div class="pcard-price">
+                <span class="pcard-new-price">{{ product.new_price|floatformat:0 }} ر.س</span>
+                {% if product.old_price > product.new_price %}
+                <del class="pcard-old-price">{{ product.old_price|floatformat:0 }} ر.س</del>
+                {% endif %}
+              </div>
+              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form">
                 {% csrf_token %}
                 <input type="hidden" name="product_id" value="{{ product.id }}">
                 <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="cart-prominent-btn border-0" title="إضافة للسلة"><i class="bi bi-cart-plus"></i></button>
+                <button type="submit" class="pcard-add-btn" title="أضف للسلة">
+                  <i class="bi bi-cart-plus"></i>
+                  <span class="d-none d-md-inline">أضف</span>
+                </button>
               </form>
-              <a href="{% url 'products:product_detail' product.slug %}" title="عرض التفاصيل"><i class="bi bi-eye"></i></a>
-            </div>
-          </div>
-          <div class="item-details p-3 text-center">
-            <h6 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark fw-bold">{{ product.name }}</a></h6>
-            <div class="pricing">
-              <span class="price text-primary fw-bold" style="font-size: 1.2rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
             </div>
           </div>
         </div>
@@ -187,8 +202,7 @@
       {% endfor %}
     </div>
     <div class="text-center mt-5">
-      <a href="{% url 'products:product_list' %}" class="btn btn-outline-primary rounded-pill px-5 py-3 fw-bold">عرض
-        المزيد من المنتجات</a>
+      <a href="{% url 'products:product_list' %}" class="btn btn-outline-primary rounded-pill px-5 py-3 fw-bold">عرض المزيد من المنتجات</a>
     </div>
   </div>
 </section>

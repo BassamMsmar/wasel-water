@@ -118,6 +118,16 @@ DATABASES = {
 # }
 
 
+# Custom authentication backend for Multi-Identifier Login
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.PhoneOrEmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# Google Maps API Key
+GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY', '')
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 

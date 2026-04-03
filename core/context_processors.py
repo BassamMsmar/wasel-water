@@ -1,4 +1,5 @@
 # settings/context_processors.py
+from django.conf import settings
 from .models import Company
 from products.models import Category
 
@@ -37,5 +38,7 @@ def company(request):
             'company_tiktok': company.tiktok,
             'company_whatsapp': company.whatsapp,
         })
+    
+    context['GOOGLE_MAPS_API_KEY'] = getattr(settings, 'GOOGLE_MAPS_API_KEY', '')
     
     return context

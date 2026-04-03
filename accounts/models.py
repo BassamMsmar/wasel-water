@@ -33,6 +33,13 @@ class Address(models.Model):
     street = models.CharField(_("Street"), max_length=255, blank=True, null=True)
     building_number = models.CharField(_("Building Number"), max_length=20, blank=True, null=True)
     apartment_number = models.CharField(_("Apartment Number"), max_length=20, blank=True, null=True)
+    
+    # Google Maps Data
+    country = models.CharField(_("Country"), max_length=100, blank=True, null=True)
+    postal_code = models.CharField(_("Postal Code"), max_length=20, blank=True, null=True)
+    latitude = models.DecimalField(_("Latitude"), max_digits=22, decimal_places=16, blank=True, null=True)
+    longitude = models.DecimalField(_("Longitude"), max_digits=22, decimal_places=16, blank=True, null=True)
+    
     image_of_building = models.ImageField(_("Image of Building"), upload_to='address_images/', null=True, blank=True)
     
     address_type = models.CharField(_("Address Type"), max_length=10, choices=ADDRESS_TYPE_CHOICES, default='home')
