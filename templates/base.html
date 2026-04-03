@@ -28,6 +28,24 @@
 
   <!-- Main CSS File -->
   <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+  
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <style>
+    #global-map { height: 400px; width: 100%; border-radius: 12px; }
+    
+    /* Hide number input spin buttons */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      appearance: none;
+      margin: 0; 
+    }
+    input[type=number] { 
+      -moz-appearance: textfield; 
+      appearance: textfield;
+    }
+  </style>
   {% block extra_head %}{% endblock %}
 </head>
 
@@ -72,6 +90,28 @@
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
+  <!-- Global Map Modal -->
+  <div class="modal fade" id="globalMapModal" tabindex="-1" aria-labelledby="globalMapModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-bottom-0 pb-0">
+          <h5 class="modal-title fw-bold" id="globalMapModalLabel" style="color: var(--chk-primary);"><i class="bi bi-geo-alt-fill me-2"></i>تحديد الموقع</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted small mb-3">الرجاء تحديد موقع التوصيل الخاص بك بدقة على الخريطة لتسهيل عملية الشحن.</p>
+          <div id="global-map" class="bg-light position-relative">
+             <div class="spinner-border text-primary position-absolute top-50 start-50 translate-middle z-3" role="status" id="mapSpinner"></div>
+          </div>
+          <input type="hidden" id="selected-location-link">
+        </div>
+        <div class="modal-footer border-top-0 pt-0">
+          <button type="button" class="btn text-white w-100 rounded-pill fw-bold" style="background: linear-gradient(135deg, #004d7a, #00b4d8);" id="confirmLocationBtn">تأكيد الموقع <i class="bi bi-check2-circle ms-1"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Preloader -->
   <div id="preloader"></div>
 
@@ -87,10 +127,31 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Main JS File -->
   <script src="{% static 'assets/js/main.js' %}"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
   <script>
     $(document).ready(function() {
-        $('.add-to-cart-form').on('submit', function(e) {
+        // Qty selector logic
+        $(document).on('click', '.btn-plus, .btn-minus', function() {
+            var input = $(this).closest('.quantity-wrapper').find('.qty-input');
+            if (input.length === 0) {
+                input = $(this).siblings('.qty-input');
+            }
+            var val = parseInt(input.val()) || 1;
+            if ($(this).hasClass('btn-plus')) {
+                input.val(val + 1);
+            } else {
+                if (val > 1) {
+                    input.val(val - 1);
+                }
+            }
+        });
+
+        // Add to cart AJAX
+        $(document).on('submit', '.add-to-cart-form', function(e) {
             e.preventDefault();
             const form = $(this);
             const url = form.attr('action');
@@ -108,15 +169,102 @@
                         if (response.cart_html) {
                             $('.cart-panel').html(response.cart_html);
                         }
-                        // Show success message (optional: use a toast)
-                        alert(response.message || 'تمت الإضافة للسلة');
+                        
+                        // Auto-closing Success Animation
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'تمت الإضافة للسلة بنجاح',
+                            showConfirmButton: false,
+                            timer: 1000,
+                            backdrop: `rgba(0,0,0,0.4)`
+                        });
                     }
                 },
                 error: function(xhr) {
-                    alert('عذراً، حدث خطأ أثناء الإضافة للسلة.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'عذراً',
+                        text: 'حدث خطأ أثناء الإضافة للسلة.',
+                        confirmButtonColor: '#004d7a'
+                    });
                 }
             });
         });
+
+        // Global Map Logic
+        let map = null;
+        let marker = null;
+        let isMapInitialized = false;
+
+        function initMap() {
+            if(isMapInitialized) return;
+            // Default: Central Jeddah [21.5433, 39.1728]
+            map = L.map('global-map').setView([21.5433, 39.1728], 12);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            $('#mapSpinner').hide();
+            
+            map.on('click', function(e) {
+                let lat = e.latlng.lat;
+                let lng = e.latlng.lng;
+                
+                if(marker) {
+                    marker.setLatLng(e.latlng);
+                } else {
+                    marker = L.marker(e.latlng).addTo(map);
+                }
+                
+                let link = `https://www.google.com/maps?q=${lat},${lng}`;
+                $('#selected-location-link').val(link);
+            });
+            isMapInitialized = true;
+        }
+
+        $('#globalMapModal').on('shown.bs.modal', function () {
+            initMap();
+            if(map) {
+                map.invalidateSize();
+            }
+        });
+
+        $('#confirmLocationBtn').click(function() {
+            let link = $('#selected-location-link').val();
+            if(!link) {
+                Swal.fire({
+                    icon: 'warning', title: 'تنبيه',
+                    text: 'الرجاء النقر على الخريطة لتحديد موقعك أولاً',
+                    confirmButtonText: 'حسناً', confirmButtonColor: '#004d7a'
+                });
+                return;
+            }
+
+            $.ajax({
+                url: '{% url "accounts:save_temp_location" %}',
+                method: 'POST',
+                data: JSON.stringify({location_link: link}),
+                contentType: 'application/json',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function(resp) {
+                    if(resp.success) {
+                        $('#globalMapModal').modal('hide');
+                        Swal.fire({
+                            toast: true, position: 'top', icon: 'success',
+                            title: 'تم حفظ الموقع بنجاح', showConfirmButton: false, timer: 1500
+                        });
+                        $(document).trigger('locationSaved', [link]);
+                    } else {
+                        console.error('Save location failed:', resp.error);
+                    }
+                }
+            });
+        });
+
     });
   </script>
   

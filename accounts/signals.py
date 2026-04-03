@@ -16,3 +16,23 @@ def save_customer_profile(sender, instance, **kwargs):
         instance.customer.save()
     else:
         Customer.objects.create(user=instance)
+
+from django.contrib.auth.signals import user_logged_in
+from .models import Address
+
+@receiver(user_logged_in)
+def save_temp_location_to_user(sender, user, request, **kwargs):
+    if request and hasattr(request, 'session'):
+        temp_location = request.session.get('temp_location')
+        if temp_location:
+            # Check if this link already exists for the user
+            if not Address.objects.filter(user=user, location_link=temp_location).exists():
+                Address.objects.create(
+                    user=user,
+                    full_name=user.get_full_name() or user.username,
+                    phone_number="",
+                    city="jeddah - جدة",
+                    location_link=temp_location,
+                    is_default=not Address.objects.filter(user=user).exists()
+                )
+            del request.session['temp_location']

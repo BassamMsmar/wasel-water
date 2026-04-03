@@ -8,7 +8,7 @@
             <a href="{% url 'home' %}" class="logo">
               <span class="sitename">{{ company.name|default:"متاجر 360" }}</span>
             </a>
-            <p>{{ company.description|default:"مصدرك الموثوق للمياه المتميزة ومنتجات نمط الحياة." }}</p>
+            <p>{{ company.description|default:"مصدركم الموثوق للمياه النقية ومنتجات الحياة العصرية بأعلى معايير الجودة."|safe }}</p>
 
             <div class="social-links mt-4">
               <h5>تواصل معنا</h5>

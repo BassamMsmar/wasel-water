@@ -18,6 +18,8 @@ class CartCheckout(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['cart'] = Cart(self.request)
+        if self.request.user.is_authenticated:
+            context['addresses'] = self.request.user.addresses.all()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -27,17 +29,42 @@ class CartCheckout(LoginRequiredMixin, TemplateView):
             return redirect('cart:cart_detail')
 
         # Extract data
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        phone = request.POST.get('phone')
-        city = request.POST.get('city')
-        # Handle select field which might return "Riyadh" or "jeddah"
-        # Since Order model has shipping_city as CharField, we just save what we get
+        selected_address_id = request.POST.get('selected_address_id')
+        new_location_link = request.POST.get('new_location_link')
         
-        address_line = request.POST.get('address')
-        note = request.POST.get('note', '')
+        if selected_address_id:
+            # User chose a saved address
+            address = get_object_or_404(self.request.user.addresses, id=selected_address_id)
+            first_name = address.full_name.split()[0] if address.full_name else ''
+            last_name = " ".join(address.full_name.split()[1:]) if address.full_name else ''
+            phone = address.phone_number
+            city = address.city
+            full_address = f"{address.neighborhood or ''} {address.street or ''} {address.building_number or ''}".strip() or address.city
+            location_link = address.location_link
+            note = request.POST.get('note', '')
+        else:
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            phone = request.POST.get('phone')
+            city = request.POST.get('city')
+            address_line = request.POST.get('address')
+            note = request.POST.get('note', '')
+            location_link = new_location_link or request.session.get('temp_location')
 
-        full_address = address_line
+            full_address = address_line
+            # Save address if authenticated
+            if location_link and self.request.user.is_authenticated:
+                from accounts.models import Address
+                if not Address.objects.filter(user=self.request.user, location_link=location_link).exists():
+                    Address.objects.create(
+                        user=self.request.user,
+                        full_name=f"{first_name} {last_name}",
+                        phone_number=phone,
+                        city=city,
+                        location_link=location_link,
+                        is_default=not self.request.user.addresses.exists()
+                    )
+
         if note:
              full_address += f" - ملاحظات: {note}"
 
@@ -48,6 +75,7 @@ class CartCheckout(LoginRequiredMixin, TemplateView):
             shipping_phone=phone,
             shipping_city=city,
             shipping_address=full_address,
+            shipping_location_link=location_link,
             total_price=cart.get_total_price(),
             status='pending'
         )
@@ -95,6 +123,7 @@ def cart_add(request):
     cart = Cart(request)
     product_id = request.POST.get('product_id')
     item_type = request.POST.get('item_type', 'product') # Default to product
+    quantity = int(request.POST.get('quantity', 1))
     
     if not product_id:
         return JsonResponse({'error': 'No ID provided'}, status=400)
@@ -105,7 +134,7 @@ def cart_add(request):
         else:
             product = get_object_or_404(Product, id=product_id)
             
-        cart.add(product=product, item_type=item_type)
+        cart.add(product=product, quantity=quantity, override_quantity=False, item_type=item_type)
         
         # Generate the updated cart HTML
         cart_html = render_to_string('cart/partials/sidebar_cart.html', {'cart': cart}, request=request)
@@ -137,7 +166,7 @@ def cart_update(request):
         cart_html = render_to_string('cart/partials/sidebar_cart.html', {'cart': cart}, request=request)
         
         cart_key = f"{item_type}_{product_id}"
-        item_total = cart.cart[cart_key]['price'] * quantity if cart_key in cart.cart else 0
+        item_total = float(cart.cart[cart_key]['price']) * quantity if cart_key in cart.cart else 0
 
         return JsonResponse({
             'qty': len(cart), 

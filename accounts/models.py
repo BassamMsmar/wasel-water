@@ -41,6 +41,7 @@ class Address(models.Model):
     longitude = models.DecimalField(_("Longitude"), max_digits=22, decimal_places=16, blank=True, null=True)
     
     image_of_building = models.ImageField(_("Image of Building"), upload_to='address_images/', null=True, blank=True)
+    location_link = models.URLField(_("Map Link"), max_length=500, blank=True, null=True)
     
     address_type = models.CharField(_("Address Type"), max_length=10, choices=ADDRESS_TYPE_CHOICES, default='home')
     is_default = models.BooleanField(_("Default Address"), default=False)

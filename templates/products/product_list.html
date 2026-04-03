@@ -6,11 +6,35 @@
 {% endblock %}
 
 {% block content %}
-<!-- Page Title -->
+<!-- Page Title / Brand Cover -->
+{% if brand %}
+<div class="brand-cover-wrapper position-relative w-100" style="background-color: #f4f9f9; min-height: 300px; display: flex; align-items: center; justify-content: center;">
+  {% if brand.cover_image %}
+    <img src="{{ brand.cover_image.url }}" class="position-absolute w-100 h-100" style="object-fit: cover; z-index: 0; filter: brightness(0.6);" alt="{{ brand.name }} Cover">
+  {% else %}
+    <div class="position-absolute w-100 h-100" style="background: linear-gradient(135deg, var(--dash-primary, #004d7a) 0%, var(--dash-accent, #00b4d8) 100%); opacity: 0.9; z-index: 0;"></div>
+  {% endif %}
+  <div class="container position-relative text-center text-white" style="z-index: 1; padding: 4rem 0;">
+    <div class="brand-logo-container mx-auto mb-4 bg-white shadow-lg d-flex align-items-center justify-content-center" style="width: 140px; height: 140px; border-radius: 50%; padding: 15px; border: 5px solid rgba(255,255,255,0.2);">
+      {% if brand.image %}
+        <img src="{{ brand.image.url }}" class="img-fluid" style="max-height: 100px; object-fit: contain;" alt="{{ brand.name }}">
+      {% else %}
+        <span class="text-primary fw-bold fs-2">{{ brand.name }}</span>
+      {% endif %}
+    </div>
+    <h1 class="fw-bold mb-3 d-inline-block px-4 py-2" style="background: rgba(0,0,0,0.3); border-radius: 30px; backdrop-filter: blur(5px);">{{ brand.name }}</h1>
+    {% if brand.description %}
+    <div class="brand-desc-box mx-auto mt-3 p-3 text-white" style="max-width: 700px; background: rgba(0,0,0,0.4); border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px);">
+      <p class="mb-0 fs-5 lh-lg">{{ brand.description|safe }}</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% else %}
 <div class="page-title light-background">
   <div class="container d-lg-flex justify-content-between align-items-center">
     <h1 class="mb-2 mb-lg-0">
-      {% if category %}{{ category.name }}{% elif brand %}{{ brand.name }}{% else %}المتجر{% endif %}
+      {% if category %}{{ category.name }}{% else %}المتجر{% endif %}
     </h1>
     <nav class="breadcrumbs">
       <ol>
@@ -24,9 +48,11 @@
       </ol>
     </nav>
   </div>
-</div><!-- End Page Title -->
+</div>
+{% endif %}
+<!-- End Page Title -->
 
-{% if user.is_staff %}
+{% if user.is_staff and not brand %}
 <div class="container mt-4">
   <div class="admin-actions bg-light p-3 rounded border">
     <h5 class="mb-3"><i class="bi bi-gear-fill me-2 text-primary"></i>إجراءات المشرف</h5>
@@ -149,17 +175,29 @@
                   <del class="was-price text-muted ms-2">{{ product.old_price|floatformat:0 }}</del>
                   {% endif %}
                 </div>
-                <div class="item-actions mt-2">
-                  <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form d-inline-block">
+                <div class="item-actions mt-2" style="width: 100%;">
+                  <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form">
                     {% csrf_token %}
                     <input type="hidden" name="product_id" value="{{ product.id }}">
                     <input type="hidden" name="item_type" value="product">
-                    <button type="submit" class="cart-prominent-btn border-0 py-2 px-3 rounded-pill bg-primary text-white" aria-label="Add to cart">
-                      <i class="bi bi-cart-plus me-1"></i> إضافة للسلة
-                    </button>
+                    
+                    <!-- Quantity & Cart button row -->
+                    <div class="d-flex align-items-center justify-content-center gap-2 mb-2 w-100">
+                      <!-- Quantity Selector -->
+                      <div class="quantity-wrapper d-flex align-items-center border rounded-pill shadow-sm" style="height: 32px; width: 95px; background: #fff;">
+                        <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-plus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.1rem; font-weight: bold;" aria-label="Increase">+</button>
+                        <input type="text" name="quantity" class="form-control text-center border-0 p-0 m-0 qty-input bg-transparent w-50 h-100" value="1" readonly style="font-weight: bold; font-size: 0.95rem; box-shadow: none;" aria-label="Quantity">
+                        <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-minus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.1rem; font-weight: bold;" aria-label="Decrease">-</button>
+                      </div>
+                      
+                      <!-- Submit -->
+                      <button type="submit" class="cart-prominent-btn border-0 p-0 rounded-pill bg-primary text-white d-flex align-items-center justify-content-center shadow-sm flex-grow-1" aria-label="Add to cart" style="height: 32px;">
+                        <i class="bi bi-cart-plus ms-1"></i>
+                      </button>
+                    </div>
                   </form>
-                  <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-link btn-sm text-decoration-none text-muted mt-1 d-block">
-                    <i class="bi bi-eye"></i> التفاصيل
+                  <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-link btn-sm text-decoration-none text-muted mt-1 d-block w-100 p-0 text-center">
+                    <i class="bi bi-eye"></i> تفاصيل أكثر
                   </a>
                 </div>
               </div>
@@ -212,7 +250,7 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const importForm = document.querySelector('form[action="{% url \'products:import_products_excel\' %}"]');
+  const importForm = document.querySelector('form[action="{% url 'products:import_products_excel' %}"]');
   const importBtn = document.getElementById('importSubmitBtn');
   
   if (importForm && importBtn) {

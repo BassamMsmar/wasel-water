@@ -3,6 +3,21 @@
 
 {% block title %}{{ product.name }} - {{ company.name|default:"متاجر 360" }}{% endblock %}
 
+{% block extra_head %}
+<style>
+  /* Add to Cart Button Profile */
+  
+  .add-cart-btn {
+    background: linear-gradient(135deg, #004d7a 0%, #00b4d8 100%);
+    color: #fff; border-radius: 50px; font-weight: bold; font-size: 1.1rem; padding: 12px 20px;
+    border: none; transition: 0.3s;
+  }
+  .add-cart-btn:hover {
+    transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 180, 216, 0.2); color: #fff;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Page Title -->
 <div class="page-title light-background">
@@ -90,10 +105,10 @@
               {% csrf_token %}
               <input type="hidden" name="product_id" value="{{ product.id }}">
               <input type="hidden" name="item_type" value="product">
-              <div class="quantity-selector">
-                <button class="quantity-btn decrease" type="button"><i class="bi bi-dash"></i></button>
-                <input type="number" name="quantity" class="quantity-input" value="1" min="1">
-                <button class="quantity-btn increase" type="button"><i class="bi bi-plus"></i></button>
+              <div class="quantity-wrapper d-flex align-items-center border rounded-pill shadow-sm bg-white" style="height: 48px; width: 140px;">
+                <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-plus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.4rem; font-weight: bold;">+</button>
+                <input type="text" name="quantity" class="form-control text-center border-0 p-0 m-0 qty-input bg-transparent w-50 h-100" value="1" readonly style="font-weight: bold; font-size: 1.2rem; box-shadow: none;">
+                <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-minus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.4rem; font-weight: bold;">-</button>
               </div>
               <button type="submit" class="btn add-cart-btn flex-grow-1">
                 <i class="bi bi-bag-plus"></i> إضافة إلى السلة
@@ -175,4 +190,7 @@
 
   </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
 {% endblock %}

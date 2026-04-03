@@ -108,6 +108,8 @@ class ProductImages(models.Model):
 class Brand(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     image = models.ImageField(_("Images"), upload_to='brand')
+    cover_image = models.ImageField(_("Cover Image"), upload_to='brand_covers', null=True, blank=True)
+    description = models.TextField(_("Description"), blank=True, null=True)
     slug = models.SlugField(_("Slug"), null=True, blank=True, allow_unicode=True)
 
 

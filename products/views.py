@@ -61,7 +61,7 @@ class BrandList(ListView):
 
 class BrandDetail(ListView):
     model = Product     #context : object_list, model_list
-    template_name = 'products/brand_detail.html'
+    template_name = 'products/product_list.html'
 
 
     def get_queryset(self):
@@ -83,7 +83,7 @@ class CategoryList(ListView):
 
 class CategoryDetail(ListView):
     model = Product     #context : object_list, model_list
-    template_name = 'products/category_detail.html'
+    template_name = 'products/product_list.html'
 
     def get_queryset(self):
         category = get_object_or_404(Category, slug=self.kwargs['slug'])

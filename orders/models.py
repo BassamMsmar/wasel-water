@@ -24,6 +24,7 @@ class Order(models.Model):
     shipping_address = models.TextField()
     shipping_phone = models.CharField(max_length=20)
     shipping_city = models.CharField(max_length=50)
+    shipping_location_link = models.URLField(max_length=500, blank=True, null=True)
 
     class Meta:
         ordering = ('-created_at',)

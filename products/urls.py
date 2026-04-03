@@ -13,15 +13,15 @@ urlpatterns = [
     
     path('bundles/', BundleList.as_view(), name='bundle_list'), 
     path('brands/', BrandList.as_view(), name='brand_list'), 
-    path('brands/<str:slug>', BrandDetail.as_view(), name='brand_detail'), 
+    path('brands/<str:slug>/', BrandDetail.as_view(), name='brand_detail'), 
 
     path('categories/', CategoryList.as_view(), name='category_list'), 
-    path('categories/<str:slug>', CategoryDetail.as_view(), name='category_detail'), 
+    path('categories/<str:slug>/', CategoryDetail.as_view(), name='category_detail'), 
 
     path('offers/', OfferList.as_view(), name='offer_list'), 
-    path('offers/<int:pk>', OfferDetail.as_view(), name='offer_detail'), 
+    path('offers/<int:pk>/', OfferDetail.as_view(), name='offer_detail'), 
 
-    path('<str:slug>', ProductDetail.as_view(), name='product_detail'), 
+    path('<str:slug>/', ProductDetail.as_view(), name='product_detail'), 
 
     # Excel Import/Export
     path('excel/export/', export_products_excel, name='export_products_excel'),

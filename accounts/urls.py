@@ -1,12 +1,13 @@
 from django.urls import path
 from .views import (
     DashboardView, SettingsView, AddressListView, ProfileView, PaymentMethodsView,
-    AddressCreateView, AddressUpdateView, AddressDeleteView, SignUpView
+    AddressCreateView, AddressUpdateView, AddressDeleteView, SignUpView, save_temp_location
 )
 
 app_name = 'accounts'
 
 urlpatterns = [
+    path('save-temp-location/', save_temp_location, name='save_temp_location'),
     path('signup/', SignUpView.as_view(), name='signup'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('profile/', ProfileView.as_view(), name='profile_detail'),
