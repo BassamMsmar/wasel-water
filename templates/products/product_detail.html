@@ -177,9 +177,30 @@
               </div>
             </div>
             <div class="item-info text-center mt-2">
-              <h4 class="item-name"><a href="{% url 'products:product_detail' rel_product.slug %}">{{ rel_product.name
-                  }}</a></h4>
-              <span class="item-cost">{{ rel_product.new_price }}</span>
+              <h4 class="item-name"><a href="{% url 'products:product_detail' rel_product.slug %}">{{ rel_product.name }}</a></h4>
+              <div class="item-cost fw-bold text-primary mb-2">{{ rel_product.new_price }} ر.س</div>
+              
+              <div class="item-actions" style="width: 100%;">
+                <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form">
+                  {% csrf_token %}
+                  <input type="hidden" name="product_id" value="{{ rel_product.id }}">
+                  <input type="hidden" name="item_type" value="product">
+                  
+                  <div class="d-flex align-items-center justify-content-center gap-1 mb-2 w-100">
+                    <!-- Quantity Selector -->
+                    <div class="quantity-wrapper d-flex align-items-center border rounded-pill shadow-sm" style="height: 28px; width: 80px; background: #fff;">
+                      <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-plus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1rem; font-weight: bold;">+</button>
+                      <input type="text" name="quantity" class="form-control text-center border-0 p-0 m-0 qty-input bg-transparent w-50 h-100" value="1" readonly style="font-weight: bold; font-size: 0.85rem; box-shadow: none;">
+                      <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-minus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1rem; font-weight: bold;">-</button>
+                    </div>
+                    
+                    <!-- Submit -->
+                    <button type="submit" class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center flex-grow-1 shadow-sm" style="height: 27px; border: none;">
+                      <i class="bi bi-cart-plus" style="font-size: 0.8rem;"></i>
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </article>
         </div>

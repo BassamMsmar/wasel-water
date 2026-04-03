@@ -105,6 +105,19 @@
     transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0, 180, 216, 0.3);
     color: #fff;
   }
+  
+  /* OTP Modal Styles */
+  .otp-digit-checkout {
+    width: 50px; height: 60px;
+    background: #f8f9fa; border: 2px solid #dee2e6;
+    border-radius: 12px; text-align: center;
+    font-size: 1.5rem; font-weight: 700; color: var(--chk-primary);
+    margin: 0 5px;
+  }
+  .otp-digit-checkout:focus {
+    border-color: var(--chk-accent); outline: none; background: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.1);
+  }
 </style>
 {% endblock %}
 
@@ -176,9 +189,17 @@
                     <i class="bi bi-geo-alt-fill"></i> تحديد من الخريطة
                 </button>
               </div>
-              <input type="hidden" name="new_location_link" id="checkout-location-link" value="{{ request.session.temp_location|default:'' }}">
-              
               <div class="row g-4 mt-1">
+                <div class="col-12 mb-2">
+                    <div id="map" style="height: 300px; width: 100%; border-radius: 15px; border: 2px solid #eee;"></div>
+                    <p class="text-muted small mt-2">انقر على الخريطة أو اسحب العلامة لتحديد موقعك ، سيتم ملء البيانات تلقائياً.</p>
+                </div>
+                
+                <!-- Hidden Coordinates -->
+                <input type="hidden" name="latitude" id="id_latitude">
+                <input type="hidden" name="longitude" id="id_longitude">
+                <input type="hidden" name="new_location_link" id="checkout-location-link" value="{{ request.session.temp_location|default:'' }}">
+                
                 <div class="col-md-6">
                   <label for="first_name" class="form-label-premium">الاسم الأول <span class="text-danger">*</span></label>
                   <input type="text" id="first_name" name="first_name" class="form-control form-control-premium new-addr-input" required placeholder="أدخل اسمك">
@@ -194,20 +215,33 @@
                     <input type="tel" id="phone" name="phone" class="form-control form-control-premium text-start new-addr-input" style="border-radius: 12px 0 0 12px;" dir="ltr" required placeholder="05x xxx xxxx">
                   </div>
                 </div>
-                <div class="col-12">
+                <div class="col-md-6">
                   <label for="city" class="form-label-premium">المدينة <span class="text-danger">*</span></label>
-                  <select id="city" name="city" class="form-select form-select-premium new-addr-input" required>
-                    <option value="" selected disabled>اختر مدينتك من القائمة</option>
-                    <option value="الرياض">الرياض</option>
-                    <option value="جدة">جدة</option>
-                    <option value="الدمام">الدمام</option>
-                    <option value="مكة">مكة المكرمة</option>
-                    <option value="المدينة المنورة">المدينة المنورة</option>
-                  </select>
+                  <input type="text" id="city" name="city" class="form-control form-control-premium new-addr-input" required placeholder="المدينة">
+                </div>
+                <div class="col-md-6">
+                  <label for="country" class="form-label-premium">الدولة</label>
+                  <input type="text" id="country" name="country" class="form-control form-control-premium new-addr-input" placeholder="الدولة">
+                </div>
+                <div class="col-md-6">
+                  <label for="neighborhood" class="form-label-premium">الحي</label>
+                  <input type="text" id="neighborhood" name="neighborhood" class="form-control form-control-premium new-addr-input" placeholder="الحي">
+                </div>
+                <div class="col-md-6">
+                   <label for="street" class="form-label-premium">الشارع</label>
+                   <input type="text" id="street" name="street" class="form-control form-control-premium new-addr-input" placeholder="الشارع">
+                </div>
+                <div class="col-md-6">
+                    <label for="building_number" class="form-label-premium">رقم المبنى</label>
+                    <input type="text" id="building_number" name="building_number" class="form-control form-control-premium new-addr-input" placeholder="رقم المبنى">
+                </div>
+                <div class="col-md-6">
+                    <label for="postal_code" class="form-label-premium">الرمز البريدي</label>
+                    <input type="text" id="postal_code" name="postal_code" class="form-control form-control-premium new-addr-input" placeholder="الرمز البريدي">
                 </div>
                 <div class="col-12">
-                  <label for="address" class="form-label-premium">العنوان التفصيلي <span class="text-danger">*</span></label>
-                  <textarea id="address" name="address" class="form-control form-control-premium new-addr-input" rows="2" required placeholder="اسم الحي، الشارع، المبنى..."></textarea>
+                  <label for="address" class="form-label-premium">العنوان التفصيلي (اختياري)</label>
+                  <textarea id="address" name="address" class="form-control form-control-premium" rows="2" placeholder="تفاصيل إضافية للعنوان..."></textarea>
                 </div>
               </div>
             </div>
@@ -292,6 +326,39 @@
   </div>
 </section>
 </div>
+
+<!-- Guest OTP Verification Modal -->
+{% if not user.is_authenticated %}
+<div class="modal fade" id="otpVerifyModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" style="color: var(--chk-primary);">التحقق من رقم الهاتف</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center p-4">
+        <p class="text-muted mb-4">أدخل الكود المكون من 4 أرقام المرسل إلى <br><strong id="otp-display-phone" dir="ltr"></strong></p>
+        
+        <div class="d-flex justify-content-center mb-4" dir="ltr">
+          <input type="text" class="otp-digit-checkout" id="checkout-otp-1" maxlength="1" inputmode="numeric">
+          <input type="text" class="otp-digit-checkout" id="checkout-otp-2" maxlength="1" inputmode="numeric">
+          <input type="text" class="otp-digit-checkout" id="checkout-otp-3" maxlength="1" inputmode="numeric">
+          <input type="text" class="otp-digit-checkout" id="checkout-otp-4" maxlength="1" inputmode="numeric">
+        </div>
+        
+        <button type="button" id="btn-verify-checkout-otp" class="btn-confirm-order m-0 py-3">
+            تحقق وإتمام الطلب
+        </button>
+        
+        <div class="mt-3 small">
+            <span class="text-muted">لم يصلك الكود؟</span>
+            <a href="#" id="btn-resend-checkout-otp" class="text-primary fw-bold text-decoration-none ms-1">إعادة إرسال</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
@@ -365,24 +432,171 @@
       else if (action === 'decrease' && qty > 1) qty--;
       else return;
 
-      $.ajax({
-        url: "{% url 'cart:cart_update' %}",
-        method: "POST",
-        data: {
-          'product_id': productId,
-          'item_type': itemType,
-          'quantity': qty,
-          'csrfmiddlewaretoken': csrftoken
-        },
-        success: function (response) {
-          input.val(qty);
-          row.find('.line-total').text(response.item_total);
-          $('.cart-total-price').text(response.total_price);
-          // Also update base cart dot icon
-          $('.count-dot').text(response.qty);
-        }
       });
     });
+
+    // Guest OTP Logic
+    {% if not user.is_authenticated %}
+    const checkoutForm = $('.checkout-form');
+    const otpModal = new bootstrap.Modal(document.getElementById('otpVerifyModal'));
+    let otpPhone = '';
+
+    checkoutForm.on('submit', function(e) {
+        if ($(this).data('authenticated')) return true;
+        
+        e.preventDefault();
+        otpPhone = $('#phone').val();
+        
+        if (!otpPhone || otpPhone.length < 9) {
+            Swal.fire({ icon: 'error', title: 'خطأ', text: 'يرجى إدخال رقم هاتف صحيح أولاً', confirmButtonColor: '#004d7a' });
+            return;
+        }
+
+        // Normalize for API
+        let apiPhone = otpPhone;
+        if (apiPhone.startsWith('05')) apiPhone = '+966' + apiPhone.substring(1);
+        else if (apiPhone.startsWith('5')) apiPhone = '+966' + apiPhone;
+
+        // Request OTP
+        $.ajax({
+            url: "{% url 'accounts:otp_request' %}",
+            method: "POST",
+            headers: { 'X-CSRFToken': csrftoken },
+            data: JSON.stringify({ phone: apiPhone }),
+            contentType: "application/json",
+            success: function(resp) {
+                if (resp.success) {
+                    $('#otp-display-phone').text(apiPhone);
+                    otpModal.show();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'خطأ', text: resp.error, confirmButtonColor: '#004d7a' });
+                }
+            }
+        });
+    });
+
+    const otpInputs = $('.otp-digit-checkout');
+    otpInputs.on('input', function() {
+        if (this.value.length === 1) $(this).next('.otp-digit-checkout').focus();
+    });
+    otpInputs.on('keydown', function(e) {
+        if (e.key === 'Backspace' && !this.value) $(this).prev('.otp-digit-checkout').focus();
+    });
+
+    $('#btn-verify-checkout-otp').on('click', function() {
+        let code = '';
+        otpInputs.each(function() { code += this.value; });
+        
+        let apiPhone = otpPhone;
+        if (apiPhone.startsWith('05')) apiPhone = '+966' + apiPhone.substring(1);
+        else if (apiPhone.startsWith('5')) apiPhone = '+966' + apiPhone;
+
+        $.ajax({
+            url: "{% url 'accounts:otp_verify' %}",
+            method: "POST",
+            headers: { 'X-CSRFToken': csrftoken },
+            data: JSON.stringify({ phone: apiPhone, code: code }),
+            contentType: "application/json",
+            success: function(resp) {
+                if (resp.success) {
+                    // Auth success - mark form and submit
+                    checkoutForm.data('authenticated', true);
+                    otpModal.hide();
+                    Swal.fire({
+                        icon: 'success', title: 'تم التحقق بنجاح', text: 'جاري إتمام طلبك...',
+                        showConfirmButton: false, timer: 1500
+                    }).then(() => {
+                        checkoutForm.submit();
+                    });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'خطأ', text: resp.error, confirmButtonColor: '#004d7a' });
+                    otpInputs.val('');
+                    otpInputs.first().focus();
+                }
+            }
+        });
+    });
+    {% endif %}
   });
+</script>
+
+<script async src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap"></script>
+
+<script>
+    let map;
+    let marker;
+    let geocoder;
+
+    function initMap() {
+        const defaultLat = 24.7136;
+        const defaultLng = 46.6753;
+        const myLatlng = { lat: defaultLat, lng: defaultLng };
+
+        const mapElement = document.getElementById("map");
+        if (!mapElement) return;
+
+        map = new google.maps.Map(mapElement, {
+            zoom: 12,
+            center: myLatlng,
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        marker = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            draggable: true,
+            title: "موقعي",
+        });
+
+        marker.addListener("dragend", (event) => {
+            const pos = marker.getPosition();
+            updateLatLngFields(pos.lat(), pos.lng());
+            reverseGeocode(pos);
+        });
+
+        map.addListener("click", (event) => {
+            marker.setPosition(event.latLng);
+            updateLatLngFields(event.latLng.lat(), event.latLng.lng());
+            reverseGeocode(event.latLng);
+        });
+    }
+
+    function updateLatLngFields(lat, lng) {
+        document.getElementById('id_latitude').value = lat;
+        document.getElementById('id_longitude').value = lng;
+    }
+
+    function reverseGeocode(latLng) {
+        geocoder.geocode({ location: latLng }, (results, status) => {
+            if (status === "OK" && results[0]) {
+                const addressComponents = results[0].address_components;
+                const fieldMap = {
+                    'country': 'country',
+                    'locality': 'city',
+                    'sublocality': 'neighborhood',
+                    'neighborhood': 'neighborhood',
+                    'route': 'street',
+                    'street_number': 'building_number',
+                    'postal_code': 'postal_code'
+                };
+
+                Object.values(fieldMap).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+
+                addressComponents.forEach(component => {
+                    const types = component.types;
+                    for (const [type, id] of Object.entries(fieldMap)) {
+                        if (types.includes(type)) {
+                            const el = document.getElementById(id);
+                            if (el && !el.value) el.value = component.long_name;
+                        }
+                    }
+                });
+            }
+        });
+    }
 </script>
 {% endblock %}

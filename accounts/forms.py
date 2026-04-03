@@ -37,18 +37,22 @@ class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
         fields = [
-            'full_name', 'phone_number', 'city', 'neighborhood', 
-            'street', 'building_number', 'apartment_number', 
-            'image_of_building', 'address_type', 'is_default'
+            'full_name', 'phone_number', 'country', 'city', 'neighborhood', 
+            'street', 'building_number', 'apartment_number', 'postal_code',
+            'latitude', 'longitude', 'image_of_building', 'address_type', 'is_default'
         ]
         widgets = {
             'full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الاسم الكامل'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'رقم الهاتف'}),
-            'city': forms.Select(attrs={'class': 'form-select'}),
+            'country': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الدولة'}),
+            'city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'المدينة'}),
             'neighborhood': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الحي'}),
             'street': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الشارع'}),
             'building_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'رقم المبنى'}),
             'apartment_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'رقم الشقة (اختياري)'}),
+            'postal_code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الرمز البريدي'}),
+            'latitude': forms.HiddenInput(),
+            'longitude': forms.HiddenInput(),
             'address_type': forms.Select(attrs={'class': 'form-select'}),
             'is_default': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

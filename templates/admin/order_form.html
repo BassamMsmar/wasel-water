@@ -52,8 +52,24 @@
                         {{ form.shipping_city }}
                     </div>
                     <div class="mb-3">
+                        <label class="form-label small fw-bold">الدولة</label>
+                        {{ form.shipping_country }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">الرمز البريدي</label>
+                        {{ form.shipping_postal_code }}
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label small fw-bold">العنوان التفصيلي</label>
                         {{ form.shipping_address }}
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="form-label small fw-bold mb-2">تحديد الموقع على الخريطة</label>
+                        <div id="admin-map" style="height: 300px; width: 100%; border-radius: 12px; border: 1px solid #ddd;"></div>
+                        <p class="text-muted small mt-2">انقر على الخريطة لتحديد الموقع وتعبئة البيانات تلقائياً.</p>
+                        {{ form.shipping_latitude }}
+                        {{ form.shipping_longitude }}
                     </div>
                 </div>
             </div>
@@ -257,6 +273,88 @@
     // Initial calculation
     window.addEventListener('DOMContentLoaded', calculateTotals);
 
+</script>
+
+<script async src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initAdminMap"></script>
+
+<script>
+    let adminMap;
+    let adminMarker;
+    let adminGeocoder;
+
+    function initAdminMap() {
+        const latVal = document.getElementById('id_shipping_latitude').value;
+        const lngVal = document.getElementById('id_shipping_longitude').value;
+        
+        const defaultLat = latVal ? parseFloat(latVal) : 24.7136;
+        const defaultLng = lngVal ? parseFloat(lngVal) : 46.6753;
+        const myLatlng = { lat: defaultLat, lng: defaultLng };
+
+        const mapElement = document.getElementById("admin-map");
+        if (!mapElement) return;
+
+        adminMap = new google.maps.Map(mapElement, {
+            zoom: 10,
+            center: myLatlng,
+        });
+
+        adminGeocoder = new google.maps.Geocoder();
+
+        adminMarker = new google.maps.Marker({
+            position: myLatlng,
+            map: adminMap,
+            draggable: true,
+            title: "موقع الشحن",
+        });
+
+        adminMarker.addListener("dragend", (event) => {
+            const pos = adminMarker.getPosition();
+            updateAdminLatLng(pos.lat(), pos.lng());
+            reverseGeocodeAdmin(pos);
+        });
+
+        adminMap.addListener("click", (event) => {
+            adminMarker.setPosition(event.latLng);
+            updateAdminLatLng(event.latLng.lat(), event.latLng.lng());
+            reverseGeocodeAdmin(event.latLng);
+        });
+    }
+
+    function updateAdminLatLng(lat, lng) {
+        document.getElementById('id_shipping_latitude').value = lat;
+        document.getElementById('id_shipping_longitude').value = lng;
+    }
+
+    function reverseGeocodeAdmin(latLng) {
+        adminGeocoder.geocode({ location: latLng }, (results, status) => {
+            if (status === "OK" && results[0]) {
+                const components = results[0].address_components;
+                const fieldMap = {
+                    'country': 'id_shipping_country',
+                    'locality': 'id_shipping_city',
+                    'postal_code': 'id_shipping_postal_code',
+                };
+
+                // Clear fields
+                Object.values(fieldMap).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+                const addrEl = document.getElementById('id_shipping_address');
+                if (addrEl) addrEl.value = results[0].formatted_address;
+
+                components.forEach(c => {
+                    const types = c.types;
+                    for (const [type, id] of Object.entries(fieldMap)) {
+                        if (types.includes(type)) {
+                            const el = document.getElementById(id);
+                            if (el && !el.value) el.value = c.long_name;
+                        }
+                    }
+                });
+            }
+        });
+    }
 </script>
 {% endblock %}
 

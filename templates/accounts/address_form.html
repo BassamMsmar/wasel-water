@@ -119,6 +119,12 @@
                     <form method="POST" class="mt-4">
                         {% csrf_token %}
                         <div class="row g-4">
+                            <div class="col-12 mb-3">
+                                <label class="form-label fw-bold">تحديد الموقع على الخريطة</label>
+                                <div id="map" style="height: 400px; width: 100%; border-radius: 15px; border: 2px solid #eee;"></div>
+                                <p class="text-muted small mt-2">قم بسحب العلامة أو النقر على الخريطة لتحديد موقعك بدقة، سيتم ملاً البيانات تلقائياً.</p>
+                            </div>
+
                             {% for field in form %}
                             <div class="col-md-{% if field.name == 'neighborhood' or field.name == 'street' or field.name == 'image_of_building' or field.name == 'note' %}12{% else %}6{% endif %}">
                                 <label for="{{ field.id_for_label }}" class="form-label form-label-premium">{{ field.label }}</label>
@@ -153,15 +159,101 @@
     </div>
 </section>
 
+<script async src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap"></script>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const inputs = document.querySelectorAll('.address-form input, .address-form select, .address-form textarea');
-        inputs.forEach(input => {
-            if(input.type !== 'checkbox' && input.type !== 'radio' && input.type !== 'hidden') {
-                input.classList.add('form-control-premium');
-                input.classList.add('form-control');
+    let map;
+    let marker;
+    let geocoder;
+
+    function initMap() {
+        // Default to Saudi Arabia if no lat/lng
+        const latField = document.getElementById('id_latitude');
+        const lngField = document.getElementById('id_longitude');
+        
+        const defaultLat = (latField && latField.value) ? parseFloat(latField.value) : 24.7136;
+        const defaultLng = (lngField && lngField.value) ? parseFloat(lngField.value) : 46.6753;
+        
+        const myLatlng = { lat: defaultLat, lng: defaultLng };
+
+        const mapElement = document.getElementById("map");
+        if (!mapElement) return;
+
+        map = new google.maps.Map(mapElement, {
+            zoom: 12,
+            center: myLatlng,
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        marker = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            draggable: true,
+            title: "موقعي",
+        });
+
+        // Update coordinates on drag end
+        marker.addListener("dragend", (event) => {
+            const pos = marker.getPosition();
+            updateLatLngFields(pos.lat(), pos.lng());
+            reverseGeocode(pos);
+        });
+
+        // Move marker and update coordinates on map click
+        map.addListener("click", (event) => {
+            marker.setPosition(event.latLng);
+            updateLatLngFields(event.latLng.lat(), event.latLng.lng());
+            reverseGeocode(event.latLng);
+        });
+    }
+
+    function updateLatLngFields(lat, lng) {
+        const latField = document.getElementById('id_latitude');
+        const lngField = document.getElementById('id_longitude');
+        if (latField) latField.value = lat;
+        if (lngField) lngField.value = lng;
+    }
+
+    function reverseGeocode(latLng) {
+        geocoder.geocode({ location: latLng }, (results, status) => {
+            if (status === "OK") {
+                if (results[0]) {
+                    const addressComponents = results[0].address_components;
+                    
+                    // Fields to update
+                    const fieldMap = {
+                        'country': 'id_country',
+                        'locality': 'id_city',
+                        'sublocality': 'id_neighborhood',
+                        'neighborhood': 'id_neighborhood',
+                        'route': 'id_street',
+                        'street_number': 'id_building_number',
+                        'postal_code': 'id_postal_code'
+                    };
+
+                    // Clear fields first (except latitude/longitude)
+                    Object.values(fieldMap).forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.value = '';
+                    });
+
+                    addressComponents.forEach(component => {
+                        const types = component.types;
+                        for (const [type, id] of Object.entries(fieldMap)) {
+                            if (types.includes(type)) {
+                                const el = document.getElementById(id);
+                                if (el && !el.value) { // Don't overwrite if neighborhood was already set by sublocality
+                                    el.value = component.long_name;
+                                }
+                            }
+                        }
+                    });
+                }
+            } else {
+                console.error("Geocoder failed due to: " + status);
             }
         });
-    });
+    }
 </script>
 {% endblock %}

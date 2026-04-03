@@ -26,10 +26,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     # Authentication URLs
-    path('accounts/', include('django.contrib.auth.urls')),  # Includes all auth URLs (login, logout, password reset, etc.)
-    
-    
     path('accounts/', include('accounts.urls', namespace='accounts')),
+    path('accounts/social/', include('allauth.urls')),  # Social Login (Google)
+    path('accounts/', include('django.contrib.auth.urls')),  # Fallback
     path('products/', include('products.urls', namespace='products')),
     path('orders/', include('orders.urls', namespace='orders')),
     path('cart/', include('cart.urls', namespace='cart')),
