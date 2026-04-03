@@ -45,7 +45,6 @@
     /* ================================================
        LOCATION SELECTION MODAL STYLES
     ================================================ */
-    #locationModal .modal-dialog { max-width: 680px; }
     #location-map-container {
       height: 350px;
       width: 100%;
@@ -54,7 +53,7 @@
       position: relative;
       background: #e9f2f9;
     }
-    #location-map-gm { height: 100%; width: 100%; }
+    #location-map-leaflet { height: 100%; width: 100%; }
     #location-map-loading {
       position: absolute; inset: 0;
       display: flex; flex-direction: column;
@@ -236,7 +235,7 @@
               <div class="spinner-border" role="status"></div>
               <span class="text-primary fw-semibold">جارٍ تحميل الخريطة...</span>
             </div>
-            <div id="location-map-gm"></div>
+            <div id="location-map-leaflet"></div>
           </div>
 
           <!-- Selected Location Display -->
@@ -292,51 +291,43 @@
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <!-- Google Maps API -->
-  <script>
-    // Google Maps callback - called after API loads
-    function onGoogleMapsReady() {
-      window._gmapsReady = true;
-      document.dispatchEvent(new Event('gmaps:ready'));
-    }
-  </script>
-  <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=onGoogleMapsReady&language=ar&region=SA"></script>
+  <!-- Leaflet CSS + JS (OpenStreetMap - Free) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
   <script>
   (function() {
     'use strict';
 
     // =====================================================
-    // LOCATION STORAGE UTILITIES
+    // LOCATION STORAGE
     // =====================================================
     const LOCATION_KEY = 'user_location';
-    
+
     function getStoredLocation() {
       try { return JSON.parse(localStorage.getItem(LOCATION_KEY)); } catch(e) { return null; }
     }
-    
     function setStoredLocation(data) {
       try { localStorage.setItem(LOCATION_KEY, JSON.stringify(data)); } catch(e) {}
     }
-
     function updateHeaderLocationBtn(addressText) {
       const btn = document.getElementById('header-location-btn');
       if (!btn) return;
       const label = btn.querySelector('#header-loc-label');
       if (label) {
-        const shortAddr = addressText ? addressText.split(',')[0].trim() : 'موقعي';
-        label.textContent = shortAddr;
+        label.textContent = addressText ? addressText.split(',')[0].trim() : 'موقعي';
       }
       btn.style.display = 'flex';
     }
 
     // =====================================================
-    // LOCATION MODAL SYSTEM
+    // LEAFLET MAP SYSTEM (OpenStreetMap - Free)
     // =====================================================
-    let gmMap = null, gmMarker = null, gmGeocoder = null, gmAutocomplete = null;
+    let lfMap = null, lfMarker = null;
     let selectedLocation = null;
     let modalInstance = null;
+    let searchTimeout = null;
+    let searchResults = null;
 
     function getModalInstance() {
       if (!modalInstance) {
@@ -350,122 +341,110 @@
       const modal = getModalInstance();
       if (modal) {
         modal.show();
-        initLocationMap();
+        // Small delay to let modal animate open before map init
+        setTimeout(initLeafletMap, 200);
       }
     }
 
-    function initLocationMap() {
-      if (gmMap) { google.maps.event.trigger(gmMap, 'resize'); return; }
-      if (!window._gmapsReady) {
-        document.addEventListener('gmaps:ready', initLocationMap, { once: true });
+    function initLeafletMap() {
+      if (lfMap) {
+        lfMap.invalidateSize();
         return;
       }
 
-      const defaultCenter = { lat: 21.5433, lng: 39.1728 }; // Jeddah
-      
-      gmMap = new google.maps.Map(document.getElementById('location-map-gm'), {
-        center: defaultCenter,
-        zoom: 12,
-        disableDefaultUI: false,
-        mapTypeControl: false,
-        fullscreenControl: false,
-        streetViewControl: false,
-        styles: [
-          { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }
-        ]
-      });
-
-      gmGeocoder = new google.maps.Geocoder();
-      document.getElementById('location-map-loading').style.opacity = '0';
-      setTimeout(() => { document.getElementById('location-map-loading').style.display = 'none'; }, 400);
-
-      // Marker
-      gmMarker = new google.maps.Marker({
-        map: gmMap,
-        draggable: true,
-        animation: google.maps.Animation.DROP,
-        title: 'موقع التوصيل',
-        visible: false,
-      });
-
-      // Autocomplete
-      const searchInput = document.getElementById('location-search-input');
-      gmAutocomplete = new google.maps.places.Autocomplete(searchInput, {
-        fields: ['geometry', 'formatted_address', 'address_components'],
-      });
-      gmAutocomplete.addListener('place_changed', function() {
-        const place = gmAutocomplete.getPlace();
-        if (!place.geometry || !place.geometry.location) return;
-        gmMap.setCenter(place.geometry.location);
-        gmMap.setZoom(15);
-        placeMarker(place.geometry.location);
-        fillLocationFromComponents(place.address_components, place.geometry.location, place.formatted_address);
-      });
-
-      // Click on map
-      gmMap.addListener('click', function(e) {
-        placeMarker(e.latLng);
-        reverseGeocode(e.latLng);
-      });
-
-      // Drag marker
-      gmMarker.addListener('dragend', function(e) {
-        reverseGeocode(e.latLng);
-      });
-
-      // If location already saved, show it
       const stored = getStoredLocation();
+      const defaultLat = stored ? parseFloat(stored.latitude) : 21.5433;
+      const defaultLng = stored ? parseFloat(stored.longitude) : 39.1728;
+
+      lfMap = L.map('location-map-leaflet', {
+        center: [defaultLat, defaultLng],
+        zoom: stored ? 15 : 12,
+        zoomControl: true,
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+        maxZoom: 19,
+      }).addTo(lfMap);
+
+      // Hide loading spinner
+      const loadingEl = document.getElementById('location-map-loading');
+      if (loadingEl) loadingEl.style.display = 'none';
+
+      // Custom marker icon
+      const pinIcon = L.divIcon({
+        className: '',
+        html: '<div style="background:linear-gradient(135deg,#004d7a,#00b4d8);width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 3px 12px rgba(0,77,122,0.4);"></div>',
+        iconSize: [36, 36],
+        iconAnchor: [18, 36],
+      });
+
+      // If stored location exists, place marker
       if (stored && stored.latitude && stored.longitude) {
-        const pos = new google.maps.LatLng(stored.latitude, stored.longitude);
-        gmMap.setCenter(pos); gmMap.setZoom(15);
-        placeMarker(pos);
+        lfMarker = L.marker([stored.latitude, stored.longitude], { icon: pinIcon, draggable: true }).addTo(lfMap);
+        lfMarker.on('dragend', function() {
+          const pos = lfMarker.getLatLng();
+          reverseGeocodeNominatim(pos.lat, pos.lng);
+        });
         setSelectedLocation({
-          latitude: stored.latitude,
-          longitude: stored.longitude,
+          latitude: stored.latitude, longitude: stored.longitude,
           readable_address: stored.readable_address || '',
           maps_url: stored.maps_url || '',
-          city: stored.city || '',
-          country: stored.country || '',
+          city: stored.city || '', country: stored.country || '',
         });
       }
-    }
 
-    function placeMarker(latLng) {
-      gmMarker.setPosition(latLng);
-      gmMarker.setVisible(true);
-      if (gmMarker.getAnimation()) gmMarker.setAnimation(null);
-      gmMap.panTo(latLng);
-    }
-
-    function reverseGeocode(latLng) {
-      gmGeocoder.geocode({ location: latLng }, function(results, status) {
-        if (status === 'OK' && results[0]) {
-          fillLocationFromComponents(results[0].address_components, latLng, results[0].formatted_address);
+      // Click on map to place/move marker
+      lfMap.on('click', function(e) {
+        const { lat, lng } = e.latlng;
+        if (lfMarker) {
+          lfMarker.setLatLng(e.latlng);
+        } else {
+          lfMarker = L.marker(e.latlng, { icon: pinIcon, draggable: true }).addTo(lfMap);
+          lfMarker.on('dragend', function() {
+            const pos = lfMarker.getLatLng();
+            reverseGeocodeNominatim(pos.lat, pos.lng);
+          });
         }
+        reverseGeocodeNominatim(lat, lng);
       });
     }
 
-    function fillLocationFromComponents(components, latLng, formattedAddress) {
-      let city = '', country = '', neighborhood = '', street = '', postal_code = '';
-      if (components) {
-        components.forEach(function(c) {
-          if (c.types.includes('locality')) city = c.long_name;
-          if (c.types.includes('administrative_area_level_2') && !city) city = c.long_name;
-          if (c.types.includes('country')) country = c.long_name;
-          if (c.types.includes('sublocality') || c.types.includes('neighborhood')) neighborhood = c.long_name;
-          if (c.types.includes('route')) street = c.long_name;
-          if (c.types.includes('postal_code')) postal_code = c.long_name;
+    // Nominatim Reverse Geocoding (free, no key needed)
+    function reverseGeocodeNominatim(lat, lng) {
+      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=ar`;
+      fetch(url, { headers: { 'Accept-Language': 'ar' } })
+        .then(r => r.json())
+        .then(function(data) {
+          const addr = data.address || {};
+          const city = addr.city || addr.town || addr.village || addr.county || '';
+          const country = addr.country || '';
+          const neighborhood = addr.suburb || addr.neighbourhood || addr.quarter || '';
+          const street = addr.road || addr.street || '';
+          const postal_code = addr.postcode || '';
+          const readable = data.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+          setSelectedLocation({
+            latitude: lat, longitude: lng,
+            readable_address: readable,
+            maps_url: `https://www.google.com/maps?q=${lat},${lng}`,
+            city, country, neighborhood, street, postal_code
+          });
+        })
+        .catch(function() {
+          // Fallback: coordinates only
+          setSelectedLocation({
+            latitude: lat, longitude: lng,
+            readable_address: `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+            maps_url: `https://www.google.com/maps?q=${lat},${lng}`,
+            city: '', country: '', neighborhood: '', street: '', postal_code: ''
+          });
         });
-      }
-      const lat = typeof latLng.lat === 'function' ? latLng.lat() : latLng.lat;
-      const lng = typeof latLng.lng === 'function' ? latLng.lng() : latLng.lng;
-      setSelectedLocation({
-        latitude: lat,
-        longitude: lng,
-        readable_address: formattedAddress || `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
-        maps_url: `https://www.google.com/maps?q=${lat},${lng}`,
-        city, country, neighborhood, street, postal_code
-      });
+    }
+
+    // Nominatim Search (free)
+    function searchNominatim(query) {
+      const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(query)}&limit=5&accept-language=ar`;
+      return fetch(url).then(r => r.json());
     }
 
     function setSelectedLocation(loc) {
@@ -473,13 +452,83 @@
       const displayEl = document.getElementById('selected-location-display');
       const textEl = document.getElementById('selected-location-text');
       const confirmBtn = document.getElementById('btn-confirm-location');
-      if (displayEl) { displayEl.classList.add('visible'); }
+      if (displayEl) displayEl.classList.add('visible');
       if (textEl) textEl.textContent = loc.readable_address;
       if (confirmBtn) confirmBtn.disabled = false;
     }
 
-    // GPS Button
+    // =====================================================
+    // SEARCH AUTOCOMPLETE (Nominatim)
+    // =====================================================
+    function setupSearch() {
+      const input = document.getElementById('location-search-input');
+      if (!input) return;
+
+      // Create dropdown container
+      const dropdown = document.createElement('div');
+      dropdown.id = 'search-dropdown';
+      dropdown.style.cssText = 'position:absolute;top:100%;right:0;left:0;z-index:9999;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.15);max-height:250px;overflow-y:auto;display:none;';
+      input.parentElement.style.position = 'relative';
+      input.parentElement.appendChild(dropdown);
+
+      input.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const q = this.value.trim();
+        if (q.length < 3) { dropdown.style.display = 'none'; return; }
+        searchTimeout = setTimeout(function() {
+          searchNominatim(q).then(function(results) {
+            dropdown.innerHTML = '';
+            if (!results.length) {
+              dropdown.style.display = 'none'; return;
+            }
+            results.slice(0, 5).forEach(function(r) {
+              const item = document.createElement('div');
+              item.style.cssText = 'padding:10px 14px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:0.9rem;color:#1e3a5f;transition:background 0.15s;';
+              item.textContent = r.display_name;
+              item.addEventListener('mouseenter', function() { this.style.background = '#f0fbff'; });
+              item.addEventListener('mouseleave', function() { this.style.background = ''; });
+              item.addEventListener('click', function() {
+                const lat = parseFloat(r.lat);
+                const lng = parseFloat(r.lon);
+                input.value = r.display_name;
+                dropdown.style.display = 'none';
+
+                lfMap.setView([lat, lng], 16);
+                const pinIcon = L.divIcon({
+                  className: '',
+                  html: '<div style="background:linear-gradient(135deg,#004d7a,#00b4d8);width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 3px 12px rgba(0,77,122,0.4);"></div>',
+                  iconSize: [36, 36], iconAnchor: [18, 36],
+                });
+                if (lfMarker) lfMarker.setLatLng([lat, lng]);
+                else {
+                  lfMarker = L.marker([lat, lng], { icon: pinIcon, draggable: true }).addTo(lfMap);
+                  lfMarker.on('dragend', function() {
+                    const p = lfMarker.getLatLng();
+                    reverseGeocodeNominatim(p.lat, p.lng);
+                  });
+                }
+                reverseGeocodeNominatim(lat, lng);
+              });
+              dropdown.appendChild(item);
+            });
+            dropdown.style.display = 'block';
+          });
+        }, 400);
+      });
+
+      // Close dropdown on outside click
+      document.addEventListener('click', function(e) {
+        if (!input.parentElement.contains(e.target)) dropdown.style.display = 'none';
+      });
+    }
+
+    // =====================================================
+    // EVENT LISTENERS
+    // =====================================================
     document.addEventListener('DOMContentLoaded', function() {
+      setupSearch();
+
+      // GPS Button
       const gpsBtn = document.getElementById('btn-use-gps');
       if (gpsBtn) {
         gpsBtn.addEventListener('click', function() {
@@ -493,19 +542,25 @@
             function(pos) {
               gpsBtn.innerHTML = '<i class="bi bi-crosshair me-2"></i>استخدام موقعي الحالي (GPS)';
               gpsBtn.disabled = false;
-              if (!window._gmapsReady) {
-                document.addEventListener('gmaps:ready', function() {
-                  const latLng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-                  gmMap.setCenter(latLng); gmMap.setZoom(16);
-                  placeMarker(latLng);
-                  reverseGeocode(latLng);
-                }, { once: true });
-                return;
+              const lat = pos.coords.latitude;
+              const lng = pos.coords.longitude;
+              if (lfMap) {
+                lfMap.setView([lat, lng], 16);
+                const pinIcon = L.divIcon({
+                  className: '',
+                  html: '<div style="background:linear-gradient(135deg,#004d7a,#00b4d8);width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 3px 12px rgba(0,77,122,0.4);"></div>',
+                  iconSize: [36, 36], iconAnchor: [18, 36],
+                });
+                if (lfMarker) lfMarker.setLatLng([lat, lng]);
+                else {
+                  lfMarker = L.marker([lat, lng], { icon: pinIcon, draggable: true }).addTo(lfMap);
+                  lfMarker.on('dragend', function() {
+                    const p = lfMarker.getLatLng();
+                    reverseGeocodeNominatim(p.lat, p.lng);
+                  });
+                }
+                reverseGeocodeNominatim(lat, lng);
               }
-              const latLng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-              gmMap.setCenter(latLng); gmMap.setZoom(16);
-              placeMarker(latLng);
-              reverseGeocode(latLng);
             },
             function(err) {
               gpsBtn.innerHTML = '<i class="bi bi-crosshair me-2"></i>استخدام موقعي الحالي (GPS)';
@@ -526,31 +581,26 @@
           if (!selectedLocation) return;
           confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جارٍ الحفظ...';
           confirmBtn.disabled = true;
-
-          // Save to localStorage immediately
           setStoredLocation(selectedLocation);
 
-          // Save to server
           fetch('{% url "accounts:save_user_location" %}', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
             body: JSON.stringify(selectedLocation)
           })
           .then(r => r.json())
-          .then(function(data) {
+          .then(function() {
             getModalInstance().hide();
             updateHeaderLocationBtn(selectedLocation.readable_address);
             confirmBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>تأكيد الموقع والمتابعة';
             confirmBtn.disabled = false;
-            // Dispatch event for other scripts
             document.dispatchEvent(new CustomEvent('locationSaved', { detail: selectedLocation }));
             Swal.fire({
-              toast: true, position: 'top', icon: 'success', showConfirmButton: false, timer: 2000,
-              title: `<small>تم تحديد الموقع: ${selectedLocation.city || selectedLocation.readable_address.split(',')[0]}</small>`
+              toast: true, position: 'top', icon: 'success', showConfirmButton: false, timer: 2500,
+              title: `<small>✅ تم تحديد الموقع: ${selectedLocation.city || selectedLocation.readable_address.split(',')[0]}</small>`
             });
           })
           .catch(function() {
-            // Even if server fails, localStorage is saved - proceed
             getModalInstance().hide();
             updateHeaderLocationBtn(selectedLocation.readable_address);
             confirmBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>تأكيد الموقع والمتابعة';
@@ -559,30 +609,24 @@
         });
       }
 
-      // Close button - allow dismissing
+      // Close button
       const closeBtn = document.getElementById('btn-close-location-modal');
       if (closeBtn) {
-        closeBtn.addEventListener('click', function() {
-          getModalInstance().hide();
-        });
+        closeBtn.addEventListener('click', function() { getModalInstance().hide(); });
       }
 
       // Auto-show on first visit
       const stored = getStoredLocation();
       if (stored && stored.latitude) {
-        // Location already set - update header
         updateHeaderLocationBtn(stored.readable_address || stored.city || '');
       } else {
-        // No location stored - show after short delay for better UX
         setTimeout(showLocationModal, 800);
       }
+    });
 
-    }); // end DOMContentLoaded
-
-    // Expose globally so header button can call it
     window.showLocationModal = showLocationModal;
 
-  })(); // end IIFE
+  })();
   </script>
 
   <script>
