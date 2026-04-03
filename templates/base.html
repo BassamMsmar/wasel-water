@@ -158,25 +158,14 @@
 
   <main class="main">
     <div class="container mt-3">
-      {% if messages %}
+    <!-- Django Messages will be handled by SweetAlert2 at the end of the body -->
+    {% if messages %}
+      <div id="django-messages" style="display: none;">
         {% for message in messages %}
-          <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert" style="border-right: 5px solid;">
-            <div class="d-flex align-items-center">
-              {% if message.tags == 'success' %}
-                <i class="bi bi-check-circle-fill me-2 fs-5 text-success"></i>
-              {% elif message.tags == 'error' %}
-                <i class="bi bi-exclamation-triangle-fill me-2 fs-5 text-danger"></i>
-              {% else %}
-                <i class="bi bi-info-circle-fill me-2 fs-5 text-primary"></i>
-              {% endif %}
-              <div class="ms-2">
-                {{ message }}
-              </div>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
+          <span class="django-message" data-level="{{ message.tags }}" data-text="{{ message }}"></span>
         {% endfor %}
-      {% endif %}
+      </div>
+    {% endif %}
     </div>
     {% block content %}{% endblock %}
   </main>
@@ -785,6 +774,34 @@
         }
       });
     })();
+  </script>
+
+  <!-- Django Messages Rendering Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const messages = document.querySelectorAll('.django-message');
+      messages.forEach(msg => {
+        const level = msg.getAttribute('data-level') || 'info';
+        const text = msg.getAttribute('data-text');
+        
+        let icon = 'info';
+        if (level.includes('success')) icon = 'success';
+        else if (level.includes('error') || level.includes('danger')) icon = 'error';
+        else if (level.includes('warning')) icon = 'warning';
+
+        Swal.fire({
+          icon: icon,
+          title: text,
+          position: 'center',
+          showConfirmButton: (icon === 'error'), // Only show "OK" for errors
+          confirmButtonText: 'حسناً',
+          confirmButtonColor: '#004d7a',
+          timer: (icon === 'success' ? 2500 : 5000), // Auto close success quickly
+          timerProgressBar: true,
+          backdrop: `rgba(0,0,0,0.4)`
+        });
+      });
+    });
   </script>
 
 </body>

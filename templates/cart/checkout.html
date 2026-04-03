@@ -105,6 +105,19 @@
     transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0, 180, 216, 0.3);
     color: #fff;
   }
+  
+  /* OTP Modal Styles */
+  .otp-digit-checkout {
+    width: 50px; height: 60px;
+    background: #f8f9fa; border: 2px solid #dee2e6;
+    border-radius: 12px; text-align: center;
+    font-size: 1.5rem; font-weight: 700; color: var(--chk-primary);
+    margin: 0 5px;
+  }
+  .otp-digit-checkout:focus {
+    border-color: var(--chk-accent); outline: none; background: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.1);
+  }
 </style>
 {% endblock %}
 
@@ -313,6 +326,39 @@
   </div>
 </section>
 </div>
+
+<!-- Guest OTP Verification Modal -->
+{% if not user.is_authenticated %}
+<div class="modal fade" id="otpVerifyModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" style="color: var(--chk-primary);">التحقق من رقم الهاتف</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center p-4">
+        <p class="text-muted mb-4">أدخل الكود المكون من 4 أرقام المرسل إلى <br><strong id="otp-display-phone" dir="ltr"></strong></p>
+        
+        <div class="d-flex justify-content-center mb-4" dir="ltr">
+          <input type="text" class="otp-digit-checkout" id="checkout-otp-1" maxlength="1" inputmode="numeric">
+          <input type="text" class="otp-digit-checkout" id="checkout-otp-2" maxlength="1" inputmode="numeric">
+          <input type="text" class="otp-digit-checkout" id="checkout-otp-3" maxlength="1" inputmode="numeric">
+          <input type="text" class="otp-digit-checkout" id="checkout-otp-4" maxlength="1" inputmode="numeric">
+        </div>
+        
+        <button type="button" id="btn-verify-checkout-otp" class="btn-confirm-order m-0 py-3">
+            تحقق وإتمام الطلب
+        </button>
+        
+        <div class="mt-3 small">
+            <span class="text-muted">لم يصلك الكود؟</span>
+            <a href="#" id="btn-resend-checkout-otp" class="text-primary fw-bold text-decoration-none ms-1">إعادة إرسال</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
@@ -386,24 +432,91 @@
       else if (action === 'decrease' && qty > 1) qty--;
       else return;
 
-      $.ajax({
-        url: "{% url 'cart:cart_update' %}",
-        method: "POST",
-        data: {
-          'product_id': productId,
-          'item_type': itemType,
-          'quantity': qty,
-          'csrfmiddlewaretoken': csrftoken
-        },
-        success: function (response) {
-          input.val(qty);
-          row.find('.line-total').text(response.item_total);
-          $('.cart-total-price').text(response.total_price);
-          // Also update base cart dot icon
-          $('.count-dot').text(response.qty);
-        }
       });
     });
+
+    // Guest OTP Logic
+    {% if not user.is_authenticated %}
+    const checkoutForm = $('.checkout-form');
+    const otpModal = new bootstrap.Modal(document.getElementById('otpVerifyModal'));
+    let otpPhone = '';
+
+    checkoutForm.on('submit', function(e) {
+        if ($(this).data('authenticated')) return true;
+        
+        e.preventDefault();
+        otpPhone = $('#phone').val();
+        
+        if (!otpPhone || otpPhone.length < 9) {
+            Swal.fire({ icon: 'error', title: 'خطأ', text: 'يرجى إدخال رقم هاتف صحيح أولاً', confirmButtonColor: '#004d7a' });
+            return;
+        }
+
+        // Normalize for API
+        let apiPhone = otpPhone;
+        if (apiPhone.startsWith('05')) apiPhone = '+966' + apiPhone.substring(1);
+        else if (apiPhone.startsWith('5')) apiPhone = '+966' + apiPhone;
+
+        // Request OTP
+        $.ajax({
+            url: "{% url 'accounts:otp_request' %}",
+            method: "POST",
+            headers: { 'X-CSRFToken': csrftoken },
+            data: JSON.stringify({ phone: apiPhone }),
+            contentType: "application/json",
+            success: function(resp) {
+                if (resp.success) {
+                    $('#otp-display-phone').text(apiPhone);
+                    otpModal.show();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'خطأ', text: resp.error, confirmButtonColor: '#004d7a' });
+                }
+            }
+        });
+    });
+
+    const otpInputs = $('.otp-digit-checkout');
+    otpInputs.on('input', function() {
+        if (this.value.length === 1) $(this).next('.otp-digit-checkout').focus();
+    });
+    otpInputs.on('keydown', function(e) {
+        if (e.key === 'Backspace' && !this.value) $(this).prev('.otp-digit-checkout').focus();
+    });
+
+    $('#btn-verify-checkout-otp').on('click', function() {
+        let code = '';
+        otpInputs.each(function() { code += this.value; });
+        
+        let apiPhone = otpPhone;
+        if (apiPhone.startsWith('05')) apiPhone = '+966' + apiPhone.substring(1);
+        else if (apiPhone.startsWith('5')) apiPhone = '+966' + apiPhone;
+
+        $.ajax({
+            url: "{% url 'accounts:otp_verify' %}",
+            method: "POST",
+            headers: { 'X-CSRFToken': csrftoken },
+            data: JSON.stringify({ phone: apiPhone, code: code }),
+            contentType: "application/json",
+            success: function(resp) {
+                if (resp.success) {
+                    // Auth success - mark form and submit
+                    checkoutForm.data('authenticated', true);
+                    otpModal.hide();
+                    Swal.fire({
+                        icon: 'success', title: 'تم التحقق بنجاح', text: 'جاري إتمام طلبك...',
+                        showConfirmButton: false, timer: 1500
+                    }).then(() => {
+                        checkoutForm.submit();
+                    });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'خطأ', text: resp.error, confirmButtonColor: '#004d7a' });
+                    otpInputs.val('');
+                    otpInputs.first().focus();
+                }
+            }
+        });
+    });
+    {% endif %}
   });
 </script>
 

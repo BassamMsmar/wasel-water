@@ -1,0 +1,728 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}تسجيل الدخول - واصل مياه{% endblock %}
+
+{% block extra_head %}
+<!-- Tajawal Font -->
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --otp-primary: #004d7a;
+        --otp-secondary: #00b4d8;
+        --otp-text-main: #2c3e50;
+        --otp-text-muted: #5a6a7a;
+        --otp-bg: #f8fbfb;
+        --card-bg: #ffffff;
+    }
+
+    body.otp-page {
+        background-color: var(--otp-bg);
+        display: flex;
+        flex-direction: column;
+        color: var(--otp-text-main);
+        font-family: 'Tajawal', sans-serif;
+    }
+
+    .otp-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    .otp-card {
+        background: var(--card-bg);
+        border: 1px solid rgba(0, 77, 122, 0.1);
+        border-radius: 24px;
+        padding: 40px;
+        width: 100%;
+        max-width: 440px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .otp-header {
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .otp-logo {
+        max-width: 120px;
+        margin-bottom: 24px;
+    }
+
+    .otp-header h1 {
+        font-weight: 800;
+        font-size: 1.7rem;
+        margin-bottom: 12px;
+        color: var(--otp-primary);
+    }
+
+    .otp-header p {
+        color: var(--otp-text-muted);
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 700;
+        color: var(--otp-text-main);
+        font-size: 0.9rem;
+    }
+
+    .phone-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border: 2px solid #e9ecef;
+        border-radius: 14px;
+        padding: 2px 16px;
+        transition: all 0.3s;
+    }
+
+    .phone-input-wrapper:focus-within {
+        border-color: var(--otp-primary);
+        box-shadow: 0 0 0 4px rgba(0, 77, 122, 0.08);
+    }
+
+    .phone-prefix {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-left: 12px;
+        border-left: 1px solid #e9ecef;
+        color: var(--otp-primary);
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .phone-input {
+        width: 100%;
+        background: transparent;
+        border: none;
+        padding: 14px;
+        color: var(--otp-text-main);
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .phone-input:focus {
+        outline: none;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, var(--otp-primary), var(--otp-secondary));
+        color: #fff;
+        border: none;
+        border-radius: 14px;
+        padding: 18px;
+        width: 100%;
+        font-weight: 800;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+        box-shadow: 0 8px 20px rgba(0, 77, 122, 0.15);
+        margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(0, 77, 122, 0.25);
+        color: #fff;
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+    .btn-submit:disabled {
+        background: #f1f3f5;
+        color: #adb5bd;
+        box-shadow: none;
+        cursor: not-allowed;
+    }
+
+    /* OTP Inputs */
+    .digit-group {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 30px;
+        direction: ltr;
+    }
+
+    .otp-digit {
+        width: 60px;
+        height: 70px;
+        background: #fcfcfc;
+        border: 2px solid #e9ecef;
+        border-radius: 14px;
+        text-align: center;
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--otp-primary);
+        transition: all 0.3s;
+    }
+
+    .otp-digit:focus {
+        outline: none;
+        border-color: var(--otp-primary);
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(0, 77, 122, 0.08);
+    }
+
+    .resend-text {
+        text-align: center;
+        margin-top: 24px;
+        font-size: 0.95rem;
+        color: var(--otp-text-muted);
+    }
+
+    .resend-link {
+        color: var(--otp-primary);
+        text-decoration: none;
+        font-weight: 700;
+        margin-right: 5px;
+        transition: 0.3s;
+    }
+
+    .resend-link:hover {
+        text-decoration: underline;
+    }
+
+    .resend-link.disabled {
+        color: #adb5bd;
+        cursor: not-allowed;
+        text-decoration: none;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--otp-text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+        margin-bottom: 24px;
+        transition: 0.3s;
+        font-weight: 600;
+    }
+
+    .back-btn:hover {
+        color: var(--otp-primary);
+    }
+
+    .divider {
+        height: 1px;
+        background: #e9ecef;
+        margin: 32px 0;
+        position: relative;
+    }
+
+    .divider::after {
+        content: 'أو';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--card-bg);
+        padding: 0 16px;
+        color: #adb5bd;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .guest-link {
+        display: block;
+        text-align: center;
+        color: var(--otp-text-muted);
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: 0.3s;
+        font-weight: 600;
+    }
+
+    .guest-link:hover {
+        color: var(--otp-primary);
+        text-decoration: underline;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    /* Login Toggle */
+    .login-toggle {
+        display: flex;
+        background: #f1f3f5;
+        border-radius: 12px;
+        padding: 4px;
+        margin-bottom: 30px;
+    }
+
+    .toggle-btn {
+        flex: 1;
+        border: none;
+        background: transparent;
+        padding: 10px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--otp-text-muted);
+        border-radius: 10px;
+        transition: all 0.3s;
+    }
+
+    .toggle-btn.active {
+        background: #fff;
+        color: var(--otp-primary);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Social Login */
+    .social-login {
+        margin-top: 30px;
+    }
+
+    .btn-google {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+        background: #fff;
+        border: 2px solid #e9ecef;
+        border-radius: 14px;
+        padding: 14px;
+        color: var(--otp-text-main);
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+
+    .btn-google:hover {
+        background: #f8f9fa;
+        border-color: #dee2e6;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .google-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Spinner */
+    .loader {
+        width: 22px;
+        height: 22px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 0.8s linear infinite;
+        display: none;
+        margin: 0 auto;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block body_class %}otp_page{% endblock %}
+
+{% block content %}
+<div class="otp-container">
+    <!-- Step 1: Login Choice (Phone or Password) -->
+    <div id="step-phone" class="otp-card">
+        <div class="otp-header">
+            {% if company.logo %}
+            <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="otp-logo">
+            {% endif %}
+            <h1>مرحباً بك</h1>
+            <p>سجل دخولك للمتابعة</p>
+        </div>
+
+        <!-- Toggle -->
+        <div class="login-toggle">
+            <button type="button" class="toggle-btn active" data-target="form-otp">الدخول السريع</button>
+            <button type="button" class="toggle-btn" data-target="form-password">كلمة المرور</button>
+        </div>
+
+        <!-- OTP Form -->
+        <div id="form-otp" class="login-form-method">
+            <div class="form-group">
+                <label class="form-label">رقم الجوال</label>
+                <div class="phone-input-wrapper" dir="ltr">
+                    <div class="phone-prefix">
+                        <img src="https://flagcdn.com/w20/sa.png" width="20" alt="SA">
+                        <span>+966</span>
+                    </div>
+                    <input type="tel" id="input-phone" class="phone-input" placeholder="5xxxxxxxx" maxlength="9" autocomplete="tel">
+                </div>
+                <div id="phone-error" class="text-danger small mt-2 hidden"></div>
+            </div>
+
+            <button id="btn-send-otp" class="btn-submit" disabled>
+                <span class="btn-text">إرسال كود التحقق</span>
+                <div class="loader"></div>
+            </button>
+        </div>
+
+        <!-- Password Form -->
+        <div id="form-password" class="login-form-method hidden">
+            <div class="form-group">
+                <label class="form-label">اسم المستخدم أو الجوال</label>
+                <input type="text" id="input-username" class="phone-input" placeholder="أدخل اسمك أو رقم جوالك" style="border: 2px solid #e9ecef; border-radius: 14px; background: #fff; padding-right: 15px;">
+            </div>
+            <div class="form-group">
+                <label class="form-label">كلمة المرور</label>
+                <input type="password" id="input-password" class="phone-input" placeholder="••••••••" style="border: 2px solid #e9ecef; border-radius: 14px; background: #fff; padding-right: 15px;">
+            </div>
+            <div id="password-error" class="text-danger small mt-2 hidden" style="margin-bottom: 15px;"></div>
+            <button id="btn-login-password" class="btn-submit">
+                <span class="btn-text">تسجيل الدخول</span>
+                <div class="loader"></div>
+            </button>
+        </div>
+
+        <!-- Google Login -->
+        <div class="social-login">
+            <div class="divider"><span>أو عبر جوجل</span></div>
+            <a href="{% url 'google_login' %}" class="btn-google">
+                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="google-icon" alt="Google">
+                <span>المتابعة عبر جوجل</span>
+            </a>
+        </div>
+
+        <div class="divider"></div>
+        <a href="{% url 'home' %}" class="guest-link">المتابعة كزائر</a>
+    </div>
+
+    <!-- Step 2: OTP Verification -->
+    <div id="step-otp" class="otp-card hidden">
+        <a href="#" id="btn-back" class="back-btn">
+            <i class="bi bi-arrow-right"></i>
+            <span>العودة لتعديل الرقم</span>
+        </a>
+
+        <div class="otp-header">
+            <h1>رمز التحقق</h1>
+            <p>تم إرسال رمز التحقق إلى الرقم الموضح أدناه<br><strong id="display-phone" dir="ltr" class="text-primary mt-1 d-block" style="font-size: 1.1rem;"></strong></p>
+        </div>
+
+        <div class="digit-group">
+            <input type="text" class="otp-digit" id="otp-1" maxlength="1" inputmode="numeric" autocomplete="one-time-code">
+            <input type="text" class="otp-digit" id="otp-2" maxlength="1" inputmode="numeric">
+            <input type="text" class="otp-digit" id="otp-3" maxlength="1" inputmode="numeric">
+            <input type="text" class="otp-digit" id="otp-4" maxlength="1" inputmode="numeric">
+        </div>
+
+        <button id="btn-verify-otp" class="btn-submit" disabled>
+            <span class="btn-text">تأكيد الرمز</span>
+            <div class="loader"></div>
+        </button>
+
+        <div class="resend-text">
+            لم يصلك الرمز؟
+            <a href="#" id="btn-resend" class="resend-link disabled">إعادة الإرسال <span id="timer">(01:00)</span></a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        const stepPhone = $('#step-phone');
+        const stepOtp = $('#step-otp');
+        const inputPhone = $('#input-phone');
+        const phoneError = $('#phone-error');
+        const btnSendOtp = $('#btn-send-otp');
+        const displayPhone = $('#display-phone');
+        const resendLink = $('#btn-resend');
+        const timerSpan = $('#timer');
+        
+        let countdown;
+        let phoneValue = '';
+
+        // CSRF Token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        // Phone Input UI
+        inputPhone.on('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length === 9) {
+                btnSendOtp.prop('disabled', false);
+            } else {
+                btnSendOtp.prop('disabled', true);
+            }
+        });
+
+        // Send OTP
+        btnSendOtp.on('click', function() {
+            phoneValue = inputPhone.val();
+            if (!phoneValue.startsWith('5') || phoneValue.length !== 9) {
+                phoneError.text('يرجى إدخال رقم جوال سعودي صحيح يبدأ بـ 5').removeClass('hidden');
+                return;
+            }
+            
+            phoneError.addClass('hidden');
+            const fullPhone = '+966' + phoneValue;
+            
+            setLoading(btnSendOtp, true);
+
+            fetch('{% url "accounts:otp_request" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ phone: fullPhone })
+            })
+            .then(res => res.json())
+            .then(data => {
+                setLoading(btnSendOtp, false);
+                if (data.success) {
+                    switchToOtp(fullPhone);
+                } else {
+                    phoneError.text(data.error).removeClass('hidden');
+                }
+            })
+            .catch(err => {
+                setLoading(btnSendOtp, false);
+                phoneError.text('حدث خطأ ما، يرجى المحاولة لاحقاً').removeClass('hidden');
+            });
+        });
+
+        // OTP Input UI
+        const otpInputs = $('.otp-digit');
+        otpInputs.on('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length === 1) {
+                $(this).next('.otp-digit').focus();
+            }
+            checkOtpComplete();
+        });
+
+        otpInputs.on('keydown', function(e) {
+            if (e.key === 'Backspace' && this.value.length === 0) {
+                $(this).prev('.otp-digit').focus();
+            }
+        });
+
+        function checkOtpComplete() {
+            let complete = true;
+            otpInputs.each(function() {
+                if (this.value.length === 0) complete = false;
+            });
+            $('#btn-verify-otp').prop('disabled', !complete);
+            if (complete) {
+                // Auto verify if you want
+                // verifyOtp();
+            }
+        }
+
+        // Verify OTP
+        $('#btn-verify-otp').on('click', verifyOtp);
+
+        function verifyOtp() {
+            let code = '';
+            otpInputs.each(function() { code += this.value; });
+            const fullPhone = '+966' + phoneValue;
+            const btnVerify = $('#btn-verify-otp');
+
+            setLoading(btnVerify, true);
+
+            const nextUrl = new URLSearchParams(window.location.search).get('next') || '{% url "home" %}';
+
+            fetch('{% url "accounts:otp_verify" %}' + (window.location.search), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ phone: fullPhone, code: code })
+            })
+            .then(res => res.json())
+            .then(data => {
+                setLoading(btnVerify, false);
+                if (data.success) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'فشل التحقق',
+                        text: data.error,
+                        confirmButtonColor: '#00b4d8'
+                    });
+                    // Clear inputs on error
+                    otpInputs.val('');
+                    otpInputs.first().focus();
+                }
+            })
+            .catch(err => {
+                setLoading(btnVerify, false);
+                console.error(err);
+            });
+        }
+
+        // Navigation
+        function switchToOtp(phone) {
+            stepPhone.addClass('hidden');
+            stepOtp.removeClass('hidden');
+            displayPhone.text(phone);
+            otpInputs.first().focus();
+            startTimer(60);
+        }
+
+        $('#btn-back').on('click', function(e) {
+            e.preventDefault();
+            stepOtp.addClass('hidden');
+            stepPhone.removeClass('hidden');
+            clearInterval(countdown);
+        });
+
+        // Resend
+        resendLink.on('click', function(e) {
+            e.preventDefault();
+            if ($(this).hasClass('disabled')) return;
+            
+            const fullPhone = '+966' + phoneValue;
+            fetch('{% url "accounts:otp_request" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ phone: fullPhone })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    startTimer(60);
+                    Swal.fire({
+                        toast: true,
+                        position: 'top',
+                        icon: 'success',
+                        title: 'تم إعادة إرسال الكود',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
+            });
+        });
+
+        // Utils
+        function setLoading(btn, isLoading) {
+            const text = btn.find('.btn-text');
+            const loader = btn.find('.loader');
+            if (isLoading) {
+                text.hide();
+                loader.show();
+                btn.prop('disabled', true);
+            } else {
+                text.show();
+                loader.hide();
+                btn.prop('disabled', false);
+            }
+        }
+
+        function startTimer(seconds) {
+            resendLink.addClass('disabled');
+            let timeLeft = seconds;
+            
+            updateTimerDisplay(timeLeft);
+            
+            clearInterval(countdown);
+            countdown = setInterval(function() {
+                timeLeft--;
+                updateTimerDisplay(timeLeft);
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    resendLink.removeClass('disabled');
+                    timerSpan.text('');
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay(s) {
+            const min = Math.floor(s / 60);
+            const sec = s % 60;
+            timerSpan.text(`(${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')})`);
+        }
+
+        // --- NEW: Toggle & Traditional Login ---
+        $('.toggle-btn').on('click', function() {
+            const target = $(this).data('target');
+            $('.toggle-btn').removeClass('active');
+            $(this).addClass('active');
+            $('.login-form-method').addClass('hidden');
+            $('#' + target).removeClass('hidden');
+        });
+
+        $('#btn-login-password').on('click', function() {
+            const username = $('#input-username').val();
+            const password = $('#input-password').val();
+            const errorDiv = $('#password-error');
+
+            if (!username || !password) {
+                errorDiv.text('يرجى تعبئة جميع الحقول').removeClass('hidden');
+                return;
+            }
+
+            setLoading($(this), true);
+            errorDiv.addClass('hidden');
+
+            fetch('{% url "accounts:traditional_login" %}' + window.location.search, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                setLoading($(this), false);
+                if (data.success) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    errorDiv.text(data.error).removeClass('hidden');
+                }
+            })
+            .catch(err => {
+                setLoading($(this), false);
+                errorDiv.text('حدث خطأ فني، يرجى المحاولة لاحقاً').removeClass('hidden');
+            });
+        });
+    });
+</script>
+{% endblock %}
