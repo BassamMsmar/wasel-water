@@ -609,19 +609,26 @@
         });
       }
 
-      // Close button
+      // Close button - save dismissed flag so modal won't show again automatically
       const closeBtn = document.getElementById('btn-close-location-modal');
       if (closeBtn) {
-        closeBtn.addEventListener('click', function() { getModalInstance().hide(); });
+        closeBtn.addEventListener('click', function() {
+          try { localStorage.setItem('location_modal_dismissed', '1'); } catch(e) {}
+          getModalInstance().hide();
+        });
       }
 
-      // Auto-show on first visit
+      // Auto-show: only on true first visit (no location saved AND never dismissed)
       const stored = getStoredLocation();
+      const dismissed = localStorage.getItem('location_modal_dismissed');
       if (stored && stored.latitude) {
+        // Location already set - update header button
         updateHeaderLocationBtn(stored.readable_address || stored.city || '');
-      } else {
+      } else if (!dismissed) {
+        // First visit ever - show after short delay
         setTimeout(showLocationModal, 800);
       }
+      // if dismissed && no location: do nothing - user chose to skip
     });
 
     window.showLocationModal = showLocationModal;
