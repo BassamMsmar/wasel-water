@@ -23,7 +23,6 @@
     <div class="row g-4 justify-content-center">
       {% for product in latest_products|slice:":3" %}
       <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:1 }}00">
-<<<<<<< HEAD
         <div class="pcard">
           <a href="{% url 'products:product_detail' product.slug %}" class="pcard-img-wrap">
             <img src="{{ product.image.url }}" class="pcard-img" alt="{{ product.name }}">
@@ -41,41 +40,15 @@
                 <del class="pcard-old-price">{{ product.old_price }} ر.س</del>
                 {% endif %}
               </div>
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ product.id }}">
-                <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="pcard-add-btn" title="أضف للسلة">
-                  <i class="bi bi-cart-plus"></i>
-                  <span>أضف للسلة</span>
-                </button>
-              </form>
-            </div>
-          </div>
-=======
-        <div class="showcase-card shadow-sm {% if forloop.counter == 2 %}elevated{% endif %}">
-          <div class="card-visual">
-            <a href="{% url 'products:product_detail' product.slug %}">
-              <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
-            </a>
-            <span class="label {% if product.flag == 'sale' %}hot{% endif %}">{{ product.get_flag_display|default:product.flag }}</span>
-          </div>
-          <div class="card-details p-3 text-center">
-            <h5 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark text-decoration-none fw-bold">{{ product.name }}</a></h5>
-            <div class="pricing mb-3">
-              <span class="now fw-bold text-primary" style="font-size: 1.15rem;">{{ product.new_price }} ر.س</span>
-              {% if product.old_price > product.new_price %}
-              <span class="was text-muted text-decoration-line-through small ms-2">{{ product.old_price }}</span>
-              {% endif %}
             </div>
             
             <!-- Formal Buttons & Quantity -->
-            <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form mt-3" style="width: 100%;">
+            <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form mt-2" style="width: 100%;">
               {% csrf_token %}
               <input type="hidden" name="product_id" value="{{ product.id }}">
               <input type="hidden" name="item_type" value="product">
               
-              <div class="d-flex w-100 gap-2 justify-content-center align-items-center mb-1">
+              <div class="d-flex gap-2 justify-content-center align-items-center">
                 <!-- Quantity Selector -->
                 <div class="quantity-wrapper d-flex align-items-center border rounded-pill shadow-sm" style="height: 32px; width: 95px; background: #fff;">
                   <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-plus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.1rem; font-weight: bold;" aria-label="Increase">+</button>
@@ -84,8 +57,8 @@
                 </div>
                 
                 <!-- Submit -->
-                <button type="submit" class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center flex-grow-1 shadow-sm m-0 p-0" style="height: 32px; border: none;">
-                  <i class="bi bi-cart-plus pb-1"></i>
+                <button type="submit" class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center flex-grow-1 shadow-sm" style="height: 31px; border: none;">
+                  <i class="bi bi-cart-plus"></i>
                 </button>
               </div>
             </form>
@@ -94,7 +67,6 @@
               <i class="bi bi-eye"></i> تفاصيل المنتج
             </a>
           </div>
->>>>>>> e69a8c8bfa1ac158c5d76c306bbfab0a0719fcec
         </div>
       </div>
       {% endfor %}
@@ -194,7 +166,6 @@
             {% if product.flag %}
             <span class="pcard-badge pcard-badge--{{ product.flag }}">{{ product.get_flag_display|default:product.flag }}</span>
             {% endif %}
-<<<<<<< HEAD
           </a>
           <div class="pcard-body">
             <p class="pcard-brand">{{ product.brand.name|default:"" }}</p>
@@ -206,22 +177,6 @@
                 <del class="pcard-old-price">{{ product.old_price|floatformat:0 }} ر.س</del>
                 {% endif %}
               </div>
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ product.id }}">
-                <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="pcard-add-btn" title="أضف للسلة">
-                  <i class="bi bi-cart-plus"></i>
-                  <span>أضف للسلة</span>
-                </button>
-              </form>
-=======
-          </div>
-          <div class="item-details p-3 text-center">
-            <h6 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark fw-bold text-decoration-none">{{ product.name }}</a></h6>
-            <div class="pricing mb-3">
-              <span class="price text-primary fw-bold" style="font-size: 1.15rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
->>>>>>> e69a8c8bfa1ac158c5d76c306bbfab0a0719fcec
             </div>
             
             <!-- Formal Buttons & Quantity -->
@@ -268,7 +223,6 @@
     </div>
     <div class="row g-3">
       {% for product in all_products %}
-<<<<<<< HEAD
       <div class="col-lg-2 col-md-3 col-6">
         <div class="pcard">
           <a href="{% url 'products:product_detail' product.slug %}" class="pcard-img-wrap">
@@ -284,26 +238,6 @@
                 <del class="pcard-old-price">{{ product.old_price|floatformat:0 }} ر.س</del>
                 {% endif %}
               </div>
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ product.id }}">
-                <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="pcard-add-btn" title="أضف للسلة">
-                  <i class="bi bi-cart-plus"></i>
-                  <span class="d-none d-md-inline">أضف</span>
-                </button>
-              </form>
-=======
-      <div class="col-lg-3 col-md-4 col-6">
-        <div class="item-card shadow-sm border-0 rounded-4 overflow-hidden">
-          <div class="item-img">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
-          </div>
-          <div class="item-details p-3 text-center">
-            <h6 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark fw-bold text-decoration-none">{{ product.name }}</a></h6>
-            <div class="pricing mb-3">
-              <span class="price text-primary fw-bold" style="font-size: 1.15rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
->>>>>>> e69a8c8bfa1ac158c5d76c306bbfab0a0719fcec
             </div>
             
             <!-- Formal Buttons & Quantity -->

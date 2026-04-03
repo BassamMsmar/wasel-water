@@ -24,6 +24,10 @@ class Order(models.Model):
     shipping_address = models.TextField()
     shipping_phone = models.CharField(max_length=20)
     shipping_city = models.CharField(max_length=50)
+    shipping_country = models.CharField(max_length=100, blank=True, null=True)
+    shipping_postal_code = models.CharField(max_length=20, blank=True, null=True)
+    shipping_latitude = models.DecimalField(max_digits=22, decimal_places=16, blank=True, null=True)
+    shipping_longitude = models.DecimalField(max_digits=22, decimal_places=16, blank=True, null=True)
     shipping_location_link = models.URLField(max_length=500, blank=True, null=True)
 
     class Meta:

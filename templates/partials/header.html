@@ -38,6 +38,12 @@
         <!-- Header Actions -->
         <div class="header-actions d-flex align-items-center">
 
+          <!-- Location Button -->
+          <a href="#" id="header-location-btn" onclick="window.showLocationModal && window.showLocationModal(); return false;" title="تغيير موقع التوصيل" style="display: none;">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span id="header-loc-label">موقعي</span>
+          </a>
+
           <!-- Mobile Search Toggle -->
           <button class="action-icon mobile-search-toggle d-lg-none" type="button" data-bs-toggle="collapse"
             data-bs-target="#mobileSearch" aria-expanded="false" aria-controls="mobileSearch">
@@ -88,8 +94,7 @@
                 </div>
                 {% else %}
                 <div class="account-panel-auth d-grid gap-2 px-2 pt-2">
-                  <a href="{% url 'login' %}" class="btn btn-primary btn-sm rounded-pill fw-bold py-2">تسجيل الدخول</a>
-                  <a href="{% url 'accounts:signup' %}" class="btn btn-outline-secondary btn-sm rounded-pill fw-bold py-2">إنشاء حساب</a>
+                  <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-sm rounded-pill fw-bold py-2">تسجيل الدخول / حـساب جديد</a>
                 </div>
                 {% endif %}
               </div>
@@ -114,43 +119,6 @@
     </div>
   </div>
 
-<<<<<<< HEAD
-
-=======
-  <!-- Navigation -->
-  <div class="header-nav">
-    <div class="container-fluid container-xl position-relative">
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="{% url 'home' %}">الرئيسية</a></li>
-          <li><a href="{% url 'products:product_list' %}">المتجر</a></li>
-          <li class="dropdown"><a href="#"><span>الأصناف</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              {% for category in categories %}
-              {% if category.slug %}
-              <li><a href="{% url 'products:category_detail' category.slug %}">{{ category.name }}</a></li>
-              {% endif %}
-              {% endfor %}
-            </ul>
-          </li>
-          <li class="dropdown"><a href="{% url 'products:brand_list' %}"><span>الماركات</span> <i
-                class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              {% for brand in brands %}
-              {% if brand.slug %}
-              <li><a href="{% url 'products:brand_detail' brand.slug %}">{{ brand.name }}</a></li>
-              {% endif %}
-              {% endfor %}
-            </ul>
-          </li>
-          <li><a href="{% url 'products:bundle_list' %}">الباقات</a></li>
-          <li><a href="{% url 'settings:about' %}">عن الشركة</a></li>
-          <li><a href="{% url 'settings:contact' %}">اتصل بنا</a></li>
-        </ul>
-      </nav>
-    </div>
-  </div>
->>>>>>> e69a8c8bfa1ac158c5d76c306bbfab0a0719fcec
 
   <!-- Mobile Search Form -->
   <div class="collapse" id="mobileSearch">

@@ -159,7 +159,6 @@
     </div>
 </section>
 
-<<<<<<< HEAD
 <script async src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap"></script>
 
 <script>
@@ -256,17 +255,5 @@
             }
         });
     }
-=======
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const inputs = document.querySelectorAll('.address-form input, .address-form select, .address-form textarea');
-        inputs.forEach(input => {
-            if(input.type !== 'checkbox' && input.type !== 'radio' && input.type !== 'hidden') {
-                input.classList.add('form-control-premium');
-                input.classList.add('form-control');
-            }
-        });
-    });
->>>>>>> e69a8c8bfa1ac158c5d76c306bbfab0a0719fcec
 </script>
 {% endblock %}

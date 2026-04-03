@@ -4670,15 +4670,20 @@ section,
 --------------------------------------------------------------*/
 .category-product-list .item-card {
   position: relative;
-  border: 1px solid color-mix(in srgb, var(--default-color), transparent 88%);
+  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 85%);
   background: var(--surface-color);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   overflow: hidden;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .category-product-list .item-card:hover {
-  border-color: var(--accent-color);
-  box-shadow: 0 8px 30px color-mix(in srgb, var(--accent-color), transparent 85%);
+  border-color: color-mix(in srgb, var(--accent-color), transparent 40%);
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--accent-color), transparent 85%);
+  transform: translateY(-6px);
 }
 
 .category-product-list .item-card:hover .secondary-img {
@@ -14053,18 +14058,19 @@ section,
   background: #fff;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   display: flex;
   flex-direction: column;
   height: 100%;
-  border: 1px solid rgba(0,0,0,0.06);
+  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 85%);
   position: relative;
 }
 
 .pcard:hover {
-  box-shadow: 0 10px 32px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
-  transform: translateY(-4px);
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--accent-color), transparent 85%);
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--accent-color), transparent 40%);
 }
 
 /* --- صورة المنتج --- */

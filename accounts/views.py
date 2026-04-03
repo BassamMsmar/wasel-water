@@ -1,17 +1,22 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
+from django.contrib import messages, auth
 from django.urls import reverse_lazy
-from .models import Address, Customer
+from django.contrib.auth import get_user_model, authenticate, login as auth_login
+from .models import Address, Customer, OTPToken
 from .forms import AddressForm, UserSignUpForm
+from .otp_utils import generate_otp, send_otp, normalize_phone, validate_phone_sa
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 import json
 
+User = get_user_model()
+
 @require_POST
 def save_temp_location(request):
+    """Legacy endpoint - kept for backward compatibility."""
     try:
         data = json.loads(request.body)
         location_link = data.get('location_link')
@@ -19,6 +24,83 @@ def save_temp_location(request):
             request.session['temp_location'] = location_link
             return JsonResponse({'success': True})
         return JsonResponse({'success': False, 'error': 'No link provided'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@require_POST
+def save_user_location(request):
+    """
+    Save full location data from Google Maps selection.
+    Stores: latitude, longitude, readable_address, maps_url
+    - Always saves to session (for guests and cached use)
+    - If logged in, also saves/updates the default Address record
+    """
+    try:
+        data = json.loads(request.body)
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+        readable_address = data.get('readable_address', '')
+        maps_url = data.get('maps_url', '')
+        city = data.get('city', '')
+        country = data.get('country', '')
+        neighborhood = data.get('neighborhood', '')
+        street = data.get('street', '')
+        postal_code = data.get('postal_code', '')
+
+        if not latitude or not longitude:
+            return JsonResponse({'success': False, 'error': 'Latitude and longitude are required'})
+
+        # Save to session for all users (guests + logged in)
+        request.session['user_location'] = {
+            'latitude': latitude,
+            'longitude': longitude,
+            'readable_address': readable_address,
+            'maps_url': maps_url,
+            'city': city,
+            'country': country,
+        }
+        # Also keep legacy key
+        request.session['temp_location'] = maps_url
+
+        # If authenticated, save/update default address in database
+        if request.user.is_authenticated:
+            from decimal import Decimal
+            # Check for existing address with same coords
+            existing = Address.objects.filter(
+                user=request.user,
+                latitude=Decimal(str(latitude)),
+                longitude=Decimal(str(longitude))
+            ).first()
+
+            if not existing:
+                # If user has a default address, unset it
+                Address.objects.filter(user=request.user, is_default=True).update(is_default=False)
+                # Create new address from map selection
+                Address.objects.create(
+                    user=request.user,
+                    full_name=request.user.get_full_name() or request.user.username,
+                    phone_number=getattr(request.user, 'customer', None) and request.user.customer.phone_number or '',
+                    city=city,
+                    country=country,
+                    neighborhood=neighborhood,
+                    street=street,
+                    postal_code=postal_code,
+                    latitude=latitude,
+                    longitude=longitude,
+                    is_default=True,
+                )
+            else:
+                # Mark existing as default
+                Address.objects.filter(user=request.user, is_default=True).exclude(pk=existing.pk).update(is_default=False)
+                existing.is_default = True
+                existing.save()
+
+        return JsonResponse({
+            'success': True,
+            'readable_address': readable_address,
+            'city': city,
+        })
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
@@ -108,7 +190,6 @@ class AddressDeleteView(LoginRequiredMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 class ProfileView(LoginRequiredMixin, TemplateView):
-# ... (rest of file) ...
     template_name = 'accounts/profile_detail.html'
     
     def post(self, request, *args, **kwargs):
@@ -136,3 +217,129 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
 class PaymentMethodsView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/payment_methods.html'
+
+def otp_login_page_view(request):
+    """Render the unified OTP login/register page."""
+    if request.user.is_authenticated:
+        return redirect('home')
+    return render(request, 'accounts/otp_login.html')
+
+@require_POST
+def otp_request_view(request):
+    """Handle OTP request via AJAX."""
+    try:
+        data = json.loads(request.body)
+        phone = data.get('phone')
+        
+        if not phone:
+            return JsonResponse({'success': False, 'error': 'يرجى إدخال رقم الهاتف'})
+            
+        if not validate_phone_sa(phone):
+            return JsonResponse({'success': False, 'error': 'رقم الهاتف غير صحيح (مثال: 05xxxxxxxx)'})
+            
+        normalized_phone = normalize_phone(phone)
+        code = generate_otp(4)
+        
+        # Create OTP token
+        OTPToken.objects.create(
+            phone_number=normalized_phone,
+            code=code
+        )
+        
+        # Send OTP
+        send_otp(normalized_phone, code)
+        
+        return JsonResponse({'success': True, 'message': 'تم إرسال كود التحقق بنجاح'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@require_POST
+def otp_verify_view(request):
+    """Verify OTP and log user in (auto-register if new)."""
+    try:
+        data = json.loads(request.body)
+        phone = data.get('phone')
+        code = data.get('code')
+        
+        if not phone or not code:
+            return JsonResponse({'success': False, 'error': 'بيانات التحقق غير مكتملة'})
+            
+        normalized_phone = normalize_phone(phone)
+        
+        # Find valid OTP token
+        otp_token = OTPToken.objects.filter(
+            phone_number=normalized_phone,
+            code=code,
+            is_used=False
+        ).order_by('-created_at').first()
+        
+        if not otp_token or not otp_token.is_valid():
+            if otp_token:
+                otp_token.attempts += 1
+                otp_token.save()
+            return JsonResponse({'success': False, 'error': 'كود التحقق غير صحيح أو منتهي الصلاحية'})
+            
+        # Mark as used
+        otp_token.is_used = True
+        otp_token.save()
+        
+        # Find or create user
+        customer = Customer.objects.filter(phone_number=normalized_phone).first()
+        if customer:
+            user = customer.user
+        else:
+            # Check if user exists by username (phone)
+            user = User.objects.filter(username=normalized_phone).first()
+            if not user:
+                # Create new user
+                user = User.objects.create_user(
+                    username=normalized_phone,
+                    password=User.objects.make_random_password()
+                )
+                # Create customer profile
+                Customer.objects.create(user=user, phone_number=normalized_phone)
+            else:
+                # User exists but no customer? (unlikely but possible)
+                if not getattr(user, 'customer', None):
+                    Customer.objects.create(user=user, phone_number=normalized_phone)
+        
+        # Log in
+        auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        
+        # Check for next redirect
+        next_url = request.GET.get('next', 'home')
+        if next_url == 'home' or not next_url:
+            from django.urls import reverse
+            next_url = reverse('home')
+            
+        return JsonResponse({'success': True, 'redirect_url': next_url})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@require_POST
+def traditional_login_view(request):
+    """Handle traditional username/password login via AJAX."""
+    try:
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        
+        if not username or not password:
+            return JsonResponse({'success': False, 'error': 'يرجى إدخال اسم المستخدم وكلمة المرور'})
+            
+        # Our PhoneOrEmailBackend handles username, email or phone
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            auth_login(request, user, backend='accounts.backends.PhoneOrEmailBackend')
+            
+            # Follow next parameter
+            from django.urls import reverse
+            next_url = request.GET.get('next') or reverse('home')
+                
+            return JsonResponse({'success': True, 'redirect_url': next_url})
+        else:
+            return JsonResponse({'success': False, 'error': 'خطأ في اسم المستخدم أو كلمة المرور'})
+            
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': 'حدث خطأ أثناء تسجيل الدخول'})

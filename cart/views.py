@@ -28,10 +28,14 @@ class CartCheckout(LoginRequiredMixin, TemplateView):
             messages.error(request, "سلة المشتريات فارغة")
             return redirect('cart:cart_detail')
 
-        # Extract data
+        # Extract all POST fields first
         selected_address_id = request.POST.get('selected_address_id')
         new_location_link = request.POST.get('new_location_link')
-        
+        country = request.POST.get('country', '')
+        postal_code = request.POST.get('postal_code', '')
+        latitude = request.POST.get('latitude') or None
+        longitude = request.POST.get('longitude') or None
+
         if selected_address_id:
             # User chose a saved address
             address = get_object_or_404(self.request.user.addresses, id=selected_address_id)
@@ -41,29 +45,53 @@ class CartCheckout(LoginRequiredMixin, TemplateView):
             city = address.city
             full_address = f"{address.neighborhood or ''} {address.street or ''} {address.building_number or ''}".strip() or address.city
             location_link = address.location_link
+            country = address.country or ''
+            postal_code = address.postal_code or ''
+            latitude = address.latitude
+            longitude = address.longitude
             note = request.POST.get('note', '')
         else:
-            first_name = request.POST.get('first_name')
-            last_name = request.POST.get('last_name')
-            phone = request.POST.get('phone')
-            city = request.POST.get('city')
-            address_line = request.POST.get('address')
+            first_name = request.POST.get('first_name', '')
+            last_name = request.POST.get('last_name', '')
+            phone = request.POST.get('phone', '')
+            city = request.POST.get('city', '')
+            neighborhood = request.POST.get('neighborhood', '')
+            street = request.POST.get('street', '')
+            building_number = request.POST.get('building_number', '')
+            address_line = request.POST.get('address', '')
             note = request.POST.get('note', '')
-            location_link = new_location_link or request.session.get('temp_location')
+            location_link = new_location_link or request.session.get('temp_location', '')
 
-            full_address = address_line
-            # Save address if authenticated
-            if location_link and self.request.user.is_authenticated:
+            # Build full address from components or fallback to address_line
+            if neighborhood or street or building_number:
+                full_address = f"{neighborhood} {street} {building_number}".strip()
+            else:
+                full_address = address_line or city
+
+            # Auto-save address for authenticated users if coords available
+            if self.request.user.is_authenticated and latitude and longitude:
                 from accounts.models import Address
-                if not Address.objects.filter(user=self.request.user, location_link=location_link).exists():
-                    Address.objects.create(
-                        user=self.request.user,
-                        full_name=f"{first_name} {last_name}",
-                        phone_number=phone,
-                        city=city,
-                        location_link=location_link,
-                        is_default=not self.request.user.addresses.exists()
-                    )
+                from decimal import Decimal, InvalidOperation
+                try:
+                    lat_dec = Decimal(str(latitude))
+                    lng_dec = Decimal(str(longitude))
+                    if not Address.objects.filter(user=self.request.user, latitude=lat_dec, longitude=lng_dec).exists():
+                        Address.objects.create(
+                            user=self.request.user,
+                            full_name=f"{first_name} {last_name}".strip(),
+                            phone_number=phone,
+                            city=city,
+                            country=country,
+                            neighborhood=neighborhood,
+                            street=street,
+                            building_number=building_number,
+                            postal_code=postal_code,
+                            latitude=lat_dec,
+                            longitude=lng_dec,
+                            is_default=not self.request.user.addresses.exists()
+                        )
+                except (InvalidOperation, Exception):
+                    pass
 
         if note:
              full_address += f" - ملاحظات: {note}"
@@ -74,7 +102,11 @@ class CartCheckout(LoginRequiredMixin, TemplateView):
             shipping_full_name=f"{first_name} {last_name}",
             shipping_phone=phone,
             shipping_city=city,
+            shipping_country=country,
+            shipping_postal_code=postal_code,
             shipping_address=full_address,
+            shipping_latitude=latitude,
+            shipping_longitude=longitude,
             shipping_location_link=location_link,
             total_price=cart.get_total_price(),
             status='pending'
