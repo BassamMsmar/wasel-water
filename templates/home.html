@@ -150,7 +150,6 @@
             {% if product.flag %}
             <span class="pcard-badge pcard-badge--{{ product.flag }}">{{ product.get_flag_display|default:product.flag }}</span>
             {% endif %}
-<<<<<<< HEAD
           </a>
           <div class="pcard-body">
             <p class="pcard-brand">{{ product.brand.name|default:"" }}</p>
@@ -171,13 +170,6 @@
                   <span>أضف للسلة</span>
                 </button>
               </form>
-=======
-          </div>
-          <div class="item-details p-3 text-center">
-            <h6 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark fw-bold text-decoration-none">{{ product.name }}</a></h6>
-            <div class="pricing mb-3">
-              <span class="price text-primary fw-bold" style="font-size: 1.15rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
->>>>>>> e69a8c8bfa1ac158c5d76c306bbfab0a0719fcec
             </div>
             
             <!-- Formal Buttons & Quantity -->
@@ -224,7 +216,6 @@
     </div>
     <div class="row g-3">
       {% for product in all_products %}
-<<<<<<< HEAD
       <div class="col-lg-2 col-md-3 col-6">
         <div class="pcard">
           <a href="{% url 'products:product_detail' product.slug %}" class="pcard-img-wrap">
@@ -249,17 +240,6 @@
                   <span class="d-none d-md-inline">أضف</span>
                 </button>
               </form>
-=======
-      <div class="col-lg-3 col-md-4 col-6">
-        <div class="item-card shadow-sm border-0 rounded-4 overflow-hidden">
-          <div class="item-img">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
-          </div>
-          <div class="item-details p-3 text-center">
-            <h6 class="mb-2"><a href="{% url 'products:product_detail' product.slug %}" class="text-dark fw-bold text-decoration-none">{{ product.name }}</a></h6>
-            <div class="pricing mb-3">
-              <span class="price text-primary fw-bold" style="font-size: 1.15rem;">{{ product.new_price|floatformat:0 }} ر.س</span>
->>>>>>> e69a8c8bfa1ac158c5d76c306bbfab0a0719fcec
             </div>
             
             <!-- Formal Buttons & Quantity -->
