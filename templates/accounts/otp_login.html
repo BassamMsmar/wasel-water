@@ -35,12 +35,12 @@
 
     .otp-card {
         background: var(--card-bg);
-        border: 1px solid rgba(0, 77, 122, 0.1);
-        border-radius: 24px;
+        border: 1px solid rgba(0, 77, 122, 0.12);
+        border-radius: 16px;
         padding: 40px;
         width: 100%;
-        max-width: 440px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        max-width: 330px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
         animation: fadeIn 0.6s ease-out;
     }
 
@@ -89,37 +89,37 @@
         display: flex;
         align-items: center;
         background: #fff;
-        border: 2px solid #e9ecef;
-        border-radius: 14px;
-        padding: 2px 16px;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 2px 14px;
         transition: all 0.3s;
     }
 
     .phone-input-wrapper:focus-within {
         border-color: var(--otp-primary);
-        box-shadow: 0 0 0 4px rgba(0, 77, 122, 0.08);
+        box-shadow: 0 0 0 3px rgba(0, 77, 122, 0.06);
     }
 
     .phone-prefix {
         display: flex;
         align-items: center;
         gap: 8px;
-        padding-left: 12px;
-        border-left: 1px solid #e9ecef;
+        padding-right: 12px;
+        border-right: 1px solid #dee2e6;
         color: var(--otp-primary);
         font-weight: 700;
-        font-size: 1.1rem;
+        font-size: 1.05rem;
     }
 
     .phone-input {
         width: 100%;
         background: transparent;
         border: none;
-        padding: 14px;
+        padding: 12px;
         color: var(--otp-text-main);
-        font-size: 1.2rem;
-        font-weight: 700;
-        letter-spacing: 1px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
     }
 
     .phone-input:focus {
@@ -127,16 +127,16 @@
     }
 
     .btn-submit {
-        background: linear-gradient(135deg, var(--otp-primary), var(--otp-secondary));
+        background: var(--otp-primary);
         color: #fff;
         border: none;
-        border-radius: 14px;
-        padding: 18px;
+        border-radius: 10px;
+        padding: 16px;
         width: 100%;
-        font-weight: 800;
-        font-size: 1.1rem;
+        font-weight: 700;
+        font-size: 1rem;
         transition: all 0.3s;
-        box-shadow: 0 8px 20px rgba(0, 77, 122, 0.15);
+        box-shadow: 0 4px 12px rgba(0, 77, 122, 0.12);
         margin-top: 10px;
     }
 
@@ -290,7 +290,47 @@
     .toggle-btn.active {
         background: #fff;
         color: var(--otp-primary);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Input with Icon Group */
+    .input-icon-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 0 14px;
+        transition: all 0.3s;
+    }
+    
+    .input-icon-group:focus-within {
+        border-color: var(--otp-primary);
+        box-shadow: 0 0 0 3px rgba(0, 77, 122, 0.06);
+    }
+    
+    .input-icon {
+        color: #adb5bd;
+        font-size: 1.1rem;
+        padding-left: 12px;
+        border-left: 1px solid #dee2e6;
+        display: flex;
+        align-items: center;
+    }
+    
+    .input-icon-group input {
+        width: 100%;
+        background: transparent;
+        border: none;
+        padding: 12px;
+        color: var(--otp-text-main);
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    
+    .input-icon-group input:focus {
+        outline: none;
     }
 
     /* Social Login */
@@ -342,6 +382,16 @@
     @keyframes spin {
         to { transform: rotate(360deg); }
     }
+
+    /* Fix Autofill background color */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active  {
+        -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+        -webkit-text-fill-color: var(--otp-text-main) !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
 </style>
 {% endblock %}
 
@@ -389,11 +439,21 @@
         <div id="form-password" class="login-form-method hidden">
             <div class="form-group">
                 <label class="form-label">اسم المستخدم أو الجوال</label>
-                <input type="text" id="input-username" class="phone-input" placeholder="أدخل اسمك أو رقم جوالك" style="border: 2px solid #e9ecef; border-radius: 14px; background: #fff; padding-right: 15px;">
+                <div class="input-icon-group">
+                    <div class="input-icon">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <input type="text" id="input-username" placeholder="أدخل اسمك أو رقم جوالك">
+                </div>
             </div>
             <div class="form-group">
                 <label class="form-label">كلمة المرور</label>
-                <input type="password" id="input-password" class="phone-input" placeholder="••••••••" style="border: 2px solid #e9ecef; border-radius: 14px; background: #fff; padding-right: 15px;">
+                <div class="input-icon-group">
+                    <div class="input-icon">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <input type="password" id="input-password" placeholder="••••••••">
+                </div>
             </div>
             <div id="password-error" class="text-danger small mt-2 hidden" style="margin-bottom: 15px;"></div>
             <button id="btn-login-password" class="btn-submit">
@@ -404,7 +464,7 @@
 
         <!-- Google Login -->
         <div class="social-login">
-            <div class="divider"><span>أو عبر جوجل</span></div>
+            <div class="divider"><span>أو</span></div>
             <a href="{% url 'google_login' %}" class="btn-google">
                 <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="google-icon" alt="Google">
                 <span>المتابعة عبر جوجل</span>
