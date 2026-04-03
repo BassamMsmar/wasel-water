@@ -12,6 +12,7 @@ import json
 
 @require_POST
 def save_temp_location(request):
+    """Legacy endpoint - kept for backward compatibility."""
     try:
         data = json.loads(request.body)
         location_link = data.get('location_link')
@@ -19,6 +20,83 @@ def save_temp_location(request):
             request.session['temp_location'] = location_link
             return JsonResponse({'success': True})
         return JsonResponse({'success': False, 'error': 'No link provided'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@require_POST
+def save_user_location(request):
+    """
+    Save full location data from Google Maps selection.
+    Stores: latitude, longitude, readable_address, maps_url
+    - Always saves to session (for guests and cached use)
+    - If logged in, also saves/updates the default Address record
+    """
+    try:
+        data = json.loads(request.body)
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+        readable_address = data.get('readable_address', '')
+        maps_url = data.get('maps_url', '')
+        city = data.get('city', '')
+        country = data.get('country', '')
+        neighborhood = data.get('neighborhood', '')
+        street = data.get('street', '')
+        postal_code = data.get('postal_code', '')
+
+        if not latitude or not longitude:
+            return JsonResponse({'success': False, 'error': 'Latitude and longitude are required'})
+
+        # Save to session for all users (guests + logged in)
+        request.session['user_location'] = {
+            'latitude': latitude,
+            'longitude': longitude,
+            'readable_address': readable_address,
+            'maps_url': maps_url,
+            'city': city,
+            'country': country,
+        }
+        # Also keep legacy key
+        request.session['temp_location'] = maps_url
+
+        # If authenticated, save/update default address in database
+        if request.user.is_authenticated:
+            from decimal import Decimal
+            # Check for existing address with same coords
+            existing = Address.objects.filter(
+                user=request.user,
+                latitude=Decimal(str(latitude)),
+                longitude=Decimal(str(longitude))
+            ).first()
+
+            if not existing:
+                # If user has a default address, unset it
+                Address.objects.filter(user=request.user, is_default=True).update(is_default=False)
+                # Create new address from map selection
+                Address.objects.create(
+                    user=request.user,
+                    full_name=request.user.get_full_name() or request.user.username,
+                    phone_number=getattr(request.user, 'customer', None) and request.user.customer.phone_number or '',
+                    city=city,
+                    country=country,
+                    neighborhood=neighborhood,
+                    street=street,
+                    postal_code=postal_code,
+                    latitude=latitude,
+                    longitude=longitude,
+                    is_default=True,
+                )
+            else:
+                # Mark existing as default
+                Address.objects.filter(user=request.user, is_default=True).exclude(pk=existing.pk).update(is_default=False)
+                existing.is_default = True
+                existing.save()
+
+        return JsonResponse({
+            'success': True,
+            'readable_address': readable_address,
+            'city': city,
+        })
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 

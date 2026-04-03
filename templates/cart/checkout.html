@@ -176,9 +176,17 @@
                     <i class="bi bi-geo-alt-fill"></i> تحديد من الخريطة
                 </button>
               </div>
-              <input type="hidden" name="new_location_link" id="checkout-location-link" value="{{ request.session.temp_location|default:'' }}">
-              
               <div class="row g-4 mt-1">
+                <div class="col-12 mb-2">
+                    <div id="map" style="height: 300px; width: 100%; border-radius: 15px; border: 2px solid #eee;"></div>
+                    <p class="text-muted small mt-2">انقر على الخريطة أو اسحب العلامة لتحديد موقعك ، سيتم ملء البيانات تلقائياً.</p>
+                </div>
+                
+                <!-- Hidden Coordinates -->
+                <input type="hidden" name="latitude" id="id_latitude">
+                <input type="hidden" name="longitude" id="id_longitude">
+                <input type="hidden" name="new_location_link" id="checkout-location-link" value="{{ request.session.temp_location|default:'' }}">
+                
                 <div class="col-md-6">
                   <label for="first_name" class="form-label-premium">الاسم الأول <span class="text-danger">*</span></label>
                   <input type="text" id="first_name" name="first_name" class="form-control form-control-premium new-addr-input" required placeholder="أدخل اسمك">
@@ -194,20 +202,33 @@
                     <input type="tel" id="phone" name="phone" class="form-control form-control-premium text-start new-addr-input" style="border-radius: 12px 0 0 12px;" dir="ltr" required placeholder="05x xxx xxxx">
                   </div>
                 </div>
-                <div class="col-12">
+                <div class="col-md-6">
                   <label for="city" class="form-label-premium">المدينة <span class="text-danger">*</span></label>
-                  <select id="city" name="city" class="form-select form-select-premium new-addr-input" required>
-                    <option value="" selected disabled>اختر مدينتك من القائمة</option>
-                    <option value="الرياض">الرياض</option>
-                    <option value="جدة">جدة</option>
-                    <option value="الدمام">الدمام</option>
-                    <option value="مكة">مكة المكرمة</option>
-                    <option value="المدينة المنورة">المدينة المنورة</option>
-                  </select>
+                  <input type="text" id="city" name="city" class="form-control form-control-premium new-addr-input" required placeholder="المدينة">
+                </div>
+                <div class="col-md-6">
+                  <label for="country" class="form-label-premium">الدولة</label>
+                  <input type="text" id="country" name="country" class="form-control form-control-premium new-addr-input" placeholder="الدولة">
+                </div>
+                <div class="col-md-6">
+                  <label for="neighborhood" class="form-label-premium">الحي</label>
+                  <input type="text" id="neighborhood" name="neighborhood" class="form-control form-control-premium new-addr-input" placeholder="الحي">
+                </div>
+                <div class="col-md-6">
+                   <label for="street" class="form-label-premium">الشارع</label>
+                   <input type="text" id="street" name="street" class="form-control form-control-premium new-addr-input" placeholder="الشارع">
+                </div>
+                <div class="col-md-6">
+                    <label for="building_number" class="form-label-premium">رقم المبنى</label>
+                    <input type="text" id="building_number" name="building_number" class="form-control form-control-premium new-addr-input" placeholder="رقم المبنى">
+                </div>
+                <div class="col-md-6">
+                    <label for="postal_code" class="form-label-premium">الرمز البريدي</label>
+                    <input type="text" id="postal_code" name="postal_code" class="form-control form-control-premium new-addr-input" placeholder="الرمز البريدي">
                 </div>
                 <div class="col-12">
-                  <label for="address" class="form-label-premium">العنوان التفصيلي <span class="text-danger">*</span></label>
-                  <textarea id="address" name="address" class="form-control form-control-premium new-addr-input" rows="2" required placeholder="اسم الحي، الشارع، المبنى..."></textarea>
+                  <label for="address" class="form-label-premium">العنوان التفصيلي (اختياري)</label>
+                  <textarea id="address" name="address" class="form-control form-control-premium" rows="2" placeholder="تفاصيل إضافية للعنوان..."></textarea>
                 </div>
               </div>
             </div>
@@ -384,5 +405,85 @@
       });
     });
   });
+</script>
+
+<script async src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap"></script>
+
+<script>
+    let map;
+    let marker;
+    let geocoder;
+
+    function initMap() {
+        const defaultLat = 24.7136;
+        const defaultLng = 46.6753;
+        const myLatlng = { lat: defaultLat, lng: defaultLng };
+
+        const mapElement = document.getElementById("map");
+        if (!mapElement) return;
+
+        map = new google.maps.Map(mapElement, {
+            zoom: 12,
+            center: myLatlng,
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        marker = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            draggable: true,
+            title: "موقعي",
+        });
+
+        marker.addListener("dragend", (event) => {
+            const pos = marker.getPosition();
+            updateLatLngFields(pos.lat(), pos.lng());
+            reverseGeocode(pos);
+        });
+
+        map.addListener("click", (event) => {
+            marker.setPosition(event.latLng);
+            updateLatLngFields(event.latLng.lat(), event.latLng.lng());
+            reverseGeocode(event.latLng);
+        });
+    }
+
+    function updateLatLngFields(lat, lng) {
+        document.getElementById('id_latitude').value = lat;
+        document.getElementById('id_longitude').value = lng;
+    }
+
+    function reverseGeocode(latLng) {
+        geocoder.geocode({ location: latLng }, (results, status) => {
+            if (status === "OK" && results[0]) {
+                const addressComponents = results[0].address_components;
+                const fieldMap = {
+                    'country': 'country',
+                    'locality': 'city',
+                    'sublocality': 'neighborhood',
+                    'neighborhood': 'neighborhood',
+                    'route': 'street',
+                    'street_number': 'building_number',
+                    'postal_code': 'postal_code'
+                };
+
+                Object.values(fieldMap).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+
+                addressComponents.forEach(component => {
+                    const types = component.types;
+                    for (const [type, id] of Object.entries(fieldMap)) {
+                        if (types.includes(type)) {
+                            const el = document.getElementById(id);
+                            if (el && !el.value) el.value = component.long_name;
+                        }
+                    }
+                });
+            }
+        });
+    }
 </script>
 {% endblock %}

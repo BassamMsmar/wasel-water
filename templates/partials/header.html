@@ -38,6 +38,12 @@
         <!-- Header Actions -->
         <div class="header-actions d-flex align-items-center">
 
+          <!-- Location Button -->
+          <a href="#" id="header-location-btn" onclick="window.showLocationModal && window.showLocationModal(); return false;" title="تغيير موقع التوصيل" style="display: none;">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span id="header-loc-label">موقعي</span>
+          </a>
+
           <!-- Mobile Search Toggle -->
           <button class="action-icon mobile-search-toggle d-lg-none" type="button" data-bs-toggle="collapse"
             data-bs-target="#mobileSearch" aria-expanded="false" aria-controls="mobileSearch">

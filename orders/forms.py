@@ -8,7 +8,8 @@ class OrderForm(forms.ModelForm):
         model = Order
         fields = [
             'user', 'status', 'total_price', 'is_paid',
-            'shipping_full_name', 'shipping_address', 'shipping_phone', 'shipping_city'
+            'shipping_full_name', 'shipping_address', 'shipping_phone', 'shipping_city',
+            'shipping_country', 'shipping_postal_code', 'shipping_latitude', 'shipping_longitude'
         ]
         widgets = {
             'user': forms.Select(attrs={'class': 'form-select'}),
@@ -19,6 +20,10 @@ class OrderForm(forms.ModelForm):
             'shipping_address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'العنوان التفصيلي (الشارع، الحي، المعلم)'}),
             'shipping_phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '05xxxxxxxx', 'lang': 'en', 'style': 'direction: ltr;'}),
             'shipping_city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'المدينة'}),
+            'shipping_country': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الدولة'}),
+            'shipping_postal_code': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الرمز البريدي'}),
+            'shipping_latitude': forms.HiddenInput(),
+            'shipping_longitude': forms.HiddenInput(),
         }
 
 OrderItemFormSet = inlineformset_factory(

@@ -29,11 +29,115 @@
   <!-- Main CSS File -->
   <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
   
-  <!-- Leaflet Map CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <style>
-    #global-map { height: 400px; width: 100%; border-radius: 12px; }
-    
+    /* Hide number input spin buttons */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      appearance: none;
+      margin: 0; 
+    }
+    input[type=number] { 
+      -moz-appearance: textfield; 
+      appearance: textfield;
+    }
+
+    /* ================================================
+       LOCATION SELECTION MODAL STYLES
+    ================================================ */
+    #locationModal .modal-dialog { max-width: 680px; }
+    #location-map-container {
+      height: 350px;
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      background: #e9f2f9;
+    }
+    #location-map-gm { height: 100%; width: 100%; }
+    #location-map-loading {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #edf6ff, #dff0fd);
+      z-index: 10;
+      gap: 12px;
+      transition: opacity 0.4s ease;
+    }
+    #location-map-loading .spinner-border { width: 3rem; height: 3rem; color: #004d7a; }
+    #location-search-input {
+      border-radius: 12px;
+      border: 2px solid #e0e7ef;
+      padding: 12px 16px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.44 1.406A5.5 5.5 0 1 1 8 2.5a5.5 5.5 0 0 1-3.698 9.25z'/%3E%3C/svg%3E") no-repeat 14px center;
+      padding-right: 16px;
+      padding-left: 42px;
+    }
+    [dir="rtl"] #location-search-input {
+      background-position: right 14px center;
+      padding-right: 42px;
+      padding-left: 16px;
+    }
+    #location-search-input:focus { border-color: #00b4d8; box-shadow: 0 0 0 3px rgba(0,180,216,0.15); outline: none; }
+    #btn-use-gps {
+      border-radius: 12px;
+      border: 2px solid #00b4d8;
+      color: #004d7a;
+      font-weight: 600;
+      transition: all 0.2s;
+      background: linear-gradient(135deg, #f0fbff, #e0f7ff);
+    }
+    #btn-use-gps:hover { background: linear-gradient(135deg, #00b4d8, #0093b5); color: #fff; border-color: #00b4d8; }
+    #selected-location-display {
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f0fbff, #e5f5fd);
+      border: 1px solid rgba(0,180,216,0.25);
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      color: #1e3a5f;
+      display: none;
+    }
+    #selected-location-display.visible { display: flex; }
+    #btn-confirm-location {
+      background: linear-gradient(135deg, #004d7a, #00b4d8);
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      width: 100%;
+      transition: all 0.25s;
+      box-shadow: 0 6px 20px rgba(0,77,122,0.25);
+    }
+    #btn-confirm-location:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0,77,122,0.35);
+    }
+    #btn-confirm-location:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    /* Header location badge */
+    #header-location-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.8rem; font-weight: 600;
+      color: #004d7a;
+      background: linear-gradient(135deg, #e7f6fc, #d0f0f9);
+      border: 1.5px solid rgba(0,180,216,0.3);
+      border-radius: 20px;
+      padding: 5px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.2s;
+    }
+    #header-location-btn:hover { background: linear-gradient(135deg, #00b4d8, #004d7a); color: #fff; border-color: transparent; }
+    #header-location-btn i { font-size: 1rem; flex-shrink: 0; }
+
     /* Hide number input spin buttons */
     input[type=number]::-webkit-inner-spin-button, 
     input[type=number]::-webkit-outer-spin-button { 
@@ -90,19 +194,77 @@
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Global Map Modal -->
-  <div class="modal fade" id="globalMapModal" tabindex="-1" aria-labelledby="globalMapModalLabel" aria-hidden="true">
+  <!-- ===================================================
+       LOCATION SELECTION MODAL (Google Maps)
+  =================================================== -->
+  <div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel"
+       data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+        <!-- Header -->
+        <div class="modal-header border-0 px-4 pt-4 pb-2" style="background: linear-gradient(135deg, #004d7a, #00b4d8);">
+          <div class="d-flex align-items-center gap-3">
+            <div style="background: rgba(255,255,255,0.2); border-radius: 12px; width:44px; height:44px; display:flex; align-items:center; justify-content:center;">
+              <i class="bi bi-geo-alt-fill fs-4 text-white"></i>
+            </div>
+            <div>
+              <h5 class="modal-title fw-bold text-white mb-0" id="locationModalLabel">حدد موقع التوصيل</h5>
+              <p class="small mb-0" style="color: rgba(255,255,255,0.8);">نحتاج موقعك لتوصيل طلبك بسرعة</p>
+            </div>
+          </div>
+          <button type="button" class="btn-close btn-close-white ms-auto" id="btn-close-location-modal" style="opacity:0.8;"></button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body px-4 pb-4 pt-3">
+          <!-- Search Input -->
+          <div class="mb-3">
+            <input type="text" id="location-search-input" class="form-control w-100"
+                   placeholder="ابحث عن منطقة أو شارع أو معلم..." autocomplete="off">
+          </div>
+
+          <!-- GPS Button -->
+          <div class="mb-3">
+            <button type="button" id="btn-use-gps" class="btn w-100 py-2">
+              <i class="bi bi-crosshair me-2"></i>استخدام موقعي الحالي (GPS)
+            </button>
+          </div>
+
+          <!-- Map -->
+          <div id="location-map-container" class="mb-3">
+            <div id="location-map-loading">
+              <div class="spinner-border" role="status"></div>
+              <span class="text-primary fw-semibold">جارٍ تحميل الخريطة...</span>
+            </div>
+            <div id="location-map-gm"></div>
+          </div>
+
+          <!-- Selected Location Display -->
+          <div id="selected-location-display" class="mb-3 align-items-center gap-2">
+            <i class="bi bi-pin-map-fill text-primary fs-5 flex-shrink-0"></i>
+            <span id="selected-location-text" class="flex-grow-1"></span>
+          </div>
+
+          <!-- Confirm Button -->
+          <button type="button" id="btn-confirm-location" disabled>
+            <i class="bi bi-check-circle me-2"></i>تأكيد الموقع والمتابعة
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legacy Global Map Modal (kept for backward compat with checkout "تحديد من الخريطة" button) -->
+  <div class="modal fade" id="globalMapModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content rounded-4 border-0 shadow">
         <div class="modal-header border-bottom-0 pb-0">
-          <h5 class="modal-title fw-bold" id="globalMapModalLabel" style="color: var(--chk-primary);"><i class="bi bi-geo-alt-fill me-2"></i>تحديد الموقع</h5>
+          <h5 class="modal-title fw-bold" style="color: var(--chk-primary);"><i class="bi bi-geo-alt-fill me-2"></i>تحديد الموقع</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p class="text-muted small mb-3">الرجاء تحديد موقع التوصيل الخاص بك بدقة على الخريطة لتسهيل عملية الشحن.</p>
-          <div id="global-map" class="bg-light position-relative">
-             <div class="spinner-border text-primary position-absolute top-50 start-50 translate-middle z-3" role="status" id="mapSpinner"></div>
-          </div>
+          <p class="text-muted small mb-3">انقر على الخريطة أو ابحث لتحديد موقع التوصيل بدقة.</p>
+          <div id="global-map" style="height:350px; border-radius:12px; background:#e9f2f9;"></div>
           <input type="hidden" id="selected-location-link">
         </div>
         <div class="modal-footer border-top-0 pt-0">
@@ -129,8 +291,299 @@
   <script src="{% static 'assets/js/main.js' %}"></script>
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Leaflet Map JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+  <!-- Google Maps API -->
+  <script>
+    // Google Maps callback - called after API loads
+    function onGoogleMapsReady() {
+      window._gmapsReady = true;
+      document.dispatchEvent(new Event('gmaps:ready'));
+    }
+  </script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=onGoogleMapsReady&language=ar&region=SA"></script>
+
+  <script>
+  (function() {
+    'use strict';
+
+    // =====================================================
+    // LOCATION STORAGE UTILITIES
+    // =====================================================
+    const LOCATION_KEY = 'user_location';
+    
+    function getStoredLocation() {
+      try { return JSON.parse(localStorage.getItem(LOCATION_KEY)); } catch(e) { return null; }
+    }
+    
+    function setStoredLocation(data) {
+      try { localStorage.setItem(LOCATION_KEY, JSON.stringify(data)); } catch(e) {}
+    }
+
+    function updateHeaderLocationBtn(addressText) {
+      const btn = document.getElementById('header-location-btn');
+      if (!btn) return;
+      const label = btn.querySelector('#header-loc-label');
+      if (label) {
+        const shortAddr = addressText ? addressText.split(',')[0].trim() : 'موقعي';
+        label.textContent = shortAddr;
+      }
+      btn.style.display = 'flex';
+    }
+
+    // =====================================================
+    // LOCATION MODAL SYSTEM
+    // =====================================================
+    let gmMap = null, gmMarker = null, gmGeocoder = null, gmAutocomplete = null;
+    let selectedLocation = null;
+    let modalInstance = null;
+
+    function getModalInstance() {
+      if (!modalInstance) {
+        const el = document.getElementById('locationModal');
+        if (el) modalInstance = new bootstrap.Modal(el);
+      }
+      return modalInstance;
+    }
+
+    function showLocationModal() {
+      const modal = getModalInstance();
+      if (modal) {
+        modal.show();
+        initLocationMap();
+      }
+    }
+
+    function initLocationMap() {
+      if (gmMap) { google.maps.event.trigger(gmMap, 'resize'); return; }
+      if (!window._gmapsReady) {
+        document.addEventListener('gmaps:ready', initLocationMap, { once: true });
+        return;
+      }
+
+      const defaultCenter = { lat: 21.5433, lng: 39.1728 }; // Jeddah
+      
+      gmMap = new google.maps.Map(document.getElementById('location-map-gm'), {
+        center: defaultCenter,
+        zoom: 12,
+        disableDefaultUI: false,
+        mapTypeControl: false,
+        fullscreenControl: false,
+        streetViewControl: false,
+        styles: [
+          { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }
+        ]
+      });
+
+      gmGeocoder = new google.maps.Geocoder();
+      document.getElementById('location-map-loading').style.opacity = '0';
+      setTimeout(() => { document.getElementById('location-map-loading').style.display = 'none'; }, 400);
+
+      // Marker
+      gmMarker = new google.maps.Marker({
+        map: gmMap,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        title: 'موقع التوصيل',
+        visible: false,
+      });
+
+      // Autocomplete
+      const searchInput = document.getElementById('location-search-input');
+      gmAutocomplete = new google.maps.places.Autocomplete(searchInput, {
+        fields: ['geometry', 'formatted_address', 'address_components'],
+      });
+      gmAutocomplete.addListener('place_changed', function() {
+        const place = gmAutocomplete.getPlace();
+        if (!place.geometry || !place.geometry.location) return;
+        gmMap.setCenter(place.geometry.location);
+        gmMap.setZoom(15);
+        placeMarker(place.geometry.location);
+        fillLocationFromComponents(place.address_components, place.geometry.location, place.formatted_address);
+      });
+
+      // Click on map
+      gmMap.addListener('click', function(e) {
+        placeMarker(e.latLng);
+        reverseGeocode(e.latLng);
+      });
+
+      // Drag marker
+      gmMarker.addListener('dragend', function(e) {
+        reverseGeocode(e.latLng);
+      });
+
+      // If location already saved, show it
+      const stored = getStoredLocation();
+      if (stored && stored.latitude && stored.longitude) {
+        const pos = new google.maps.LatLng(stored.latitude, stored.longitude);
+        gmMap.setCenter(pos); gmMap.setZoom(15);
+        placeMarker(pos);
+        setSelectedLocation({
+          latitude: stored.latitude,
+          longitude: stored.longitude,
+          readable_address: stored.readable_address || '',
+          maps_url: stored.maps_url || '',
+          city: stored.city || '',
+          country: stored.country || '',
+        });
+      }
+    }
+
+    function placeMarker(latLng) {
+      gmMarker.setPosition(latLng);
+      gmMarker.setVisible(true);
+      if (gmMarker.getAnimation()) gmMarker.setAnimation(null);
+      gmMap.panTo(latLng);
+    }
+
+    function reverseGeocode(latLng) {
+      gmGeocoder.geocode({ location: latLng }, function(results, status) {
+        if (status === 'OK' && results[0]) {
+          fillLocationFromComponents(results[0].address_components, latLng, results[0].formatted_address);
+        }
+      });
+    }
+
+    function fillLocationFromComponents(components, latLng, formattedAddress) {
+      let city = '', country = '', neighborhood = '', street = '', postal_code = '';
+      if (components) {
+        components.forEach(function(c) {
+          if (c.types.includes('locality')) city = c.long_name;
+          if (c.types.includes('administrative_area_level_2') && !city) city = c.long_name;
+          if (c.types.includes('country')) country = c.long_name;
+          if (c.types.includes('sublocality') || c.types.includes('neighborhood')) neighborhood = c.long_name;
+          if (c.types.includes('route')) street = c.long_name;
+          if (c.types.includes('postal_code')) postal_code = c.long_name;
+        });
+      }
+      const lat = typeof latLng.lat === 'function' ? latLng.lat() : latLng.lat;
+      const lng = typeof latLng.lng === 'function' ? latLng.lng() : latLng.lng;
+      setSelectedLocation({
+        latitude: lat,
+        longitude: lng,
+        readable_address: formattedAddress || `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+        maps_url: `https://www.google.com/maps?q=${lat},${lng}`,
+        city, country, neighborhood, street, postal_code
+      });
+    }
+
+    function setSelectedLocation(loc) {
+      selectedLocation = loc;
+      const displayEl = document.getElementById('selected-location-display');
+      const textEl = document.getElementById('selected-location-text');
+      const confirmBtn = document.getElementById('btn-confirm-location');
+      if (displayEl) { displayEl.classList.add('visible'); }
+      if (textEl) textEl.textContent = loc.readable_address;
+      if (confirmBtn) confirmBtn.disabled = false;
+    }
+
+    // GPS Button
+    document.addEventListener('DOMContentLoaded', function() {
+      const gpsBtn = document.getElementById('btn-use-gps');
+      if (gpsBtn) {
+        gpsBtn.addEventListener('click', function() {
+          if (!navigator.geolocation) {
+            Swal.fire({ icon: 'error', title: 'غير مدعوم', text: 'متصفحك لا يدعم تحديد الموقع تلقائياً.', confirmButtonColor: '#004d7a' });
+            return;
+          }
+          gpsBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جارٍ تحديد موقعك...';
+          gpsBtn.disabled = true;
+          navigator.geolocation.getCurrentPosition(
+            function(pos) {
+              gpsBtn.innerHTML = '<i class="bi bi-crosshair me-2"></i>استخدام موقعي الحالي (GPS)';
+              gpsBtn.disabled = false;
+              if (!window._gmapsReady) {
+                document.addEventListener('gmaps:ready', function() {
+                  const latLng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+                  gmMap.setCenter(latLng); gmMap.setZoom(16);
+                  placeMarker(latLng);
+                  reverseGeocode(latLng);
+                }, { once: true });
+                return;
+              }
+              const latLng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+              gmMap.setCenter(latLng); gmMap.setZoom(16);
+              placeMarker(latLng);
+              reverseGeocode(latLng);
+            },
+            function(err) {
+              gpsBtn.innerHTML = '<i class="bi bi-crosshair me-2"></i>استخدام موقعي الحالي (GPS)';
+              gpsBtn.disabled = false;
+              let msg = 'تعذر تحديد موقعك. يرجى السماح للمتصفح باستخدام الموقع أو حدده يدوياً على الخريطة.';
+              if (err.code === 1) msg = 'تم رفض الإذن. يرجى السماح بالوصول إلى الموقع من إعدادات المتصفح.';
+              Swal.fire({ icon: 'warning', title: 'تنبيه', text: msg, confirmButtonColor: '#004d7a' });
+            },
+            { timeout: 10000, maximumAge: 60000 }
+          );
+        });
+      }
+
+      // Confirm Button
+      const confirmBtn = document.getElementById('btn-confirm-location');
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', function() {
+          if (!selectedLocation) return;
+          confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جارٍ الحفظ...';
+          confirmBtn.disabled = true;
+
+          // Save to localStorage immediately
+          setStoredLocation(selectedLocation);
+
+          // Save to server
+          fetch('{% url "accounts:save_user_location" %}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+            body: JSON.stringify(selectedLocation)
+          })
+          .then(r => r.json())
+          .then(function(data) {
+            getModalInstance().hide();
+            updateHeaderLocationBtn(selectedLocation.readable_address);
+            confirmBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>تأكيد الموقع والمتابعة';
+            confirmBtn.disabled = false;
+            // Dispatch event for other scripts
+            document.dispatchEvent(new CustomEvent('locationSaved', { detail: selectedLocation }));
+            Swal.fire({
+              toast: true, position: 'top', icon: 'success', showConfirmButton: false, timer: 2000,
+              title: `<small>تم تحديد الموقع: ${selectedLocation.city || selectedLocation.readable_address.split(',')[0]}</small>`
+            });
+          })
+          .catch(function() {
+            // Even if server fails, localStorage is saved - proceed
+            getModalInstance().hide();
+            updateHeaderLocationBtn(selectedLocation.readable_address);
+            confirmBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>تأكيد الموقع والمتابعة';
+            confirmBtn.disabled = false;
+          });
+        });
+      }
+
+      // Close button - allow dismissing
+      const closeBtn = document.getElementById('btn-close-location-modal');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+          getModalInstance().hide();
+        });
+      }
+
+      // Auto-show on first visit
+      const stored = getStoredLocation();
+      if (stored && stored.latitude) {
+        // Location already set - update header
+        updateHeaderLocationBtn(stored.readable_address || stored.city || '');
+      } else {
+        // No location stored - show after short delay for better UX
+        setTimeout(showLocationModal, 800);
+      }
+
+    }); // end DOMContentLoaded
+
+    // Expose globally so header button can call it
+    window.showLocationModal = showLocationModal;
+
+  })(); // end IIFE
+  </script>
 
   <script>
     $(document).ready(function() {
@@ -163,103 +616,64 @@
                 data: data,
                 success: function(response) {
                     if (response.success || response.message) {
-                        // Update cart count in header
                         $('.count-dot').text(response.cart_count || response.qty);
-                        // Update sidebar cart content
                         if (response.cart_html) {
                             $('.cart-panel').html(response.cart_html);
                         }
-                        
-                        // Auto-closing Success Animation
                         Swal.fire({
-                            position: 'center',
-                            icon: 'success',
+                            position: 'center', icon: 'success',
                             title: 'تمت الإضافة للسلة بنجاح',
-                            showConfirmButton: false,
-                            timer: 1000,
+                            showConfirmButton: false, timer: 1000,
                             backdrop: `rgba(0,0,0,0.4)`
                         });
                     }
                 },
                 error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'عذراً',
-                        text: 'حدث خطأ أثناء الإضافة للسلة.',
-                        confirmButtonColor: '#004d7a'
-                    });
+                    Swal.fire({ icon: 'error', title: 'عذراً', text: 'حدث خطأ أثناء الإضافة للسلة.', confirmButtonColor: '#004d7a' });
                 }
             });
         });
 
-        // Global Map Logic
-        let map = null;
-        let marker = null;
-        let isMapInitialized = false;
+        // Legacy Global Map (globalMapModal) - simple Leaflet fallback for checkout modal
+        let legacyMap = null, legacyMarker = null, legacyMapReady = false;
 
-        function initMap() {
-            if(isMapInitialized) return;
-            // Default: Central Jeddah [21.5433, 39.1728]
-            map = L.map('global-map').setView([21.5433, 39.1728], 12);
-            
+        function initLegacyMap() {
+            if (legacyMapReady) return;
+            legacyMap = L.map('global-map').setView([21.5433, 39.1728], 12);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-
+            }).addTo(legacyMap);
             $('#mapSpinner').hide();
-            
-            map.on('click', function(e) {
-                let lat = e.latlng.lat;
-                let lng = e.latlng.lng;
-                
-                if(marker) {
-                    marker.setLatLng(e.latlng);
-                } else {
-                    marker = L.marker(e.latlng).addTo(map);
-                }
-                
-                let link = `https://www.google.com/maps?q=${lat},${lng}`;
-                $('#selected-location-link').val(link);
+            legacyMap.on('click', function(e) {
+                if (legacyMarker) legacyMarker.setLatLng(e.latlng);
+                else legacyMarker = L.marker(e.latlng).addTo(legacyMap);
+                $('#selected-location-link').val(`https://www.google.com/maps?q=${e.latlng.lat},${e.latlng.lng}`);
             });
-            isMapInitialized = true;
+            legacyMapReady = true;
         }
 
         $('#globalMapModal').on('shown.bs.modal', function () {
-            initMap();
-            if(map) {
-                map.invalidateSize();
-            }
+            initLegacyMap();
+            if (legacyMap) legacyMap.invalidateSize();
         });
 
         $('#confirmLocationBtn').click(function() {
             let link = $('#selected-location-link').val();
-            if(!link) {
-                Swal.fire({
-                    icon: 'warning', title: 'تنبيه',
-                    text: 'الرجاء النقر على الخريطة لتحديد موقعك أولاً',
-                    confirmButtonText: 'حسناً', confirmButtonColor: '#004d7a'
-                });
+            if (!link) {
+                Swal.fire({ icon: 'warning', title: 'تنبيه', text: 'الرجاء النقر على الخريطة لتحديد موقعك أولاً', confirmButtonText: 'حسناً', confirmButtonColor: '#004d7a' });
                 return;
             }
-
             $.ajax({
                 url: '{% url "accounts:save_temp_location" %}',
                 method: 'POST',
-                data: JSON.stringify({location_link: link}),
+                data: JSON.stringify({ location_link: link }),
                 contentType: 'application/json',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
                 success: function(resp) {
-                    if(resp.success) {
+                    if (resp.success) {
                         $('#globalMapModal').modal('hide');
-                        Swal.fire({
-                            toast: true, position: 'top', icon: 'success',
-                            title: 'تم حفظ الموقع بنجاح', showConfirmButton: false, timer: 1500
-                        });
+                        Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'تم حفظ الموقع', showConfirmButton: false, timer: 1500 });
                         $(document).trigger('locationSaved', [link]);
-                    } else {
-                        console.error('Save location failed:', resp.error);
                     }
                 }
             });
@@ -267,6 +681,7 @@
 
     });
   </script>
+
   
   {% block extra_js %}{% endblock %}
 
