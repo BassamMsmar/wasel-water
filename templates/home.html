@@ -40,16 +40,32 @@
                 <del class="pcard-old-price">{{ product.old_price }} ر.س</del>
                 {% endif %}
               </div>
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ product.id }}">
-                <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="pcard-add-btn" title="أضف للسلة">
-                  <i class="bi bi-cart-plus"></i>
-                  <span>أضف للسلة</span>
-                </button>
-              </form>
             </div>
+            
+            <!-- Formal Buttons & Quantity -->
+            <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form mt-2" style="width: 100%;">
+              {% csrf_token %}
+              <input type="hidden" name="product_id" value="{{ product.id }}">
+              <input type="hidden" name="item_type" value="product">
+              
+              <div class="d-flex gap-2 justify-content-center align-items-center">
+                <!-- Quantity Selector -->
+                <div class="quantity-wrapper d-flex align-items-center border rounded-pill shadow-sm" style="height: 32px; width: 95px; background: #fff;">
+                  <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-plus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.1rem; font-weight: bold;" aria-label="Increase">+</button>
+                  <input type="text" name="quantity" class="form-control text-center border-0 p-0 m-0 qty-input bg-transparent w-50 h-100" value="1" readonly style="font-weight: bold; font-size: 0.95rem; box-shadow: none;" aria-label="Quantity">
+                  <button class="btn btn-link text-decoration-none text-dark p-0 m-0 w-25 btn-minus d-flex justify-content-center align-items-center h-100" type="button" style="font-size: 1.1rem; font-weight: bold;" aria-label="Decrease">-</button>
+                </div>
+                
+                <!-- Submit -->
+                <button type="submit" class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center flex-grow-1 shadow-sm" style="height: 31px; border: none;">
+                  <i class="bi bi-cart-plus"></i>
+                </button>
+              </div>
+            </form>
+            
+            <a href="{% url 'products:product_detail' product.slug %}" class="btn btn-light border w-100 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-1 shadow-sm text-dark mt-2">
+              <i class="bi bi-eye"></i> تفاصيل المنتج
+            </a>
           </div>
         </div>
       </div>
@@ -161,15 +177,6 @@
                 <del class="pcard-old-price">{{ product.old_price|floatformat:0 }} ر.س</del>
                 {% endif %}
               </div>
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ product.id }}">
-                <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="pcard-add-btn" title="أضف للسلة">
-                  <i class="bi bi-cart-plus"></i>
-                  <span>أضف للسلة</span>
-                </button>
-              </form>
             </div>
             
             <!-- Formal Buttons & Quantity -->
@@ -231,15 +238,6 @@
                 <del class="pcard-old-price">{{ product.old_price|floatformat:0 }} ر.س</del>
                 {% endif %}
               </div>
-              <form action="{% url 'cart:cart_add' %}" method="POST" class="add-to-cart-form">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ product.id }}">
-                <input type="hidden" name="item_type" value="product">
-                <button type="submit" class="pcard-add-btn" title="أضف للسلة">
-                  <i class="bi bi-cart-plus"></i>
-                  <span class="d-none d-md-inline">أضف</span>
-                </button>
-              </form>
             </div>
             
             <!-- Formal Buttons & Quantity -->
