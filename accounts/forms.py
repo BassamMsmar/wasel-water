@@ -3,18 +3,18 @@ from django.contrib.auth.models import User
 from .models import Address, Customer
 
 class UserSignUpForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'كلمة المرور'}))
-    password_confirm = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'تأكيد كلمة المرور'}))
-    phone_number = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'رقم الجوال'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'كلمة المرور', 'autocomplete': 'new-password'}))
+    password_confirm = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'تأكيد كلمة المرور', 'autocomplete': 'new-password'}))
+    phone_number = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'رقم الجوال', 'autocomplete': 'off'}))
 
     class Meta:
         model = User
         fields = ['username', 'email', 'first_name', 'last_name', 'password']
         widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'اسم المستخدم'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'البريد الإلكتروني'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الاسم الأول'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'اسم العائلة'}),
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'اسم المستخدم', 'autocomplete': 'off'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'البريد الإلكتروني', 'autocomplete': 'off'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الاسم الأول', 'autocomplete': 'off'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'اسم العائلة', 'autocomplete': 'off'}),
         }
 
     def clean_password_confirm(self):
@@ -29,7 +29,10 @@ class UserSignUpForm(forms.ModelForm):
         user.set_password(self.cleaned_data['password'])
         if commit:
             user.save()
-            Customer.objects.create(user=user, phone_number=self.cleaned_data['phone_number'])
+            # Update the auto-created customer from signals
+            customer, created = Customer.objects.get_or_create(user=user)
+            customer.phone_number = self.cleaned_data['phone_number']
+            customer.save()
         return user
 
 

@@ -1,106 +1,67 @@
-{% extends "base.html" %}
+{% extends "accounts/base_account.html" %}
 {% load static %}
 
-{% block title %}عناويني - {{ company.name|default:"متاجر 360" }}{% endblock %}
+{% block title %}عناويني - واصل{% endblock %}
 
-{% block content %}
-<div class="page-title light-background">
-    <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0">عناويني</h1>
-        <nav class="breadcrumbs">
-            <ol>
-                <li><a href="{% url 'home' %}">الرئيسية</a></li>
-                <li><a href="{% url 'accounts:dashboard' %}">لوحة التحكم</a></li>
-                <li class="current">عناوين الشحن</li>
-            </ol>
-        </nav>
-    </div>
-</div>
+{% block account_title %}عناويني{% endblock %}
+{% block account_title_short %}عناوين الشحن{% endblock %}
 
-<section id="address-list" class="address-list section">
-    <div class="container">
-        <div class="row g-4">
+{% block account_content %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-bold mb-0" style="color: var(--ac-txt);"><i class="bi bi-geo-alt-fill"></i> عناوين الشحن</h4>
+      <a href="{% url 'accounts:address_create' %}" class="acc-btn acc-btn-black">
+          <i class="bi bi-plus-lg me-1"></i> إضافة عنوان جديد
+      </a>
+  </div>
 
-            <!-- Sidebar Navigation -->
-            <div class="col-lg-3">
-                <div class="account-sidebar p-4 bg-white shadow-sm rounded-4">
-                    <nav id="account-nav" class="account-nav">
-                        <ul class="list-unstyled mb-0">
-                            <li class="mb-2"><a href="{% url 'accounts:dashboard' %}"
-                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i
-                                        class="bi bi-speedometer2"></i> لوحة التحكم</a></li>
-                            <li class="mb-2"><a href="{% url 'orders:order_list' %}"
-                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i
-                                        class="bi bi-bag-check"></i> طلباتي</a></li>
-                            <li class="mb-2"><a href="{% url 'accounts:address_list' %}"
-                                    class="nav-link active py-2 px-3 rounded-3 d-flex align-items-center gap-2"><i
-                                        class="bi bi-geo-alt"></i> عناويني</a></li>
-                            <li class="mb-2"><a href="{% url 'accounts:profile_detail' %}"
-                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-secondary"><i
-                                        class="bi bi-person-gear"></i> تفاصيل الحساب</a></li>
-                            <hr>
-                            <li><a href="{% url 'logout' %}"
-                                    class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-2 text-danger"><i
-                                        class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
+  <div class="row g-4">
+      {% for address in addresses %}
+      <div class="col-md-6">
+          <div class="acc-panel h-100 d-flex flex-column" style="padding: 24px; {% if address.is_default %}border-color: var(--ac-accent); box-shadow: 0 4px 15px rgba(0,0,0,0.08);{% endif %}">
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                  <h5 class="fw-bold mb-0" style="color: var(--ac-txt);">{{ address.full_name }}</h5>
+                  {% if address.is_default %}
+                  <span class="acc-badge acc-badge-success">الافتراضي</span>
+                  {% endif %}
+              </div>
+              <div class="mb-3">
+                  <span class="acc-badge {% if address.address_type == 'home' %}acc-badge-success{% elif address.address_type == 'work' %}acc-badge-warning{% else %}acc-badge-neutral{% endif %} mb-2">
+                      {{ address.get_address_type_display }}
+                  </span>
+              </div>
+              <p class="mb-1" style="color: var(--ac-txt-sec); font-size: 0.95rem;">
+                  <i class="bi bi-geo-alt-fill me-1"></i> {{ address.street|default:"" }}، {{ address.neighborhood|default:"" }}
+              </p>
+              <p class="mb-1" style="color: var(--ac-txt-sec); font-size: 0.95rem;">
+                  <i class="bi bi-building me-1"></i> المبنى: {{ address.building_number|default:"-" }}{% if address.apartment_number %}، شقة: {{ address.apartment_number }}{% endif %}
+              </p>
+              <p class="mb-1" style="color: var(--ac-txt-sec); font-size: 0.95rem;">
+                  <i class="bi bi-map me-1"></i> {{ address.get_city_display }}
+              </p>
+              <p class="mb-4" style="color: var(--ac-txt-sec); font-size: 0.95rem;">
+                  <i class="bi bi-telephone me-1"></i> {{ address.phone_number }}
+              </p>
 
-            <!-- Address List Content -->
-            <div class="col-lg-9">
-                <div class="address-list-content">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="fw-bold mb-0">عناوين الشحن</h4>
-                        <a href="{% url 'accounts:address_create' %}" class="btn btn-primary rounded-pill px-4"><i
-                                class="bi bi-plus-lg me-1"></i> إضافة عنوان جديد</a>
-                    </div>
-
-                    <div class="row g-4">
-                        {% for address in addresses %}
-                        <div class="col-md-6">
-                            <div
-                                class="address-card p-4 bg-white shadow-sm rounded-4 border h-100 {% if address.is_default %}border-primary{% endif %}">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <h5 class="fw-bold mb-0">{{ address.full_name }}</h5>
-                                    {% if address.is_default %}
-                                    <span class="badge bg-primary-subtle text-primary rounded-pill">الافتراضي</span>
-                                    {% endif %}
-                                </div>
-                                <div class="mb-3">
-                                    <span class="badge {% if address.address_type == 'home' %}bg-info{% elif address.address_type == 'work' %}bg-warning text-dark{% else %}bg-secondary{% endif %} rounded-pill small mb-2">
-                                        {{ address.get_address_type_display }}
-                                    </span>
-                                </div>
-                                <p class="text-muted mb-1"><i class="bi bi-geo-alt-fill me-1"></i> {{ address.street|default:"" }}، {{ address.neighborhood|default:"" }}</p>
-                                <p class="text-muted mb-1"><i class="bi bi-building me-1"></i> المبنى: {{ address.building_number|default:"-" }}{% if address.apartment_number %}، شقة: {{ address.apartment_number }}{% endif %}</p>
-                                <p class="text-muted mb-1"><i class="bi bi-map me-1"></i> {{ address.get_city_display }}</p>
-                                <p class="text-muted mb-4"><i class="bi bi-telephone me-1"></i> {{ address.phone_number }}</p>
-
-                                <div class="d-flex gap-2 mt-auto">
-                                    <a href="{% url 'accounts:address_update' address.id %}"
-                                        class="btn btn-sm btn-light border px-3">تعديل</a>
-                                    <a href="{% url 'accounts:address_delete' address.id %}"
-                                        class="btn btn-sm btn-outline-danger px-3">حذف</a>
-                                </div>
-                            </div>
-                        </div>
-                        {% empty %}
-                        <div class="col-12 text-center py-5">
-                            <div class="p-5 bg-white shadow-sm rounded-4 border">
-                                <i class="bi bi-geo-alt text-muted fs-1 mb-3"></i>
-                                <h5 class="text-muted">لم تقم بإضافة أي عناوين بعد.</h5>
-                                <p class="text-muted small">أضف عنوان شحن ليسهل عليك عملية الطلب.</p>
-                                <a href="{% url 'accounts:address_create' %}"
-                                    class="btn btn-primary rounded-pill px-4 mt-2">أضف عنواناً الآن</a>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
+              <div class="d-flex gap-2 mt-auto pt-3" style="border-top: 1px solid var(--ac-border);">
+                  <a href="{% url 'accounts:address_update' address.id %}" class="acc-btn acc-btn-outline w-50 justify-content-center" style="padding: 6px 12px; font-size: 0.85rem;">تعديل</a>
+                  <form method="post" action="{% url 'accounts:address_delete' address.id %}" style="width: 50%;">
+                      {% csrf_token %}
+                      <button type="submit" class="acc-btn w-100 justify-content-center" style="padding: 6px 12px; font-size: 0.85rem; color: #dc3545; background: rgba(220, 53, 69, 0.1); border: none;">حذف</button>
+                  </form>
+              </div>
+          </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center py-5">
+          <div class="acc-panel py-5" style="border: 2px dashed var(--ac-border);">
+              <i class="bi bi-map text-muted opacity-50 fs-1 mb-3 d-block"></i>
+              <h5 class="fw-bold mb-2" style="color: var(--ac-txt);">لم تقم بإضافة أي عناوين بعد.</h5>
+              <p class="mb-4" style="color: var(--ac-txt-sec);">أضف عنوان شحن ليسهل عليك عملية الطلب.</p>
+              <a href="{% url 'accounts:address_create' %}" class="acc-btn acc-btn-black">
+                  أضف عنواناً الآن <i class="bi bi-arrow-left ms-1"></i>
+              </a>
+          </div>
+      </div>
+      {% endfor %}
+  </div>
 {% endblock %}

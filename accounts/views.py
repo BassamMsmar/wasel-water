@@ -240,17 +240,37 @@ def otp_request_view(request):
         normalized_phone = normalize_phone(phone)
         code = generate_otp(4)
         
-        # Create OTP token
-        OTPToken.objects.create(
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        # Invalidate old unused tokens for this phone
+        OTPToken.objects.filter(
             phone_number=normalized_phone,
-            code=code
+            is_used=False
+        ).update(is_used=True)
+        
+        # Create OTP token with explicit expires_at
+        expires_at = timezone.now() + timedelta(minutes=5)
+        token = OTPToken.objects.create(
+            phone_number=normalized_phone,
+            code=code,
+            expires_at=expires_at,
         )
+        
+        print(f"[OTP DEBUG] Created token id={token.pk} phone={normalized_phone} code={code} expires={expires_at}")
         
         # Send OTP
         send_otp(normalized_phone, code)
         
-        return JsonResponse({'success': True, 'message': 'تم إرسال كود التحقق بنجاح'})
+        from django.conf import settings
+        response_data = {'success': True, 'message': 'تم إرسال كود التحقق بنجاح'}
+        if settings.DEBUG:
+            response_data['debug_code'] = code
+            
+        return JsonResponse(response_data)
     except Exception as e:
+        import traceback
+        print(f"[OTP ERROR] otp_request: {e}\n{traceback.format_exc()}")
         return JsonResponse({'success': False, 'error': str(e)})
 
 @require_POST
@@ -266,12 +286,25 @@ def otp_verify_view(request):
             
         normalized_phone = normalize_phone(phone)
         
+        from django.utils import timezone as tz
+        print(f"[OTP DEBUG] Verify request: phone={normalized_phone} code={code} server_time={tz.now()}")
+        
         # Find valid OTP token
         otp_token = OTPToken.objects.filter(
             phone_number=normalized_phone,
             code=code,
             is_used=False
         ).order_by('-created_at').first()
+        
+        if otp_token:
+            print(f"[OTP DEBUG] Token found: id={otp_token.pk} expires={otp_token.expires_at} is_used={otp_token.is_used} attempts={otp_token.attempts} is_valid={otp_token.is_valid()}")
+        else:
+            # Try without code filter to see what's in DB
+            any_token = OTPToken.objects.filter(phone_number=normalized_phone, is_used=False).order_by('-created_at').first()
+            if any_token:
+                print(f"[OTP DEBUG] No match for code. Latest token: code={any_token.code} (submitted: {code})")
+            else:
+                print(f"[OTP DEBUG] No token found for phone={normalized_phone}")
         
         if not otp_token or not otp_token.is_valid():
             if otp_token:
@@ -291,18 +324,25 @@ def otp_verify_view(request):
             # Check if user exists by username (phone)
             user = User.objects.filter(username=normalized_phone).first()
             if not user:
-                # Create new user
+                # Create new user — make_random_password removed in Django 5.x
+                from django.utils.crypto import get_random_string
                 user = User.objects.create_user(
                     username=normalized_phone,
-                    password=User.objects.make_random_password()
+                    password=get_random_string(16)
                 )
-                # Create customer profile
-                Customer.objects.create(user=user, phone_number=normalized_phone)
-            else:
-                # User exists but no customer? (unlikely but possible)
-                if not getattr(user, 'customer', None):
-                    Customer.objects.create(user=user, phone_number=normalized_phone)
+                print(f"[OTP DEBUG] Created new user: {normalized_phone}")
+
+            # Always use get_or_create to avoid UNIQUE constraint on user_id
+            customer, created = Customer.objects.get_or_create(
+                user=user,
+                defaults={'phone_number': normalized_phone}
+            )
+            if not created and not customer.phone_number:
+                customer.phone_number = normalized_phone
+                customer.save()
+            print(f"[OTP DEBUG] Customer {'created' if created else 'found'}: id={customer.pk}")
         
+        print(f"[OTP DEBUG] Logging in user: {user.username} (id={user.pk})")
         # Log in
         auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         
@@ -314,6 +354,8 @@ def otp_verify_view(request):
             
         return JsonResponse({'success': True, 'redirect_url': next_url})
     except Exception as e:
+        import traceback
+        print(f"[OTP ERROR] otp_verify: {e}\n{traceback.format_exc()}")
         return JsonResponse({'success': False, 'error': str(e)})
 
 @require_POST

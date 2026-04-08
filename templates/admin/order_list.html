@@ -1,95 +1,103 @@
 {% extends "admin/base_admin.html" %}
-
-{% block title %}إدارة الطلبات{% endblock %}
-{% block page_title %}قائمة الطلبات{% endblock %}
+{% block title %}الطلبات{% endblock %}
+{% block page_title %}الطلبات{% endblock %}
 
 {% block admin_content %}
-<div class="card p-4 shadow-sm border-0 rounded-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h5 class="fw-bold mb-0">جميع الطلبات</h5>
-        <a href="{% url 'settings:admin_order_create' %}" class="btn btn-primary rounded-pill px-4 shadow-sm">
-            <i class="bi bi-plus-lg me-1"></i> إضافة طلب يدوي
-        </a>
-    </div>
 
-    <!-- Stats summary (Optional but nice) -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="p-3 bg-primary-subtle rounded-3 border">
-                 <small class="text-primary fw-bold d-block pb-1">إجمالي الطلبات</small>
-                 <h4 class="mb-0">{{ orders.count }}</h4>
-            </div>
-        </div>
-    </div>
-
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr class="small text-muted text-uppercase">
-                    <th class="border-0">رقم الطلب</th>
-                    <th class="border-0">العميل</th>
-                    <th class="border-0">التاريخ</th>
-                    <th class="border-0">الإجمالي</th>
-                    <th class="border-0">الحالة</th>
-                    <th class="border-0 text-center">إجراء</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for order in orders %}
-                <tr>
-                    <td class="fw-bold">#{{ order.id }}</td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-person-circle fs-4 me-2 text-secondary opacity-50"></i>
-                            <div class="d-flex flex-column">
-                                <span class="fw-medium">{{ order.user.get_full_name|default:order.user.username }}</span>
-                                <small class="text-muted">{{ order.shipping_phone }}</small>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="small">{{ order.created_at|date:"Y-m-d H:i" }}</td>
-                    <td class="fw-bold text-dark">{{ order.total_price }} ر.س</td>
-                    <td>
-                        <form action="{% url 'settings:admin_order_update_status' order.pk %}" method="post" class="status-form">
-                            {% csrf_token %}
-                            <select name="status" class="form-select form-select-sm rounded-pill fw-bold bg-opacity-10 
-                                {% if order.status == 'delivered' %}border-success text-success bg-success{% elif order.status == 'cancelled' %}border-danger text-danger bg-danger{% else %}border-warning text-warning bg-warning{% endif %}" 
-                                onchange="this.form.submit()">
-                                {% for code, label in order.STATUS_CHOICES %}
-                                <option value="{{ code }}" {% if order.status == code %}selected{% endif %}>{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                        </form>
-                    </td>
-                    <td class="text-center">
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-light border" type="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu shadow border-0">
-                                <li><a class="dropdown-item" href="{% url 'settings:admin_order_detail' order.id %}"><i class="bi bi-eye me-2"></i>عرض التفاصيل</a></li>
-                                <li><a class="dropdown-item" href="{% url 'settings:admin_order_update' order.id %}"><i class="bi bi-pencil me-2"></i>تعديل البيانات</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>حذف</a></li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="text-center py-5">
-                        <i class="bi bi-cart-x fs-1 text-muted"></i>
-                        <p class="mt-2">لا توجد طلبات مسجلة</p>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% if is_paginated %}
-    <div class="mt-4">
-        {% include "partials/pagination.html" with page_obj=page_obj %}
-    </div>
-    {% endif %}
+<div class="adm-page-hd">
+  <div>
+    <h1 class="adm-page-title">إدارة الطلبات</h1>
+    <p class="adm-page-sub">متابعة وإدارة جميع طلبات العملاء</p>
+  </div>
+  <a href="{% url 'settings:admin_order_create' %}" class="adm-btn adm-btn-black" id="btn-create-order">
+    <i class="bi bi-plus"></i> طلب يدوي
+  </a>
 </div>
+
+<!-- Mini Stats -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:22px;">
+  <div class="adm-stat" style="flex-direction:row;align-items:center;gap:14px;padding:16px;">
+    <div class="adm-stat-icon"><i class="bi bi-bag"></i></div>
+    <div><div class="adm-stat-label">الكل</div><div class="adm-stat-value" style="font-size:1.4rem;">{{ orders.count }}</div></div>
+  </div>
+  <div class="adm-stat" style="flex-direction:row;align-items:center;gap:14px;padding:16px;">
+    <div class="adm-stat-icon" style="background:rgba(255,149,0,.1);color:var(--warning);"><i class="bi bi-clock"></i></div>
+    <div><div class="adm-stat-label">انتظار</div><div class="adm-stat-value" style="font-size:1.4rem;">{{ orders_pending|default:0 }}</div></div>
+  </div>
+  <div class="adm-stat" style="flex-direction:row;align-items:center;gap:14px;padding:16px;">
+    <div class="adm-stat-icon" style="background:rgba(52,199,89,.1);color:var(--success);"><i class="bi bi-check-circle"></i></div>
+    <div><div class="adm-stat-label">مُسلَّمة</div><div class="adm-stat-value" style="font-size:1.4rem;">{{ orders_delivered|default:0 }}</div></div>
+  </div>
+  <div class="adm-stat" style="flex-direction:row;align-items:center;gap:14px;padding:16px;">
+    <div class="adm-stat-icon" style="background:rgba(255,59,48,.1);color:var(--danger);"><i class="bi bi-x-circle"></i></div>
+    <div><div class="adm-stat-label">ملغية</div><div class="adm-stat-value" style="font-size:1.4rem;">{{ orders_cancelled|default:0 }}</div></div>
+  </div>
+</div>
+
+<div class="adm-card" id="orders-card">
+  <div class="adm-card-header">
+    <span class="adm-card-title"><i class="bi bi-list-ul"></i> قائمة الطلبات</span>
+  </div>
+  <div class="adm-table-wrap">
+    <table class="adm-table" id="orders-table">
+      <thead>
+        <tr>
+          <th>رقم الطلب</th>
+          <th>العميل</th>
+          <th>الهاتف</th>
+          <th>التاريخ</th>
+          <th>المبلغ</th>
+          <th>الحالة</th>
+          <th style="text-align:center;">إجراء</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td><span class="td-id">#{{ order.id }}</span></td>
+          <td>
+            <div style="display:flex;align-items:center;gap:9px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--surface-3);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;">
+                {{ order.user.get_full_name|default:order.user.username|slice:":1"|upper }}
+              </div>
+              <span style="font-weight:500;">{{ order.user.get_full_name|default:order.user.username }}</span>
+            </div>
+          </td>
+          <td style="color:var(--text-tertiary);font-size:.8rem;">{{ order.shipping_phone|default:"—" }}</td>
+          <td style="color:var(--text-tertiary);font-size:.78rem;white-space:nowrap;">{{ order.created_at|date:"Y/m/d H:i" }}</td>
+          <td style="font-weight:600;">{{ order.total_price }} <span style="font-size:.7rem;color:var(--text-tertiary);">ر.س</span></td>
+          <td>
+            <form action="{% url 'settings:admin_order_update_status' order.pk %}" method="post">
+              {% csrf_token %}
+              <select name="status" class="adm-input" style="padding:4px 8px;font-size:.76rem;min-width:110px;" onchange="this.form.submit()">
+                {% for code, label in order.STATUS_CHOICES %}
+                <option value="{{ code }}" {% if order.status == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </form>
+          </td>
+          <td style="text-align:center;">
+            <div style="display:flex;gap:5px;justify-content:center;">
+              <a href="{% url 'settings:admin_order_detail' order.id %}" class="adm-btn adm-btn-white adm-btn-sm" id="order-view-{{ order.id }}"><i class="bi bi-eye"></i></a>
+              <a href="{% url 'settings:admin_order_update' order.id %}" class="adm-btn adm-btn-white adm-btn-sm" id="order-edit-{{ order.id }}"><i class="bi bi-pencil"></i></a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" style="text-align:center;padding:48px 0;color:var(--text-tertiary);">
+            <i class="bi bi-inbox" style="font-size:2rem;display:block;margin-bottom:8px;"></i>لا توجد طلبات
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if is_paginated %}
+  <div style="padding:14px 20px;border-top:1px solid var(--border-soft);">
+    {% include "partials/pagination.html" with page_obj=page_obj %}
+  </div>
+  {% endif %}
+</div>
+
 {% endblock %}

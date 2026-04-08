@@ -395,3 +395,10 @@ class AdminCustomerDeleteView(StaffRequiredMixin, DeleteView):
     def post(self, request, *args, **kwargs):
         messages.success(self.request, 'تم حذف المستخدم بنجاح.')
         return super().post(request, *args, **kwargs)
+
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+
+def custom_logout_view(request):
+    logout(request)
+    return redirect('home')

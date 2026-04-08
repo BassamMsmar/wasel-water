@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from core.views import home
+from core.views import home, custom_logout_view
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -28,6 +28,7 @@ urlpatterns = [
     # Authentication URLs
     path('accounts/', include('accounts.urls', namespace='accounts')),
     path('accounts/social/', include('allauth.urls')),  # Social Login (Google)
+    path('accounts/logout/', custom_logout_view, name='logout'),
     path('accounts/', include('django.contrib.auth.urls')),  # Fallback
     path('products/', include('products.urls', namespace='products')),
     path('orders/', include('orders.urls', namespace='orders')),

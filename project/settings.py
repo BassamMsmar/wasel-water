@@ -211,6 +211,10 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 LOGOUT_ON_GET = True
 
+# Allauth Logout Settings
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_LOGOUT_REDIRECT_URL = 'home'
+
 CART_SESSION_ID = 'cart'
 
 from datetime import timedelta
