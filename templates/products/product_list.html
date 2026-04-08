@@ -52,48 +52,12 @@
 {% endif %}
 <!-- End Page Title -->
 
-{% if user.is_staff and not brand %}
-<div class="container mt-4">
-  <div class="admin-actions bg-light p-3 rounded border">
-    <h5 class="mb-3"><i class="bi bi-gear-fill me-2 text-primary"></i>إجراءات المشرف</h5>
-    <div class="d-flex flex-wrap gap-2">
-      <a href="{% url 'products:export_products_excel' %}" class="btn btn-success btn-sm">
-        <i class="bi bi-file-earmark-excel me-1"></i> تصدير إكسل
-      </a>
-      <a href="{% url 'products:download_product_template' %}" class="btn btn-outline-primary btn-sm">
-        <i class="bi bi-download me-1"></i> تحميل نموذج الاستيراد
-      </a>
-      <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#importForm">
-        <i class="bi bi-file-earmark-arrow-up me-1"></i> استيراد المنتجات
-      </button>
-    </div>
-
-    <div class="collapse mt-3" id="importForm">
-      <div class="card card-body">
-        <form action="{% url 'products:import_products_excel' %}" method="POST" enctype="multipart/form-data" class="row g-3">
-          {% csrf_token %}
-          <div class="col-md-9">
-            <input type="file" name="excel_file" class="form-control" accept=".xlsx, .xls" required>
-            <div class="form-text text-muted">اختر ملف Excel يحتوي على بيانات المنتجات (الاسم، SKU، السعر، إلخ).</div>
-          </div>
-          <div class="col-md-3">
-            <button type="submit" id="importSubmitBtn" class="btn btn-primary w-100">
-              <span class="btn-text">بدء الاستيراد</span>
-              <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-{% endif %}
 
 <div class="container mt-5">
   <div class="row">
 
     <!-- Sidebar -->
-    <div class="col-lg-3 sidebar">
+    <div class="col-lg-3 sidebar order-2 order-lg-1">
       <div class="widgets-container">
 
         <!-- Categories Widget -->
@@ -138,7 +102,7 @@
     </div><!-- End Sidebar -->
 
     <!-- Product Grid Area -->
-    <div class="col-lg-9">
+    <div class="col-lg-9 order-1 order-lg-2">
       <div class="shop-toolbar d-flex justify-content-between align-items-center mb-4">
         <p class="mb-0">عرض <strong>{{ page_obj.start_index }}–{{ page_obj.end_index }}</strong> من أصل <strong>{{ paginator.count }}</strong> منتج</p>
         <div class="sorting d-flex align-items-center">

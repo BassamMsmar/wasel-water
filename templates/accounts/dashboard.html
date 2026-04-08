@@ -1,324 +1,113 @@
-{% extends "base.html" %}
+{% extends "accounts/base_account.html" %}
 {% load static %}
 
-{% block title %}لوحة التحكم - {{ company.name|default:"متاجر 360" }}{% endblock %}
+{% block title %}لوحة التحكم - واصل{% endblock %}
 
-{% block extra_head %}
-<style>
-  :root {
-    --dash-primary: #004d7a;
-    --dash-accent: #00b4d8;
-    --dash-bg: #f4f9f9;
-  }
-  
-  /* Page Title override */
-  .page-title.light-background {
-    background: linear-gradient(135deg, rgba(0,77,122,0.05) 0%, rgba(0,180,216,0.1) 100%);
-    border-bottom: 1px solid rgba(0,180,216,0.1);
-    padding: 2.5rem 0;
-  }
+{% block account_title %}نظرة عامة{% endblock %}
+{% block account_title_short %}نظرة عامة{% endblock %}
 
-  /* Dashboard Adjustments */
-  .account-dashboard {
-    background-color: var(--dash-bg);
-    padding: 3rem 0 6rem;
-  }
-  
-  /* Sleek Sidebar */
-  .account-sidebar-premium {
-    background: linear-gradient(180deg, var(--dash-primary) 0%, #003355 100%);
-    border-radius: 24px;
-    padding: 2.5rem 1.5rem;
-    color: #fff;
-    box-shadow: 0 20px 40px rgba(0, 77, 122, 0.15);
-  }
-  .user-brief .avatar {
-    width: 80px; height: 80px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 15px;
-    border: 2px solid rgba(255,255,255,0.2);
-  }
-  .user-brief .avatar i { font-size: 2.5rem; color: #fff; }
-  .user-brief h5 { font-weight: 700; margin-bottom: 5px; color: #fff; }
-  .user-brief .text-muted { color: rgba(255,255,255,0.7) !important; font-size: 0.9rem; }
-  
-  .account-nav-premium .nav-link {
-    color: rgba(255,255,255,0.8);
-    padding: 12px 20px;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    font-weight: 500;
-  }
-  .account-nav-premium .nav-link:hover, .account-nav-premium .nav-link.active {
-    background: rgba(255,255,255,0.15);
-    color: #fff;
-    transform: translateX(-5px);
-  }
-  .account-nav-premium hr { border-color: rgba(255,255,255,0.1); margin: 15px 0; }
-  .account-nav-premium .text-danger { color: #ff6b6b !important; }
-  .account-nav-premium .text-danger:hover { background: rgba(255, 107, 107, 0.1); color: #ff6b6b !important; }
+{% block account_content %}
+  <!-- Top Stat Cards -->
+  <div class="row g-3 mb-4">
+      <div class="col-md-4">
+          <div class="acc-panel d-flex align-items-center gap-3 h-100" style="padding:20px;">
+              <div style="width:50px;height:50px;background:var(--ac-bg);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;"><i class="bi bi-cart3 text-dark"></i></div>
+              <div>
+                  <h6 style="font-size:0.8rem;color:var(--ac-txt-sec);margin-bottom:2px;font-weight:600;">إجمالي الطلبات</h6>
+                  <h3 style="margin:0;font-weight:800;color:var(--ac-txt);">{{ user.orders.count }}</h3>
+              </div>
+          </div>
+      </div>
+      <div class="col-md-4">
+          <div class="acc-panel d-flex align-items-center gap-3 h-100" style="padding:20px;">
+              <div style="width:50px;height:50px;background:rgba(52, 199, 89, 0.1);color:#28a745;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;"><i class="bi bi-clock-history"></i></div>
+              <div>
+                  <h6 style="font-size:0.8rem;color:var(--ac-txt-sec);margin-bottom:2px;font-weight:600;">الطلبات النشطة</h6>
+                  <h3 style="margin:0;font-weight:800;color:var(--ac-txt);">{{ user.orders.filter.count }}</h3>
+              </div>
+          </div>
+      </div>
+      <div class="col-md-4">
+          <div class="acc-panel d-flex align-items-center gap-3 h-100" style="padding:20px;">
+              <div style="width:50px;height:50px;background:var(--ac-bg);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;"><i class="bi bi-pin-map text-dark"></i></div>
+              <div>
+                  <h6 style="font-size:0.8rem;color:var(--ac-txt-sec);margin-bottom:2px;font-weight:600;">العناوين المسجلة</h6>
+                  <h3 style="margin:0;font-weight:800;color:var(--ac-txt);">{{ user.addresses.count }}</h3>
+              </div>
+          </div>
+      </div>
+  </div>
 
-  /* Stat Cards */
-  .stat-card-premium {
-    background: #fff;
-    border-radius: 20px;
-    padding: 1.5rem;
-    display: flex; align-items: center; gap: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(0,0,0,0.02);
-  }
-  .stat-card-premium:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0, 180, 216, 0.1);
-  }
-  .stat-card-premium::before {
-    content: ''; position: absolute; top: 0; left: 0; width: 5px; height: 100%;
-  }
-  .stat-card-premium.c-primary::before { background: var(--dash-primary); }
-  .stat-card-premium.c-success::before { background: #20c997; }
-  .stat-card-premium.c-info::before { background: var(--dash-accent); }
-  
-  .stat-icon {
-    width: 60px; height: 60px;
-    border-radius: 16px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.8rem;
-  }
-  .c-primary .stat-icon { background: rgba(0, 77, 122, 0.1); color: var(--dash-primary); }
-  .c-success .stat-icon { background: rgba(32, 201, 151, 0.1); color: #20c997; }
-  .c-info .stat-icon { background: rgba(0, 180, 216, 0.1); color: var(--dash-accent); }
-  
-  .stat-info h6 { font-size: 0.9rem; margin-bottom: 5px; font-weight: 600; color: #6c757d; }
-  .stat-info h2 { font-size: 2rem; font-weight: 800; color: #212529; margin: 0; }
+  <!-- Recent Orders Section -->
+  <div class="acc-panel mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="acc-panel-title mb-0"><i class="bi bi-bag-fill"></i> أحدث الطلبات</h4>
+          <a href="{% url 'orders:order_list' %}" class="acc-btn acc-btn-outline" style="padding:6px 16px;font-size:0.8rem;">عرض الكل</a>
+      </div>
+      <div class="table-responsive">
+          <table class="acc-table">
+              <thead>
+                  <tr>
+                      <th>الطلب #</th>
+                      <th>التاريخ</th>
+                      <th>الحالة</th>
+                      <th>الإجمالي</th>
+                      <th class="text-end">الإجراء</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for order in recent_orders %}
+                  <tr>
+                      <td><strong style="font-family:monospace;">#{{ order.id }}</strong></td>
+                      <td style="color:var(--ac-txt-sec);font-size:0.85rem;">{{ order.created_at|date:"Y-m-d" }}</td>
+                      <td>
+                          <span class="acc-badge {% if order.status == 'delivered' %}acc-badge-success{% elif order.status == 'cancelled' %}acc-badge-danger{% else %}acc-badge-warning{% endif %}">
+                              {{ order.get_status_display }}
+                          </span>
+                      </td>
+                      <td class="fw-bold">{{ order.total_price }} ر.س</td>
+                      <td class="text-end">
+                          <a href="{% url 'orders:detail' order.id %}" class="acc-btn acc-btn-outline" style="padding:4px 12px;font-size:0.75rem;">التفاصيل</a>
+                      </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                      <td colspan="5" class="text-center py-5">
+                          <i class="bi bi-clipboard-x fs-1 text-muted opacity-50 mb-3 d-block"></i>
+                          <p class="text-muted fs-5 mb-0">لا توجد طلبات حديثة.</p>
+                      </td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      </div>
+  </div>
 
-  /* Sections */
-  .dashboard-section-panel {
-    background: #fff;
-    border-radius: 24px;
-    padding: 2rem;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-    margin-bottom: 2rem;
-    border: 1px solid rgba(0,0,0,0.02);
-  }
-  
-  /* Elegant Table */
-  .table-premium {
-    border-collapse: separate;
-    border-spacing: 0 10px;
-  }
-  .table-premium th {
-    border-bottom: none;
-    background-color: transparent;
-    color: #adb5bd;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-    padding: 10px 20px;
-  }
-  .table-premium td {
-    background: #fdfdfd;
-    padding: 18px 20px;
-    vertical-align: middle;
-    border-top: 1px solid #f1f3f5;
-    border-bottom: 1px solid #f1f3f5;
-  }
-  .table-premium td:first-child { border-right: 1px solid #f1f3f5; border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
-  .table-premium td:last-child { border-left: 1px solid #f1f3f5; border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
-  
-  /* Address Box */
-  .address-box-premium {
-    background: #fdfdfd;
-    border: 1px solid #f1f3f5;
-    border-radius: 16px;
-    padding: 20px;
-    position: relative;
-    transition: all 0.3s ease;
-  }
-  .address-box-premium:hover {
-    border-color: var(--dash-accent);
-    background: #fff;
-    box-shadow: 0 10px 20px rgba(0,180,216,0.05);
-  }
-  .address-box-premium::after {
-    content: '\F3E0'; /* bi-geo-alt icon code */
-    font-family: 'bootstrap-icons';
-    position: absolute;
-    top: 20px; left: 20px;
-    font-size: 2rem;
-    color: rgba(0,180,216,0.1);
-  }
-</style>
-{% endblock %}
-
-{% block content %}
-<div class="page-title light-background">
-    <div class="container d-lg-flex justify-content-between align-items-center">
-        <h1 class="mb-2 mb-lg-0 fw-bold" style="color: var(--dash-primary);">حسابي</h1>
-        <nav class="breadcrumbs">
-            <ol>
-                <li><a href="{% url 'home' %}">الرئيسية</a></li>
-                <li class="current">لوحة التحكم</li>
-            </ol>
-        </nav>
-    </div>
-</div>
-
-<section id="account-dashboard" class="account-dashboard section">
-    <div class="container" data-aos="fade-up">
-        <div class="row g-4">
-
-            <!-- Premium Sidebar Navigation -->
-            <div class="col-lg-3">
-                <div class="account-sidebar-premium">
-                    <div class="user-brief text-center mb-4">
-                        <div class="avatar">
-                            <i class="bi bi-person"></i>
-                        </div>
-                        <h5>{{ user.get_full_name|default:user.username }}</h5>
-                        <span class="text-muted">{{ user.email }}</span>
-                    </div>
-                    <nav id="account-nav" class="account-nav-premium">
-                        <ul class="list-unstyled mb-0">
-                            <li class="mb-2"><a href="{% url 'accounts:dashboard' %}"
-                                    class="nav-link active d-flex align-items-center gap-3"><i
-                                        class="bi bi-speedometer2 fs-5"></i> لوحة التحكم</a></li>
-                            <li class="mb-2"><a href="{% url 'orders:order_list' %}"
-                                    class="nav-link d-flex align-items-center gap-3"><i
-                                        class="bi bi-bag-check fs-5"></i> طلباتي</a></li>
-                            <li class="mb-2"><a href="{% url 'accounts:address_list' %}"
-                                    class="nav-link d-flex align-items-center gap-3"><i
-                                        class="bi bi-geo-alt fs-5"></i> عناويني</a></li>
-                            <li class="mb-2"><a href="{% url 'accounts:profile_detail' %}"
-                                    class="nav-link d-flex align-items-center gap-3"><i
-                                        class="bi bi-person-gear fs-5"></i> تفاصيل الحساب</a></li>
-                            <hr>
-                            <li><a href="{% url 'logout' %}"
-                                    class="nav-link d-flex align-items-center gap-3 text-danger"><i
-                                        class="bi bi-box-arrow-right fs-5"></i> تسجيل الخروج</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-
-            <!-- Dashboard Content -->
-            <div class="col-lg-9">
-                <div class="dashboard-content">
-                    
-                    <!-- Top Stat Cards -->
-                    <div class="row g-4 mb-4">
-                        <div class="col-md-4">
-                            <div class="stat-card-premium c-primary">
-                                <div class="stat-icon"><i class="bi bi-cart3"></i></div>
-                                <div class="stat-info">
-                                    <h6>إجمالي الطلبات</h6>
-                                    <h2>{{ user.orders.count }}</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="stat-card-premium c-success">
-                                <div class="stat-icon"><i class="bi bi-clock-history"></i></div>
-                                <div class="stat-info">
-                                    <h6>الطلبات النشطة</h6>
-                                    <h2>{{ user.orders.filter.count }}</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="stat-card-premium c-info">
-                                <div class="stat-icon"><i class="bi bi-pin-map"></i></div>
-                                <div class="stat-info">
-                                    <h6>العناوين المسجلة</h6>
-                                    <h2>{{ user.addresses.count }}</h2>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Recent Orders Section -->
-                    <div class="dashboard-section-panel">
-                        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-                            <h4 class="fw-bold mb-0" style="color: var(--dash-primary);"><i class="bi bi-bag-fill me-2 text-muted opacity-50"></i>آخر الطلبات</h4>
-                            <a href="{% url 'orders:order_list' %}" class="btn btn-outline-primary rounded-pill px-4">عرض الكل</a>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-premium align-middle mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>الطلب #</th>
-                                        <th>التاريخ</th>
-                                        <th>الحالة</th>
-                                        <th>الإجمالي</th>
-                                        <th class="text-end">الإجراء</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for order in recent_orders %}
-                                    <tr>
-                                        <td><strong style="color: var(--dash-primary);">#{{ order.id }}</strong></td>
-                                        <td class="text-muted">{{ order.created_at|date:"Y-m-d" }}</td>
-                                        <td>
-                                            <span class="badge rounded-pill px-3 py-2 fw-medium {% if order.status == 'delivered' %}bg-success-subtle text-success{% elif order.status == 'cancelled' %}bg-danger-subtle text-danger{% else %}bg-warning-subtle text-warning{% endif %}">
-                                                {{ order.get_status_display }}
-                                            </span>
-                                        </td>
-                                        <td class="fw-bold text-dark">{{ order.total_price }} ر.س</td>
-                                        <td class="text-end">
-                                            <a href="{% url 'orders:detail' order.id %}"
-                                                class="btn btn-sm" style="background: rgba(0,180,216,0.1); color: var(--dash-primary); border-radius: 8px;">التفاصيل <i class="bi bi-chevron-left ms-1 align-middle" style="font-size:0.8rem"></i></a>
-                                        </td>
-                                    </tr>
-                                    {% empty %}
-                                    <tr>
-                                        <td colspan="5" class="text-center py-5">
-                                            <i class="bi bi-clipboard-x fs-1 text-muted opacity-50 mb-3 d-block"></i>
-                                            <p class="text-muted fs-5 mb-0">لا توجد طلبات حديثة.</p>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Default Address Section -->
-                    <div class="dashboard-section-panel">
-                        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-                            <h4 class="fw-bold mb-0" style="color: var(--dash-primary);"><i class="bi bi-truck me-2 text-muted opacity-50"></i>عنوان الشحن الافتراضي</h4>
-                            <a href="{% url 'accounts:address_list' %}" class="btn btn-outline-primary rounded-pill px-4">إدارة العناوين</a>
-                        </div>
-                        {% if default_address %}
-                        <div class="address-box-premium">
-                            <h5 class="mb-2 fw-bold text-dark">{{ default_address.full_name|default:user.get_full_name }}</h5>
-                            <p class="mb-1 text-secondary" style="font-size:1.05rem;">
-                                <i class="bi bi-geo-alt-fill text-muted me-1"></i> 
-                                {{ default_address.street|default:"" }}، {{ default_address.neighborhood|default:"" }}
-                            </p>
-                            <p class="mb-1 text-secondary" style="font-size:0.95rem;">
-                                <i class="bi bi-map text-muted me-1"></i> {{ default_address.get_city_display }}
-                            </p>
-                            <p class="mb-0 text-secondary" style="font-size:0.95rem;">
-                                <i class="bi bi-telephone-fill text-muted me-1"></i> {{ default_address.phone_number }}
-                            </p>
-                        </div>
-                        {% else %}
-                        <div class="text-center py-4 bg-light rounded-4 border border-dashed">
-                            <i class="bi bi-pin-map text-muted opacity-50 fs-1 d-block mb-2"></i>
-                            <p class="text-muted mb-0">لم تقم بتحديد عنوان افتراضي بعد.</p>
-                        </div>
-                        {% endif %}
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
+  <!-- Default Address Section -->
+  <div class="acc-panel">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="acc-panel-title mb-0"><i class="bi bi-truck"></i> عنوان الشحن المفضل</h4>
+          <a href="{% url 'accounts:address_list' %}" class="acc-btn acc-btn-outline" style="padding:6px 16px;font-size:0.8rem;">تعديل</a>
+      </div>
+      {% if default_address %}
+      <div style="background:var(--ac-bg);border-radius:12px;padding:20px;">
+          <h5 class="mb-2 fw-bold">{{ default_address.full_name|default:user.get_full_name }}</h5>
+          <p class="mb-1" style="color:var(--ac-txt-sec);font-size:0.95rem;">
+              <i class="bi bi-geo-alt-fill me-1"></i> 
+              {{ default_address.street|default:"" }}، {{ default_address.neighborhood|default:"" }}
+          </p>
+          <p class="mb-1" style="color:var(--ac-txt-sec);font-size:0.95rem;">
+              <i class="bi bi-map me-1"></i> {{ default_address.get_city_display }}
+          </p>
+          <p class="mb-0" style="color:var(--ac-txt-sec);font-size:0.95rem;">
+              <i class="bi bi-telephone-fill me-1"></i> {{ default_address.phone_number }}
+          </p>
+      </div>
+      {% else %}
+      <div class="text-center py-4" style="background:var(--ac-bg);border-radius:12px;">
+          <i class="bi bi-pin-map text-muted opacity-50 fs-1 d-block mb-2"></i>
+          <p class="text-muted mb-0">لم تقم بتحديد عنوان افتراضي بعد.</p>
+      </div>
+      {% endif %}
+  </div>
 {% endblock %}

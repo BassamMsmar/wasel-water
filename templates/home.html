@@ -277,21 +277,6 @@
 
 {% block extra_js %}
 {{ block.super }}
-{% if not request.session.temp_location %}
-  {% if not user.is_authenticated or not user.addresses.exists %}
-  <script>
-      $(document).ready(function() {
-          // Check if we haven't prompted them this session (using a simple local flag)
-          if(!sessionStorage.getItem('mapPrompted')) {
-              setTimeout(function() {
-                  $('#globalMapModal').modal('show');
-                  sessionStorage.setItem('mapPrompted', 'true');
-              }, 1500); // give the page 1.5 seconds to load visually
-          }
-      });
-  </script>
-  {% endif %}
-{% endif %}
 {% endblock %}
 
 {% endblock %}

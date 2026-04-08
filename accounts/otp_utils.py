@@ -7,14 +7,28 @@ def generate_otp(length=4):
     """Generate a random numeric OTP."""
     return ''.join(random.choices(string.digits, k=length))
 
+import sys
+
 def send_otp(phone_number, code):
     """
     Simulate sending OTP to phone number.
     In production, replace with actual SMS gateway integration.
     """
-    print(f"\n[OTP SERVICE] Sending code {code} to {phone_number}\n")
-    # Example: 
-    # response = sms_gateway.send(to=phone_number, message=f"كود التحقق الخاص بك هو: {code}")
+    msg = f"\n\n{'*'*50}\n[OTP SERVICE - TEST MODE]\nYOUR LOGIN CODE IS: [ {code} ]\nSent to: {phone_number}\n{'*'*50}\n\n"
+    
+    # 1. Print to STDOUT
+    print(msg, flush=True)
+    sys.stdout.flush()
+    
+    # 2. Force print to STDERR (usually bypasses buffering and highlights in red)
+    sys.stderr.write(msg)
+    sys.stderr.flush()
+    
+    # 3. Use logging to ensure it appears in Django's console output
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.warning(msg)
+    
     return True
 
 def normalize_phone(phone):

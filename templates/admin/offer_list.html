@@ -1,67 +1,67 @@
 {% extends "admin/base_admin.html" %}
-
-{% block title %}إدارة العروض{% endblock %}
-{% block page_title %}قائمة العروض الحصرية{% endblock %}
+{% block title %}العروض{% endblock %}
+{% block page_title %}العروض{% endblock %}
 
 {% block admin_content %}
-<div class="card p-4 shadow-sm border-0 rounded-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h5 class="fw-bold mb-0">العروض المفعلة حالياً</h5>
-        <a href="{% url 'settings:admin_offer_create' %}" class="btn btn-primary rounded-pill px-4 shadow-sm">
-            <i class="bi bi-plus-lg me-1"></i> إضافة عرض جديد
-        </a>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="table-light text-muted uppercase small">
-                <tr>
-                    <th class="border-0">صورة العرض</th>
-                    <th class="border-0">العنوان</th>
-                    <th class="border-0">المنتج المرتبط</th>
-                    <th class="border-0 text-center">إجراء</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for offer in offers %}
-                <tr>
-                    <td>
-                        <img src="{{ offer.image.url }}" alt="{{ offer.title }}" class="rounded-3 shadow-sm" style="width: 100px; height: 60px; object-fit: cover;">
-                    </td>
-                    <td>
-                        <div class="d-flex flex-column">
-                            <span class="fw-bold text-dark">{{ offer.title }}</span>
-                            <small class="text-muted">{{ offer.description|truncatewords:10 }}</small>
-                        </div>
-                    </td>
-                    <td>
-                        {% if offer.products %}
-                        <span class="badge bg-primary-subtle text-primary fw-medium px-3 rounded-pill">{{ offer.products.name }}</span>
-                        {% else %}
-                        <span class="text-muted small">لا يوجد منتج</span>
-                        {% endif %}
-                    </td>
-                    <td class="text-center">
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-light border" type="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-three-dots-vertical"></i>
-                            </button>
-                            <ul class="dropdown-menu shadow border-0">
-                                <li><a class="dropdown-item" href="{% url 'settings:admin_offer_update' offer.id %}"><i class="bi bi-pencil me-2"></i>تعديل</a></li>
-                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i>حذف</a></li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="text-center py-5">
-                        <i class="bi bi-megaphone fs-1 text-muted"></i>
-                        <p class="mt-2 text-muted">لا توجد عروض ترويجية مسجلة</p>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+
+<div class="adm-page-hd">
+  <div>
+    <h1 class="adm-page-title">العروض والخصومات</h1>
+    <p class="adm-page-sub">إدارة العروض الترويجية وبنرات المنصة</p>
+  </div>
+  <a href="{% url 'settings:admin_offer_create' %}" class="adm-btn adm-btn-black" id="btn-create-offer"><i class="bi bi-plus"></i> عرض جديد</a>
 </div>
+
+<div class="adm-card" id="offers-card">
+  <div class="adm-card-header">
+    <span class="adm-card-title"><i class="bi bi-percent"></i> قائمة العروض</span>
+    <span style="font-size:.75rem;color:var(--text-tertiary);">{{ offers|length }} عرض</span>
+  </div>
+  <div class="adm-table-wrap">
+    <table class="adm-table" id="offers-table">
+      <thead>
+        <tr>
+          <th>الصورة</th>
+          <th>العنوان</th>
+          <th>المنتج المرتبط</th>
+          <th style="text-align:center;">إجراء</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for offer in offers %}
+        <tr>
+          <td>
+            {% if offer.image %}
+            <img src="{{ offer.image.url }}" alt="{{ offer.title }}" style="width:80px;height:50px;border-radius:var(--radius-xs);object-fit:cover;border:1px solid var(--border-soft);">
+            {% else %}
+            <div style="width:80px;height:50px;border-radius:var(--radius-xs);background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);"><i class="bi bi-image"></i></div>
+            {% endif %}
+          </td>
+          <td>
+            <div style="font-weight:600;">{{ offer.title }}</div>
+            {% if offer.description %}<div style="font-size:.72rem;color:var(--text-tertiary);">{{ offer.description|truncatewords:8 }}</div>{% endif %}
+          </td>
+          <td>
+            {% if offer.products %}
+            <span class="adm-badge adm-badge-info"><span class="adm-badge-dot"></span>{{ offer.products.name }}</span>
+            {% else %}
+            <span style="color:var(--text-tertiary);font-size:.8rem;">عرض عام</span>
+            {% endif %}
+          </td>
+          <td style="text-align:center;">
+            <a href="{% url 'settings:admin_offer_update' offer.id %}" class="adm-btn adm-btn-white adm-btn-sm" id="offer-edit-{{ offer.id }}"><i class="bi bi-pencil"></i> تعديل</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" style="text-align:center;padding:48px 0;color:var(--text-tertiary);">
+            <i class="bi bi-percent" style="font-size:2rem;display:block;margin-bottom:8px;"></i>لا توجد عروض
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
 {% endblock %}
