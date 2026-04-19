@@ -1,10 +1,18 @@
-from django.apps import AppConfig
+﻿import re
 
+path = r"E:\Code\wasel-water\backend\project\settings.py"
+with open(path, 'r', encoding='utf-8') as f: c = f.read()
 
-class SettingsConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'core'
+c = c.replace("LANGUAGE_CODE = 'en-us'", "LANGUAGE_CODE = 'ar'")
+if "'django.middleware.locale.LocaleMiddleware'" not in c:
+    c = c.replace("'django.contrib.sessions.middleware.SessionMiddleware',", "'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.locale.LocaleMiddleware',")
 
+with open(path, 'w', encoding='utf-8') as f: f.write(c)
+
+path = r"E:\Code\wasel-water\backend\core\apps.py"
+with open(path, 'r', encoding='utf-8') as f: c = f.read()
+
+ready_code = """
     def ready(self):
         try:
             from django.apps import apps
@@ -57,3 +65,11 @@ class SettingsConfig(AppConfig):
                 Group._meta.verbose_name_plural = _('مجموعات الصلاحيات')
         except Exception:
             pass
+"""
+
+if "def ready(self):" not in c:
+    c = c + ready_code
+
+with open(path, 'w', encoding='utf-8') as f: f.write(c)
+
+print("Done")
