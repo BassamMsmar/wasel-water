@@ -8,7 +8,7 @@ from datetime import timedelta
 from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
 from products.models import Product, Offer, Brand, Category, Bundle, FeaturedProduct
-from products.forms import ProductForm, BrandForm, CategoryForm, OfferForm
+from products.forms import ProductForm, BrandForm, CategoryForm, OfferForm, FeaturedProductForm
 from orders.models import Branch, Order, OrderItem, OrderStatus
 from orders.forms import BranchForm, OrderForm, OrderItemFormSet
 from django.contrib.auth import get_user_model
@@ -121,7 +121,7 @@ class AdminPermissionRequiredMixin:
         permissions = required if isinstance(required, (list, tuple)) else [required]
         if request.user.is_superuser or request.user.has_perms(permissions):
             return super().dispatch(request, *args, **kwargs)
-        raise PermissionDenied
+        return render(request, 'admin/403.html', status=403)
 
 class AdminDashboardView(StaffRequiredMixin, TemplateView):
     template_name = 'admin/dashboard.html'
@@ -258,152 +258,211 @@ def scoped_orders_for_user(user):
     return queryset.filter(user=user)
 
 # --- Product Management ---
-class AdminProductListView(StaffRequiredMixin, ListView):
+class AdminProductListView(AdminPermissionRequiredMixin, StaffRequiredMixin, ListView):
     model = Product
     template_name = 'admin/product_list.html'
     context_object_name = 'products'
     paginate_by = 20
+    permission_required = 'products.view_product'
 
-class AdminProductCreateView(StaffRequiredMixin, CreateView):
+class AdminProductCreateView(AdminPermissionRequiredMixin, StaffRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
     template_name = 'admin/product_form.html'
     success_url = reverse_lazy('settings:admin_products')
+    permission_required = 'products.add_product'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم إضافة المنتج بنجاح.')
         return super().form_valid(form)
 
-class AdminProductUpdateView(StaffRequiredMixin, UpdateView):
+class AdminProductUpdateView(AdminPermissionRequiredMixin, StaffRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'admin/product_form.html'
     success_url = reverse_lazy('settings:admin_products')
+    permission_required = 'products.change_product'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم تحديث بيانات المنتج بنجاح.')
         return super().form_valid(form)
 
-class AdminProductDeleteView(StaffRequiredMixin, DeleteView):
+class AdminProductDeleteView(AdminPermissionRequiredMixin, StaffRequiredMixin, DeleteView):
     model = Product
     template_name = 'admin/confirm_delete.html'
     success_url = reverse_lazy('settings:admin_products')
+    permission_required = 'products.delete_product'
 
     def post(self, request, *args, **kwargs):
         messages.success(self.request, 'تم حذف المنتج بنجاح.')
         return super().post(request, *args, **kwargs)
 
+# --- Featured Product Management ---
+class AdminFeaturedProductListView(AdminPermissionRequiredMixin, StaffRequiredMixin, ListView):
+    model = FeaturedProduct
+    template_name = 'admin/featured_product_list.html'
+    context_object_name = 'featured_products'
+    permission_required = 'products.view_featuredproduct'
+
+    def get_queryset(self):
+        return FeaturedProduct.objects.select_related('product').order_by('order', '-id')
+
+class AdminFeaturedProductCreateView(AdminPermissionRequiredMixin, StaffRequiredMixin, CreateView):
+    model = FeaturedProduct
+    form_class = FeaturedProductForm
+    template_name = 'admin/featured_product_form.html'
+    success_url = reverse_lazy('settings:admin_featured_products')
+    permission_required = 'products.add_featuredproduct'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'تم إضافة المنتج المميز بنجاح.')
+        return super().form_valid(form)
+
+class AdminFeaturedProductUpdateView(AdminPermissionRequiredMixin, StaffRequiredMixin, UpdateView):
+    model = FeaturedProduct
+    form_class = FeaturedProductForm
+    template_name = 'admin/featured_product_form.html'
+    success_url = reverse_lazy('settings:admin_featured_products')
+    permission_required = 'products.change_featuredproduct'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'تم تحديث بيانات المنتج المميز بنجاح.')
+        return super().form_valid(form)
+
+class AdminFeaturedProductDeleteView(AdminPermissionRequiredMixin, StaffRequiredMixin, DeleteView):
+    model = FeaturedProduct
+    template_name = 'admin/confirm_delete.html'
+    success_url = reverse_lazy('settings:admin_featured_products')
+    permission_required = 'products.delete_featuredproduct'
+
+    def post(self, request, *args, **kwargs):
+        messages.success(self.request, 'تم حذف المنتج المميز بنجاح.')
+        return super().post(request, *args, **kwargs)
+
 # --- Brand Management ---
-class AdminBrandListView(StaffRequiredMixin, ListView):
+class AdminBrandListView(AdminPermissionRequiredMixin, StaffRequiredMixin, ListView):
     model = Brand
     template_name = 'admin/brand_list.html'
     context_object_name = 'brands'
+    permission_required = 'products.view_brand'
 
-class AdminBrandCreateView(StaffRequiredMixin, CreateView):
+class AdminBrandCreateView(AdminPermissionRequiredMixin, StaffRequiredMixin, CreateView):
     model = Brand
     form_class = BrandForm
     template_name = 'admin/brand_form.html'
     success_url = reverse_lazy('settings:admin_brands')
+    permission_required = 'products.add_brand'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم إضافة الماركة بنجاح.')
         return super().form_valid(form)
 
-class AdminBrandUpdateView(StaffRequiredMixin, UpdateView):
+class AdminBrandUpdateView(AdminPermissionRequiredMixin, StaffRequiredMixin, UpdateView):
     model = Brand
     form_class = BrandForm
     template_name = 'admin/brand_form.html'
     success_url = reverse_lazy('settings:admin_brands')
+    permission_required = 'products.change_brand'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم تحديث بيانات الماركة بنجاح.')
         return super().form_valid(form)
 
-class AdminBrandDeleteView(StaffRequiredMixin, DeleteView):
+class AdminBrandDeleteView(AdminPermissionRequiredMixin, StaffRequiredMixin, DeleteView):
     model = Brand
     template_name = 'admin/confirm_delete.html'
     success_url = reverse_lazy('settings:admin_brands')
+    permission_required = 'products.delete_brand'
 
     def post(self, request, *args, **kwargs):
         messages.success(self.request, 'تم حذف الماركة بنجاح.')
         return super().post(request, *args, **kwargs)
 
 # --- Category Management ---
-class AdminCategoryListView(StaffRequiredMixin, ListView):
+class AdminCategoryListView(AdminPermissionRequiredMixin, StaffRequiredMixin, ListView):
     model = Category
     template_name = 'admin/category_list.html'
     context_object_name = 'categories'
+    permission_required = 'products.view_category'
 
-class AdminCategoryCreateView(StaffRequiredMixin, CreateView):
+class AdminCategoryCreateView(AdminPermissionRequiredMixin, StaffRequiredMixin, CreateView):
     model = Category
     form_class = CategoryForm
     template_name = 'admin/category_form.html'
     success_url = reverse_lazy('settings:admin_categories')
+    permission_required = 'products.add_category'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم إضافة القسم بنجاح.')
         return super().form_valid(form)
 
-class AdminCategoryUpdateView(StaffRequiredMixin, UpdateView):
+class AdminCategoryUpdateView(AdminPermissionRequiredMixin, StaffRequiredMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     template_name = 'admin/category_form.html'
     success_url = reverse_lazy('settings:admin_categories')
+    permission_required = 'products.change_category'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم تحديث بيانات القسم بنجاح.')
         return super().form_valid(form)
 
-class AdminCategoryDeleteView(StaffRequiredMixin, DeleteView):
+class AdminCategoryDeleteView(AdminPermissionRequiredMixin, StaffRequiredMixin, DeleteView):
     model = Category
     template_name = 'admin/confirm_delete.html'
     success_url = reverse_lazy('settings:admin_categories')
+    permission_required = 'products.delete_category'
 
     def post(self, request, *args, **kwargs):
         messages.success(self.request, 'تم حذف القسم بنجاح.')
         return super().post(request, *args, **kwargs)
 
 # --- Offer Management ---
-class AdminOfferListView(StaffRequiredMixin, ListView):
+class AdminOfferListView(AdminPermissionRequiredMixin, StaffRequiredMixin, ListView):
     model = Offer
     template_name = 'admin/offer_list.html'
     context_object_name = 'offers'
+    permission_required = 'products.view_offer'
 
-class AdminOfferCreateView(StaffRequiredMixin, CreateView):
+class AdminOfferCreateView(AdminPermissionRequiredMixin, StaffRequiredMixin, CreateView):
     model = Offer
     form_class = OfferForm
     template_name = 'admin/offer_form.html'
     success_url = reverse_lazy('settings:admin_offers')
+    permission_required = 'products.add_offer'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم إضافة العرض بنجاح.')
         return super().form_valid(form)
 
-class AdminOfferUpdateView(StaffRequiredMixin, UpdateView):
+class AdminOfferUpdateView(AdminPermissionRequiredMixin, StaffRequiredMixin, UpdateView):
     model = Offer
     form_class = OfferForm
     template_name = 'admin/offer_form.html'
     success_url = reverse_lazy('settings:admin_offers')
+    permission_required = 'products.change_offer'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم تحديث بيانات العرض بنجاح.')
         return super().form_valid(form)
 
-class AdminOfferDeleteView(StaffRequiredMixin, DeleteView):
+class AdminOfferDeleteView(AdminPermissionRequiredMixin, StaffRequiredMixin, DeleteView):
     model = Offer
     template_name = 'admin/confirm_delete.html'
     success_url = reverse_lazy('settings:admin_offers')
+    permission_required = 'products.delete_offer'
 
     def post(self, request, *args, **kwargs):
         messages.success(self.request, 'تم حذف العرض بنجاح.')
         return super().post(request, *args, **kwargs)
 
 # --- Order Management ---
-class AdminOrderListView(StaffRequiredMixin, ListView):
+class AdminOrderListView(AdminPermissionRequiredMixin, StaffRequiredMixin, ListView):
     model = Order
     template_name = 'admin/order_list.html'
     context_object_name = 'orders'
     paginate_by = 20
+    permission_required = 'orders.view_order'
 
     def get_base_queryset(self):
         return scoped_orders_for_user(self.request.user)
@@ -596,58 +655,63 @@ class AdminOrderUpdateStatusView(StaffRequiredMixin, View):
         return redirect('settings:admin_orders')
 
 
-class AdminBranchListView(StaffRequiredMixin, ListView):
+class AdminBranchListView(AdminPermissionRequiredMixin, StaffRequiredMixin, ListView):
     model = Branch
     template_name = 'admin/branch_list.html'
     context_object_name = 'branches'
+    permission_required = 'orders.view_branch'
 
     def get_queryset(self):
         return Branch.objects.order_by('name')
 
 
-class AdminBranchCreateView(StaffRequiredMixin, CreateView):
+class AdminBranchCreateView(AdminPermissionRequiredMixin, StaffRequiredMixin, CreateView):
     model = Branch
     form_class = BranchForm
     template_name = 'admin/branch_form.html'
     success_url = reverse_lazy('settings:admin_branches')
+    permission_required = 'orders.add_branch'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم إضافة الفرع بنجاح.')
         return super().form_valid(form)
 
 
-class AdminBranchUpdateView(StaffRequiredMixin, UpdateView):
+class AdminBranchUpdateView(AdminPermissionRequiredMixin, StaffRequiredMixin, UpdateView):
     model = Branch
     form_class = BranchForm
     template_name = 'admin/branch_form.html'
     success_url = reverse_lazy('settings:admin_branches')
+    permission_required = 'orders.change_branch'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم تحديث الفرع بنجاح.')
         return super().form_valid(form)
 
 
-class AdminBranchDeleteView(StaffRequiredMixin, DeleteView):
+class AdminBranchDeleteView(AdminPermissionRequiredMixin, StaffRequiredMixin, DeleteView):
     model = Branch
     template_name = 'admin/confirm_delete.html'
     success_url = reverse_lazy('settings:admin_branches')
+    permission_required = 'orders.delete_branch'
 
     def post(self, request, *args, **kwargs):
         messages.success(self.request, 'تم حذف الفرع بنجاح.')
         return super().post(request, *args, **kwargs)
 
 # --- Other Management ---
-class AdminCustomerListView(StaffRequiredMixin, ListView):
+class AdminCustomerListView(AdminPermissionRequiredMixin, StaffRequiredMixin, ListView):
     model = User
     template_name = 'admin/customer_list.html'
     context_object_name = 'customers'
     paginate_by = 20
+    permission_required = 'accounts.view_customer'
 
 class AdminStaffListView(AdminPermissionRequiredMixin, StaffRequiredMixin, ListView):
     model = User
     template_name = 'admin/staff_list.html'
     context_object_name = 'staff_members'
-    permission_required = None
+    permission_required = 'auth.view_user'
 
     def get_queryset(self):
         return User.objects.filter(is_staff=True).prefetch_related('groups').order_by('first_name', 'username')
@@ -657,7 +721,7 @@ class AdminStaffCreateView(AdminPermissionRequiredMixin, StaffRequiredMixin, Cre
     form_class = StaffForm
     template_name = 'admin/staff_form.html'
     success_url = reverse_lazy('settings:admin_staff')
-    permission_required = None
+    permission_required = 'auth.add_user'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم إضافة الموظف بنجاح.')
@@ -668,7 +732,7 @@ class AdminStaffUpdateView(AdminPermissionRequiredMixin, StaffRequiredMixin, Upd
     form_class = StaffForm
     template_name = 'admin/staff_form.html'
     success_url = reverse_lazy('settings:admin_staff')
-    permission_required = None
+    permission_required = 'auth.change_user'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم تحديث بيانات الموظف بنجاح.')
@@ -678,7 +742,7 @@ class AdminStaffDeleteView(AdminPermissionRequiredMixin, StaffRequiredMixin, Del
     model = User
     template_name = 'admin/confirm_delete.html'
     success_url = reverse_lazy('settings:admin_staff')
-    permission_required = None
+    permission_required = 'auth.delete_user'
 
     def post(self, request, *args, **kwargs):
         user = self.get_object()
@@ -693,7 +757,7 @@ class AdminGroupListView(AdminPermissionRequiredMixin, StaffRequiredMixin, ListV
     model = Group
     template_name = 'admin/group_list.html'
     context_object_name = 'groups'
-    permission_required = None
+    permission_required = 'auth.view_group'
 
     def get_queryset(self):
         return Group.objects.prefetch_related('permissions', 'user_set').order_by('name')
@@ -704,7 +768,7 @@ class AdminGroupCreateView(AdminPermissionRequiredMixin, StaffRequiredMixin, Cre
     form_class = GroupPermissionForm
     template_name = 'admin/group_form.html'
     success_url = reverse_lazy('settings:admin_groups')
-    permission_required = None
+    permission_required = 'auth.add_group'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم إنشاء المجموعة وربط الصلاحيات بنجاح.')
@@ -716,7 +780,7 @@ class AdminGroupUpdateView(AdminPermissionRequiredMixin, StaffRequiredMixin, Upd
     form_class = GroupPermissionForm
     template_name = 'admin/group_form.html'
     success_url = reverse_lazy('settings:admin_groups')
-    permission_required = None
+    permission_required = 'auth.change_group'
 
     def form_valid(self, form):
         messages.success(self.request, 'تم تحديث المجموعة والصلاحيات بنجاح.')
@@ -727,7 +791,7 @@ class AdminGroupDeleteView(AdminPermissionRequiredMixin, StaffRequiredMixin, Del
     model = Group
     template_name = 'admin/confirm_delete.html'
     success_url = reverse_lazy('settings:admin_groups')
-    permission_required = None
+    permission_required = 'auth.delete_group'
 
     def post(self, request, *args, **kwargs):
         messages.success(self.request, 'تم حذف المجموعة بنجاح.')

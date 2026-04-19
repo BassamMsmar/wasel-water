@@ -3,6 +3,7 @@ from . import views
 from .views import (
     home, about, contact, privacy, tos, return_policy,
     AdminDashboardView, AdminProductListView, AdminProductCreateView, AdminProductUpdateView, AdminProductDeleteView,
+    AdminFeaturedProductListView, AdminFeaturedProductCreateView, AdminFeaturedProductUpdateView, AdminFeaturedProductDeleteView,
     AdminOrderListView, AdminOrderCreateView, AdminOrderUpdateStatusView, AdminOrderDetailView, AdminOrderUpdateView, AdminOrderDeleteView,
     AdminBranchListView, AdminBranchCreateView, AdminBranchUpdateView, AdminBranchDeleteView,
     AdminCustomerListView, AdminCustomerDeleteView, AdminOfferListView, AdminOfferCreateView, AdminOfferUpdateView, AdminOfferDeleteView,
@@ -30,6 +31,12 @@ urlpatterns = [
     path('admin/products/add/', AdminProductCreateView.as_view(), name='admin_product_create'),
     path('admin/products/<int:pk>/edit/', AdminProductUpdateView.as_view(), name='admin_product_update'),
     path('admin/products/<int:pk>/delete/', AdminProductDeleteView.as_view(), name='admin_product_delete'),
+    
+    # Featured Products
+    path('admin/featured-products/', AdminFeaturedProductListView.as_view(), name='admin_featured_products'),
+    path('admin/featured-products/add/', AdminFeaturedProductCreateView.as_view(), name='admin_featured_product_create'),
+    path('admin/featured-products/<int:pk>/edit/', AdminFeaturedProductUpdateView.as_view(), name='admin_featured_product_update'),
+    path('admin/featured-products/<int:pk>/delete/', AdminFeaturedProductDeleteView.as_view(), name='admin_featured_product_delete'),
     
     # Categories
     path('admin/categories/', AdminCategoryListView.as_view(), name='admin_categories'),
