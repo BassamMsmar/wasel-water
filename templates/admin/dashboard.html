@@ -171,7 +171,7 @@
           <td><span class="td-id">#{{ order.id }}</span></td>
           <td>{{ order.user.get_full_name|default:order.user.username }}</td>
           <td>{{ order.branch|default:order.shipping_city|default:"-" }}</td>
-          <td>{{ order.representative.get_full_name|default:order.representative.username|default:"-" }}</td>
+          <td>{% if order.representative %}{{ order.representative.get_full_name|default:order.representative.username }}{% else %}-{% endif %}</td>
           <td><span class="adm-badge adm-badge-neutral"><span class="adm-badge-dot"></span>{{ order.get_status_display }}</span></td>
           <td style="font-weight:700;white-space:nowrap;">{{ order.total_price }} ر.س</td>
           <td style="text-align:center;"><a href="{% url 'settings:admin_order_detail' order.id %}" class="adm-btn adm-btn-white adm-btn-sm"><i class="bi bi-eye"></i></a></td>

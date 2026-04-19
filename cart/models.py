@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.conf import settings
 
@@ -7,6 +8,10 @@ class Cart(models.Model):
     data = models.JSONField(default=dict)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("سلة التسوق")
+        verbose_name_plural = _("سلال التسوق")
 
     def __str__(self):
         return f"Cart of {self.user}"

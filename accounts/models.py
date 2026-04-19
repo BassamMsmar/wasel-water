@@ -13,6 +13,10 @@ class Customer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = _("العميل")
+        verbose_name_plural = _("العملاء")
+
     def __str__(self):
         return f"{self.user.username}'s Profile"
 
@@ -52,8 +56,8 @@ class Address(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = _("Address")
-        verbose_name_plural = _("Addresses")
+        verbose_name = _("العنوان")
+        verbose_name_plural = _("العناوين")
         ordering = ['-is_default', '-created_at']
 
     def __str__(self):
@@ -72,6 +76,10 @@ class OTPToken(models.Model):
     expires_at = models.DateTimeField()
     is_used = models.BooleanField(default=False)
     attempts = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name = _("رمز التحقق")
+        verbose_name_plural = _("رموز التحقق")
 
     def save(self, *args, **kwargs):
         if not self.expires_at:

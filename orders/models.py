@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.conf import settings
 from products.models import Product, Bundle
@@ -39,6 +40,8 @@ class Order(models.Model):
     shipping_location_link = models.URLField(max_length=500, blank=True, null=True)
 
     class Meta:
+        verbose_name = _("الطلب")
+        verbose_name_plural = _("الطلبات")
         ordering = ('-created_at',)
 
     def __str__(self):
@@ -50,6 +53,10 @@ class OrderItem(models.Model):
     bundle = models.ForeignKey(Bundle, related_name='order_items', on_delete=models.SET_NULL, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        verbose_name = _("عنصر الطلب")
+        verbose_name_plural = _("عناصر الطلب")
 
     def __str__(self):
         return str(self.id)
