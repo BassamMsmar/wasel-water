@@ -9,7 +9,7 @@
     <h1 class="adm-pg-ttl">إدارة المنتجات المميزة</h1>
     <p class="adm-pg-sub">تحكم في المنتجات التي تظهر في الصفحة الرئيسية.</p>
   </div>
-  {% if request.user.is_superuser or request.user.has_perm('products.add_featuredproduct') %}
+  {% if request.user.is_superuser or perms.products.add_featuredproduct %}
   <a href="{% url 'settings:admin_featured_product_create' %}" class="adm-btn adm-btn-k">
     <i class="bi bi-plus-lg"></i> إضافة منتج مميز
   </a>
@@ -59,12 +59,12 @@
             </td>
             <td style="text-align:left;">
               <div style="display:flex; gap:6px; justify-content:flex-end;">
-                {% if request.user.is_superuser or request.user.has_perm('products.change_featuredproduct') %}
+                {% if request.user.is_superuser or perms.products.change_featuredproduct %}
                 <a href="{% url 'settings:admin_featured_product_update' fp.id %}" class="adm-btn adm-btn-w adm-btn-sm" title="تعديل">
                   <i class="bi bi-pencil"></i>
                 </a>
                 {% endif %}
-                {% if request.user.is_superuser or request.user.has_perm('products.delete_featuredproduct') %}
+                {% if request.user.is_superuser or perms.products.delete_featuredproduct %}
                 <form action="{% url 'settings:admin_featured_product_delete' fp.id %}" method="post" style="display:inline-block;" onsubmit="return confirm('هل أنت متأكد من حذف هذا المنتج المميز؟');">
                   {% csrf_token %}
                   <button type="submit" class="adm-btn adm-btn-w adm-btn-sm" style="color:var(--danger);" title="حذف">
