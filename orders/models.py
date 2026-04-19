@@ -18,6 +18,14 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     is_paid = models.BooleanField(default=False)
+    branch = models.CharField(max_length=100, blank=True, null=True)
+    representative = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name='represented_orders',
+        blank=True,
+        null=True,
+    )
     
     # Simple address snapshot for now
     shipping_full_name = models.CharField(max_length=100)

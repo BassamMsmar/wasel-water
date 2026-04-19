@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
 
   <style>
@@ -267,6 +268,85 @@
     }
     select.adm-input, select.adm-form-control, select.adm-inp { appearance: auto; }
     textarea.adm-input, textarea.adm-form-control, textarea.adm-inp { resize: vertical; min-height: 88px; }
+
+    .form-control, .form-select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--rx);
+      padding: 10px 12px;
+      font-family: var(--font);
+      font-size: .88rem;
+      color: var(--txt);
+      background-color: var(--surface);
+      box-shadow: none;
+      transition: border-color .14s, box-shadow .14s, background .14s;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--black);
+      box-shadow: 0 0 0 3px rgba(15,23,42,.08);
+      outline: none;
+    }
+    .form-control::placeholder { color: var(--txt3); }
+    textarea.form-control { min-height: 110px; resize: vertical; }
+    .form-label {
+      color: var(--txt);
+      font-size: .8rem;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+    .form-text {
+      color: var(--txt3);
+      font-size: .74rem;
+      margin-top: 6px;
+    }
+    .input-group-text {
+      border-color: var(--border);
+      background: var(--sf2);
+      color: var(--txt2);
+      font-size: .78rem;
+      font-weight: 700;
+    }
+    .card {
+      border: 1px solid var(--brs) !important;
+      border-radius: var(--r) !important;
+      box-shadow: none !important;
+      overflow: hidden;
+    }
+    .card-header {
+      border-bottom: 1px solid var(--brs);
+      background: var(--txt) !important;
+    }
+    .card-body { background: var(--surface) !important; }
+    .btn { border-radius: var(--rx) !important; font-weight: 700; }
+    .btn-primary, .btn-success {
+      background: var(--black) !important;
+      border-color: var(--black) !important;
+    }
+    .btn-outline-secondary {
+      color: var(--txt);
+      border-color: var(--border);
+      background: var(--surface);
+    }
+    .seo-panel {
+      border: 1px solid rgba(59,130,246,.22);
+      background: linear-gradient(180deg, rgba(59,130,246,.06), rgba(255,255,255,1));
+      border-radius: var(--r);
+      padding: 18px;
+    }
+    .seo-panel-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .95rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: var(--txt);
+    }
+    .seo-panel-sub {
+      color: var(--txt2);
+      font-size: .78rem;
+      margin-bottom: 16px;
+    }
 
     /* Alerts */
     .adm-alert {
@@ -530,6 +610,7 @@ document.addEventListener('keydown', function(e) {
   }
 });
 </script>
+<script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
 {% block extra_js %}{% endblock %}
 </body>

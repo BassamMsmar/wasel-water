@@ -1,71 +1,165 @@
 {% extends "admin/base_admin.html" %}
-{% block title %}نظرة عامة{% endblock %}
-{% block page_title %}نظرة عامة{% endblock %}
+{% block title %}لوحة البيانات{% endblock %}
+{% block page_title %}لوحة البيانات{% endblock %}
 
 {% block admin_content %}
-
 <div class="adm-page-hd">
   <div>
-    <h1 class="adm-page-title">لوحة التحكم</h1>
-    <p class="adm-page-sub">مرحباً {{ user.get_full_name|default:user.username }} — {% now "l, d F Y" %}</p>
+    <h1 class="adm-page-title">لوحة بيانات المبيعات</h1>
+    <p class="adm-page-sub">تابع الطلبات والإيرادات حسب الفترة، الفرع، والمندوب.</p>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;">
-    <a href="{% url 'settings:admin_orders' %}" class="adm-btn adm-btn-white adm-btn-sm" id="btn-all-orders"><i class="bi bi-bag"></i> الطلبات</a>
-    <a href="{% url 'settings:admin_product_create' %}" class="adm-btn adm-btn-black adm-btn-sm" id="btn-new-product"><i class="bi bi-plus"></i> منتج جديد</a>
+    <a href="{% url 'settings:admin_orders' %}" class="adm-btn adm-btn-white adm-btn-sm"><i class="bi bi-bag"></i> الطلبات</a>
+    <a href="{% url 'settings:admin_product_create' %}" class="adm-btn adm-btn-black adm-btn-sm"><i class="bi bi-plus"></i> منتج جديد</a>
   </div>
 </div>
 
-<!-- Stats: 2-col on mobile, 4-col on desktop -->
+<form method="get" class="adm-card dash-filter">
+  <div class="dash-filter-grid">
+    <div>
+      <label class="adm-label" for="period">الفترة السريعة</label>
+      <select class="adm-input" name="period" id="period">
+        <option value="daily" {% if period == 'daily' %}selected{% endif %}>يومي - من بداية اليوم</option>
+        <option value="weekly" {% if period == 'weekly' %}selected{% endif %}>أسبوعي - من بداية الأسبوع</option>
+        <option value="monthly" {% if period == 'monthly' %}selected{% endif %}>شهري - من بداية الشهر</option>
+        <option value="yearly" {% if period == 'yearly' %}selected{% endif %}>سنوي - من بداية السنة</option>
+        <option value="custom" {% if period == 'custom' %}selected{% endif %}>فترة مخصصة</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="adm-label" for="date_from">من تاريخ</label>
+      <input class="adm-input" type="date" name="date_from" id="date_from" value="{{ date_from }}">
+    </div>
+
+    <div>
+      <label class="adm-label" for="date_to">إلى تاريخ</label>
+      <input class="adm-input" type="date" name="date_to" id="date_to" value="{{ date_to }}">
+    </div>
+
+    <div>
+      <label class="adm-label" for="branch">الفرع</label>
+      <select class="adm-input" name="branch" id="branch">
+        <option value="">كل الفروع</option>
+        {% for branch_name in branches %}
+          <option value="{{ branch_name }}" {% if selected_branch == branch_name %}selected{% endif %}>{{ branch_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label class="adm-label" for="representative">المندوب</label>
+      <select class="adm-input" name="representative" id="representative">
+        <option value="">كل المناديب</option>
+        {% for rep in representatives %}
+          <option value="{{ rep.id }}" {% if selected_representative == rep.id|stringformat:"s" %}selected{% endif %}>
+            {{ rep.get_full_name|default:rep.username }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="dash-filter-actions">
+      <button class="adm-btn adm-btn-black" type="submit"><i class="bi bi-funnel"></i> تطبيق</button>
+      <a class="adm-btn adm-btn-white" href="{% url 'settings:admin_dashboard' %}">إعادة ضبط</a>
+    </div>
+  </div>
+</form>
+
 <div class="dash-stats">
-  <div class="adm-stat" id="stat-orders">
-    <div class="adm-stat-top">
-      <span class="adm-stat-label">إجمالي الطلبات</span>
-      <div class="adm-stat-icon"><i class="bi bi-bag"></i></div>
-    </div>
+  <div class="adm-stat">
+    <div class="adm-stat-top"><span class="adm-stat-label">إجمالي الطلبات</span><div class="adm-stat-icon"><i class="bi bi-bag"></i></div></div>
     <div class="adm-stat-value">{{ total_orders|default:0 }}</div>
-    <div class="adm-stat-footer"><i class="bi bi-circle-fill" style="font-size:.4rem;"></i> طلب مسجّل</div>
+    <div class="adm-stat-footer">ضمن الفترة المحددة</div>
   </div>
-
-  <div class="adm-stat" id="stat-products">
-    <div class="adm-stat-top">
-      <span class="adm-stat-label">المنتجات</span>
-      <div class="adm-stat-icon"><i class="bi bi-box"></i></div>
-    </div>
-    <div class="adm-stat-value">{{ total_products|default:0 }}</div>
-    <div class="adm-stat-footer up"><i class="bi bi-arrow-up"></i> في المخزون</div>
+  <div class="adm-stat">
+    <div class="adm-stat-top"><span class="adm-stat-label">الإيرادات</span><div class="adm-stat-icon"><i class="bi bi-cash-stack"></i></div></div>
+    <div class="adm-stat-value dash-money">{{ total_revenue|floatformat:2 }}</div>
+    <div class="adm-stat-footer">ريال سعودي</div>
   </div>
-
-  <div class="adm-stat" id="stat-customers">
-    <div class="adm-stat-top">
-      <span class="adm-stat-label">العملاء</span>
-      <div class="adm-stat-icon"><i class="bi bi-person"></i></div>
-    </div>
-    <div class="adm-stat-value">{{ total_customers|default:0 }}</div>
-    <div class="adm-stat-footer"><i class="bi bi-circle-fill" style="font-size:.4rem;"></i> عميل مسجّل</div>
+  <div class="adm-stat">
+    <div class="adm-stat-top"><span class="adm-stat-label">طلبات مدفوعة</span><div class="adm-stat-icon"><i class="bi bi-check2-circle"></i></div></div>
+    <div class="adm-stat-value">{{ paid_orders|default:0 }}</div>
+    <div class="adm-stat-footer up">تم تأكيد الدفع</div>
   </div>
-
-  <div class="adm-stat" id="stat-revenue">
-    <div class="adm-stat-top">
-      <span class="adm-stat-label">الإيرادات</span>
-      <div class="adm-stat-icon"><i class="bi bi-banknote"></i></div>
-    </div>
-    <div class="adm-stat-value" style="font-size:1.3rem;">{{ total_revenue|default:"—" }}</div>
-    <div class="adm-stat-footer"><i class="bi bi-circle-fill" style="font-size:.4rem;"></i> ر.س</div>
+  <div class="adm-stat">
+    <div class="adm-stat-top"><span class="adm-stat-label">متوسط الطلب</span><div class="adm-stat-icon"><i class="bi bi-graph-up"></i></div></div>
+    <div class="adm-stat-value dash-money">{{ average_order|floatformat:2 }}</div>
+    <div class="adm-stat-footer">ريال لكل طلب</div>
   </div>
 </div>
 
-<!-- Recent Orders -->
-<div class="adm-card" id="recent-orders-section">
+<div class="dash-grid">
+  <section class="adm-card">
+    <div class="adm-card-header"><span class="adm-card-title"><i class="bi bi-bar-chart"></i> الحركة الزمنية</span></div>
+    <div class="adm-card-body">
+      {% for row in timeline_rows %}
+        <div class="dash-row">
+          <span>{{ row.point|date:"Y-m-d" }}</span>
+          <strong>{{ row.revenue|floatformat:2 }} ر.س</strong>
+        </div>
+      {% empty %}
+        <p class="dash-empty">لا توجد بيانات في هذه الفترة.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="adm-card">
+    <div class="adm-card-header"><span class="adm-card-title"><i class="bi bi-signpost"></i> الأداء حسب الفرع</span></div>
+    <div class="adm-card-body">
+      {% for row in branch_rows %}
+        <div class="dash-row">
+          <span>{{ row.branch|default:row.shipping_city|default:"غير محدد" }}</span>
+          <strong>{{ row.total }} طلب</strong>
+        </div>
+      {% empty %}
+        <p class="dash-empty">لا توجد فروع ضمن النتائج.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="adm-card">
+    <div class="adm-card-header"><span class="adm-card-title"><i class="bi bi-person-badge"></i> الأداء حسب المندوب</span></div>
+    <div class="adm-card-body">
+      {% for row in representative_rows %}
+        <div class="dash-row">
+          <span>{{ row.representative__first_name }} {{ row.representative__last_name }}{% if not row.representative__first_name %}{{ row.representative__username|default:"بدون مندوب" }}{% endif %}</span>
+          <strong>{{ row.revenue|floatformat:2 }} ر.س</strong>
+        </div>
+      {% empty %}
+        <p class="dash-empty">لا توجد بيانات مناديب ضمن النتائج.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="adm-card">
+    <div class="adm-card-header"><span class="adm-card-title"><i class="bi bi-activity"></i> حالات الطلبات</span></div>
+    <div class="adm-card-body">
+      {% for row in status_rows %}
+        <div class="dash-row">
+          <span>{{ row.status }}</span>
+          <strong>{{ row.total }}</strong>
+        </div>
+      {% empty %}
+        <p class="dash-empty">لا توجد حالات طلبات.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<section class="adm-card" style="margin-top:18px;">
   <div class="adm-card-header">
-    <span class="adm-card-title"><i class="bi bi-clock-history"></i> آخر الطلبات</span>
-    <a href="{% url 'settings:admin_orders' %}" class="adm-btn adm-btn-white adm-btn-sm" id="btn-view-all">عرض الكل</a>
+    <span class="adm-card-title"><i class="bi bi-clock-history"></i> آخر الطلبات المطابقة</span>
+    <a href="{% url 'settings:admin_orders' %}" class="adm-btn adm-btn-white adm-btn-sm">عرض الكل</a>
   </div>
   <div class="adm-table-wrap">
-    <table class="adm-table" id="recent-orders-table">
+    <table class="adm-table">
       <thead>
         <tr>
           <th>#</th>
           <th>العميل</th>
+          <th>الفرع</th>
+          <th>المندوب</th>
           <th>الحالة</th>
           <th>المبلغ</th>
           <th style="text-align:center;">عرض</th>
@@ -75,51 +169,41 @@
         {% for order in recent_orders %}
         <tr>
           <td><span class="td-id">#{{ order.id }}</span></td>
-          <td>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <div style="width:26px;height:26px;border-radius:50%;background:var(--sf3);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;">
-                {{ order.user.get_full_name|default:order.user.username|slice:":1"|upper }}
-              </div>
-              <span style="font-weight:500;font-size:.82rem;">{{ order.user.get_full_name|default:order.user.username }}</span>
-            </div>
-          </td>
-          <td>
-            {% if order.status == 'delivered' %}<span class="adm-badge adm-badge-success"><span class="adm-badge-dot"></span>مُسلَّم</span>
-            {% elif order.status == 'cancelled' %}<span class="adm-badge adm-badge-danger"><span class="adm-badge-dot"></span>ملغي</span>
-            {% elif order.status == 'processing' %}<span class="adm-badge adm-badge-info"><span class="adm-badge-dot"></span>معالجة</span>
-            {% else %}<span class="adm-badge adm-badge-warning"><span class="adm-badge-dot"></span>{{ order.get_status_display }}</span>{% endif %}
-          </td>
-          <td style="font-weight:600;white-space:nowrap;">{{ order.total_price }} <span style="font-size:.68rem;color:var(--txt3);">ر.س</span></td>
-          <td style="text-align:center;">
-            <a href="{% url 'settings:admin_order_detail' order.id %}" class="adm-btn adm-btn-white adm-btn-sm" id="order-view-{{ order.id }}">
-              <i class="bi bi-eye"></i>
-            </a>
-          </td>
+          <td>{{ order.user.get_full_name|default:order.user.username }}</td>
+          <td>{{ order.branch|default:order.shipping_city|default:"-" }}</td>
+          <td>{{ order.representative.get_full_name|default:order.representative.username|default:"-" }}</td>
+          <td><span class="adm-badge adm-badge-neutral"><span class="adm-badge-dot"></span>{{ order.get_status_display }}</span></td>
+          <td style="font-weight:700;white-space:nowrap;">{{ order.total_price }} ر.س</td>
+          <td style="text-align:center;"><a href="{% url 'settings:admin_order_detail' order.id %}" class="adm-btn adm-btn-white adm-btn-sm"><i class="bi bi-eye"></i></a></td>
         </tr>
         {% empty %}
-        <tr>
-          <td colspan="5" style="text-align:center;padding:40px 0;color:var(--txt3);">
-            <i class="bi bi-inbox" style="font-size:2rem;display:block;margin-bottom:8px;"></i>لا توجد طلبات بعد
-          </td>
-        </tr>
+        <tr><td colspan="7" style="text-align:center;padding:34px;color:var(--txt3);">لا توجد طلبات مطابقة للفلاتر.</td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
-</div>
+</section>
+{% endblock %}
 
 {% block extra_css %}
 <style>
-.dash-stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
+.dash-filter { padding: 16px; margin-bottom: 18px; }
+.dash-filter-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; align-items: end; }
+.dash-filter-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.dash-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.dash-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.dash-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--brs); }
+.dash-row:last-child { border-bottom: 0; }
+.dash-row span { color: var(--txt2); font-size: .84rem; }
+.dash-row strong { color: var(--txt); font-size: .84rem; white-space: nowrap; }
+.dash-money { font-size: 1.35rem; }
+.dash-empty { color: var(--txt3); font-size: .84rem; margin: 0; }
+@media (max-width: 1100px) {
+  .dash-filter-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .dash-stats { grid-template-columns: repeat(2, 1fr); }
 }
-@media (min-width: 680px) {
-  .dash-stats { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 680px) {
+  .dash-filter-grid, .dash-grid { grid-template-columns: 1fr; }
 }
 </style>
-{% endblock %}
-
 {% endblock %}

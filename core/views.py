@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, View, DetailView, DeleteView
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Q
+from django.db.models.functions import TruncDay, TruncMonth
+from django.utils import timezone
+from datetime import timedelta
 from products.models import Product, Offer, Brand, Category, Bundle
 from products.forms import ProductForm, BrandForm, CategoryForm, OfferForm
 from orders.models import Order, OrderItem
@@ -96,11 +99,100 @@ class AdminDashboardView(StaffRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['total_orders'] = Order.objects.count()
+        filters = self._dashboard_filters()
+        orders = Order.objects.select_related('user', 'representative').filter(**filters['query'])
+        if filters['branch']:
+            orders = orders.filter(Q(branch__iexact=filters['branch']) | Q(shipping_city__iexact=filters['branch']))
+
+        context['period'] = filters['period']
+        context['date_from'] = filters['date_from']
+        context['date_to'] = filters['date_to']
+        context['selected_branch'] = filters['branch']
+        context['selected_representative'] = filters['representative']
+        context['branches'] = self._branches()
+        context['representatives'] = User.objects.filter(is_staff=True).order_by('first_name', 'username')
+        context['total_orders'] = orders.count()
         context['total_products'] = Product.objects.count()
         context['total_customers'] = User.objects.count()
-        context['recent_orders'] = Order.objects.order_by('-created_at')[:5]
+        context['total_revenue'] = orders.aggregate(total=Sum('total_price', default=0))['total']
+        context['paid_orders'] = orders.filter(is_paid=True).count()
+        context['average_order'] = (context['total_revenue'] / context['total_orders']) if context['total_orders'] else 0
+        context['recent_orders'] = orders.order_by('-created_at')[:8]
+        context['status_rows'] = orders.values('status').annotate(total=Count('id')).order_by('-total')
+        context['branch_rows'] = orders.values('branch', 'shipping_city').annotate(total=Count('id'), revenue=Sum('total_price', default=0)).order_by('-revenue')[:8]
+        context['representative_rows'] = orders.values(
+            'representative__first_name', 'representative__last_name', 'representative__username'
+        ).annotate(total=Count('id'), revenue=Sum('total_price', default=0)).order_by('-revenue')[:8]
+        context['timeline_rows'] = self._timeline(orders, filters['period'])
         return context
+
+    def _dashboard_filters(self):
+        request = self.request
+        now = timezone.localtime()
+        today = now.date()
+        period = request.GET.get('period') or 'daily'
+        date_from = request.GET.get('date_from') or ''
+        date_to = request.GET.get('date_to') or ''
+        branch = request.GET.get('branch') or ''
+        representative = request.GET.get('representative') or ''
+
+        start = None
+        end = None
+        if period == 'custom':
+            start = self._parse_date(date_from)
+            end = self._parse_date(date_to)
+        elif period == 'weekly':
+            start = today - timedelta(days=today.weekday())
+        elif period == 'monthly':
+            start = today.replace(day=1)
+        elif period == 'yearly':
+            start = today.replace(month=1, day=1)
+        else:
+            period = 'daily'
+            start = today
+
+        query = {}
+        if start:
+            query['created_at__date__gte'] = start
+            date_from = start.isoformat()
+        if end:
+            query['created_at__date__lte'] = end
+            date_to = end.isoformat()
+        if representative:
+            query['representative_id'] = representative
+
+        return {
+            'query': query,
+            'period': period,
+            'date_from': date_from,
+            'date_to': date_to,
+            'branch': branch,
+            'representative': representative,
+        }
+
+    def _parse_date(self, value):
+        if not value:
+            return None
+        try:
+            return timezone.datetime.strptime(value, '%Y-%m-%d').date()
+        except ValueError:
+            return None
+
+    def _branches(self):
+        branch_values = set(
+            Order.objects.exclude(branch__isnull=True).exclude(branch='').values_list('branch', flat=True)
+        )
+        city_values = set(
+            Order.objects.exclude(shipping_city__isnull=True).exclude(shipping_city='').values_list('shipping_city', flat=True)
+        )
+        return sorted(branch_values | city_values)
+
+    def _timeline(self, orders, period):
+        trunc = TruncMonth('created_at') if period == 'yearly' else TruncDay('created_at')
+        return orders.annotate(point=trunc).values('point').annotate(
+            total=Count('id'),
+            revenue=Sum('total_price', default=0),
+        ).order_by('point')
 
 # --- Product Management ---
 class AdminProductListView(StaffRequiredMixin, ListView):

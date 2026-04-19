@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ product.name }} - {{ company.name|default:"متاجر 360" }}{% endblock %}
+{% block title %}{{ product.seo_title|default:product.name }} - {{ company.name|default:"متاجر 360" }}{% endblock %}
+{% block meta_description %}{{ product.seo_description|default:product.subtitle|default:product.descriptions|striptags|truncatechars:160 }}{% endblock %}
+{% block meta_keywords %}{{ product.seo_keywords }}{% endblock %}
+{% block canonical_url %}{% if product.seo_canonical_url %}<link rel="canonical" href="{{ product.seo_canonical_url }}">{% endif %}{% endblock %}
+{% block og_title %}{{ product.seo_title|default:product.name }}{% endblock %}
+{% block og_description %}{{ product.seo_description|default:product.subtitle|default:product.descriptions|striptags|truncatechars:160 }}{% endblock %}
+{% block og_image %}{% if product.seo_image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ product.seo_image.url }}">{% elif product.image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ product.image.url }}">{% endif %}{% endblock %}
 
 {% block extra_head %}
 <style>

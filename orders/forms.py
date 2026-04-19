@@ -4,16 +4,24 @@ from .models import Order, OrderItem
 from products.models import Product, Bundle
 
 class OrderForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['representative'].queryset = self.fields['representative'].queryset.filter(is_staff=True)
+        self.fields['representative'].empty_label = 'بدون مندوب'
+
     class Meta:
         model = Order
         fields = [
             'user', 'status', 'total_price', 'is_paid',
+            'branch', 'representative',
             'shipping_full_name', 'shipping_address', 'shipping_phone', 'shipping_city',
             'shipping_country', 'shipping_postal_code', 'shipping_latitude', 'shipping_longitude'
         ]
         widgets = {
             'user': forms.Select(attrs={'class': 'form-select'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
+            'branch': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'مثال: فرع جدة'}),
+            'representative': forms.Select(attrs={'class': 'form-select'}),
             'total_price': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly', 'lang': 'en', 'style': 'direction: ltr;'}),
             'is_paid': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'shipping_full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الاسم الكامل للمستلم'}),

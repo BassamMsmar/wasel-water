@@ -8,6 +8,10 @@
   <title>{% block title %}SmartStore{% endblock %}</title>
   <meta name="description" content="{% block meta_description %}{% endblock %}">
   <meta name="keywords" content="{% block meta_keywords %}{% endblock %}">
+  {% block canonical_url %}{% endblock %}
+  <meta property="og:title" content="{% block og_title %}SmartStore{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{% endblock %}">
+  {% block og_image %}{% endblock %}
 
   <!-- Favicons -->
   <link href="{% static 'assets/img/favicon.png' %}" rel="icon">

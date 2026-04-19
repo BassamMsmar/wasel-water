@@ -479,6 +479,20 @@
       else if (action === 'decrease' && qty > 1) qty--;
       else return;
 
+      $.ajax({
+        url: "{% url 'cart:cart_update' %}",
+        method: "POST",
+        data: {
+          'product_id': productId,
+          'item_type': itemType,
+          'quantity': qty,
+          'csrfmiddlewaretoken': csrftoken
+        },
+        success: function (response) {
+          input.val(qty);
+          row.find('.line-total').text(response.item_total);
+          $('.cart-total-price').text(response.total_price);
+        }
       });
     });
 
