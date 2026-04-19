@@ -14,7 +14,7 @@ from orders.forms import BranchForm, OrderForm, OrderItemFormSet
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
 from django.contrib import messages
-from accounts.forms import StaffForm
+from accounts.forms import StaffForm, GroupPermissionForm
 
 User = get_user_model()
 
@@ -23,18 +23,7 @@ from .models import Banner, Company, Section
 from django import forms as dj_forms
 
 
-class GroupPermissionForm(dj_forms.ModelForm):
-    class Meta:
-        model = Group
-        fields = ['name', 'permissions']
-        widgets = {
-            'name': dj_forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'مثال: مدير الطلبات'}),
-            'permissions': dj_forms.SelectMultiple(attrs={'class': 'form-select', 'size': 16}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['permissions'].required = False
+# GroupPermissionForm is imported from accounts.forms (has full permission_sections support)
 
 
 # Create your views here.
