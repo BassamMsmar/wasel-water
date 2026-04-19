@@ -154,29 +154,33 @@
               <div class="row g-3">
                 {% for addr in addresses %}
                 <div class="col-12">
-                  <div class="card border border-2 rounded-4 p-3 address-card {% if addr.is_default %}border-primary{% endif %}" style="cursor: pointer; transition: 0.3s; background: #fff;">
-                    <div class="form-check d-flex align-items-center mb-0">
-                      <input class="form-check-input ms-3 me-0 address-radio" type="radio" name="selected_address_id" id="addr_{{ addr.id }}" value="{{ addr.id }}" {% if addr.is_default %}checked{% endif %} style="transform: scale(1.2);">
-                      <label class="form-check-label w-100" for="addr_{{ addr.id }}" style="cursor: pointer;">
-                        <div class="d-flex justify-content-between align-items-center">
-                           <span class="fw-bold fs-6">{{ addr.city }} - {{ addr.neighborhood|default:'عنوان محفوظ' }}</span>
-                           {% if addr.is_default %}<span class="badge rounded-pill" style="background-color: var(--chk-accent);">الافتراضي</span>{% endif %}
+                  <label class="w-100 m-0 p-0" for="addr_{{ addr.id }}" style="cursor: pointer;">
+                    <div class="card border border-2 rounded-4 p-3 address-card {% if addr.is_default %}border-primary{% endif %}" style="transition: 0.3s; background: #fff;">
+                      <div class="form-check d-flex align-items-center mb-0 p-0 m-0">
+                        <input class="form-check-input ms-3 me-0 address-radio" type="radio" name="selected_address_id" id="addr_{{ addr.id }}" value="{{ addr.id }}" {% if addr.is_default %}checked{% endif %} style="transform: scale(1.2);">
+                        <div class="w-100 text-start" style="padding-right: 15px;">
+                          <div class="d-flex justify-content-between align-items-center">
+                             <span class="fw-bold fs-6">{{ addr.city }} - {{ addr.neighborhood|default:'عنوان محفوظ' }}</span>
+                             {% if addr.is_default %}<span class="badge rounded-pill" style="background-color: var(--chk-accent);">الافتراضي</span>{% endif %}
+                          </div>
+                          <div class="text-muted small mt-1"><i class="bi bi-person me-1"></i> {{ addr.full_name }} <i class="bi bi-telephone ms-2 me-1"></i> {{ addr.phone_number }}</div>
                         </div>
-                        <div class="text-muted small mt-1"><i class="bi bi-person me-1"></i> {{ addr.full_name }} | <i class="bi bi-telephone ms-2 me-1"></i> {{ addr.phone_number }}</div>
-                      </label>
+                      </div>
                     </div>
-                  </div>
+                  </label>
                 </div>
                 {% endfor %}
                 <div class="col-12">
-                    <div class="card border border-2 border-dashed rounded-4 p-3 address-card text-center" id="btn-new-address" style="cursor: pointer; background: #fdfdfd;">
-                        <div class="form-check d-flex align-items-center justify-content-center mb-0">
-                          <input class="form-check-input ms-3 me-0 address-radio d-none" type="radio" name="selected_address_id" id="addr_new" value="" {% if not addresses %}checked{% endif %}>
-                          <label class="form-check-label text-primary fw-bold" for="addr_new" style="cursor: pointer;">
-                              <i class="bi bi-plus-circle me-1"></i> إدخال موقع جديد
-                          </label>
+                  <div class="w-100 m-0 p-0" style="cursor: pointer;" id="trigger-new-address">
+                    <div class="card border border-2 border-dashed rounded-4 p-3 text-center" style="background: rgba(0, 180, 216, 0.05); border-color: var(--chk-primary) !important;">
+                        <div class="d-flex align-items-center justify-content-center mb-0 p-0 m-0" style="pointer-events: none;">
+                          <input class="form-check-input ms-3 me-0" type="radio" name="selected_address_id" id="addr_new" value="" {% if not addresses %}checked{% endif %} style="transform: scale(1.2);">
+                          <span class="text-primary fw-bold m-0 p-0" style="font-size: 1.05rem;">
+                              <i class="bi bi-geo-alt-fill me-1"></i> إدخال وتحديد موقع جديد عبر الخريطة
+                          </span>
                         </div>
                     </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -185,7 +189,7 @@
             <div id="new-address-form" {% if addresses and request.user.addresses.exists %}style="display: none;"{% endif %}>
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <span class="fw-bold fs-5" style="color: var(--chk-primary);">تفاصيل التوصيل</span>
-                <button type="button" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background: linear-gradient(135deg, #00b4d8, #004d7a);" onclick="$('#globalMapModal').modal('show');">
+                <button type="button" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background: linear-gradient(135deg, #00b4d8, #004d7a);" onclick="showLocationModal();">
                     <i class="bi bi-geo-alt-fill"></i> تحديد من الخريطة
                 </button>
               </div>
@@ -407,15 +411,58 @@
     
     // Initialize
     toggleNewAddressForm();
-    
+
+    // Trigger map directly when clicking the new address card
+    $('#trigger-new-address').on('click', function(e) {
+        // Toggle the radio and form first
+        $('#addr_new').prop('checked', true);
+        toggleNewAddressForm();
+        
+        // Then safely trigger the map modal
+        if (typeof showLocationModal === 'function') {
+            showLocationModal();
+        } else {
+            console.error('showLocationModal function is not available.');
+        }
+    });
+
     $('.address-radio').on('change', function() {
         toggleNewAddressForm();
     });
     
     // If modal triggers and user saves location, update hidden field and show form
+    document.addEventListener('locationSaved', function(e) {
+        if(e.detail && e.detail.latitude) {
+            $('#checkout-location-link').val(e.detail.maps_url || '');
+            $('#id_latitude').val(e.detail.latitude);
+            $('#id_longitude').val(e.detail.longitude);
+            if(e.detail.city) $('#city').val(e.detail.city);
+            if(e.detail.country) $('#country').val(e.detail.country);
+            if(e.detail.neighborhood) $('#neighborhood').val(e.detail.neighborhood);
+            if(e.detail.street) $('#street').val(e.detail.street);
+            if(e.detail.postal_code) $('#postal_code').val(e.detail.postal_code);
+            
+            $('#addr_new').prop('checked', true).trigger('change');
+            
+            // Sabotage-proof inline Map update
+            try {
+                if (typeof google !== 'undefined' && google.maps && typeof marker !== 'undefined' && marker && typeof map !== 'undefined' && map) {
+                    const latLng = new google.maps.LatLng(e.detail.latitude, e.detail.longitude);
+                    marker.setPosition(latLng);
+                    map.setCenter(latLng);
+                }
+            } catch(err) {
+                console.log('Skipping legacy map update', err);
+            }
+        }
+    });
+    
+    // For legacy jQuery event (just in case)
     $(document).on('locationSaved', function(e, link) {
-        $('#checkout-location-link').val(link);
-        $('#addr_new').prop('checked', true).trigger('change');
+        if(typeof link === 'string') {
+            $('#checkout-location-link').val(link);
+            $('#addr_new').prop('checked', true).trigger('change');
+        }
     });
 
     // Update Quantity in Checkout Summary
@@ -432,6 +479,20 @@
       else if (action === 'decrease' && qty > 1) qty--;
       else return;
 
+      $.ajax({
+        url: "{% url 'cart:cart_update' %}",
+        method: "POST",
+        data: {
+          'product_id': productId,
+          'item_type': itemType,
+          'quantity': qty,
+          'csrfmiddlewaretoken': csrftoken
+        },
+        success: function (response) {
+          input.val(qty);
+          row.find('.line-total').text(response.item_total);
+          $('.cart-total-price').text(response.total_price);
+        }
       });
     });
 

@@ -35,6 +35,17 @@
                         </div>
                         {% endif %}
                     </div>
+                    <div class="seo-panel mb-4">
+                        <div class="seo-panel-title"><i class="bi bi-search"></i> تحسين محركات البحث SEO</div>
+                        <div class="seo-panel-sub">بيانات مخصصة لصفحة العرض في نتائج البحث والمشاركة.</div>
+                        <div class="row g-3">
+                            <div class="col-md-6"><label class="form-label">عنوان SEO</label>{{ form.seo_title }}</div>
+                            <div class="col-md-6"><label class="form-label">الكلمات المفتاحية</label>{{ form.seo_keywords }}</div>
+                            <div class="col-12"><label class="form-label">وصف SEO</label>{{ form.seo_description }}</div>
+                            <div class="col-md-6"><label class="form-label">الرابط الأساسي Canonical</label>{{ form.seo_canonical_url }}</div>
+                            <div class="col-md-6"><label class="form-label">صورة المشاركة</label>{{ form.seo_image }}</div>
+                        </div>
+                    </div>
                     <div class="mt-5 text-center">
                         <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
                             <i class="bi bi-check-circle me-2"></i> حفظ العرض

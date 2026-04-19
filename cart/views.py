@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.http import require_POST
 from products.models import Product, Bundle
-from orders.models import Order, OrderItem
+from orders.models import Order, OrderItem, OrderStatus
 from .cart import Cart
 
 # Create your views here.
@@ -109,7 +109,7 @@ class CartCheckout(LoginRequiredMixin, TemplateView):
             shipping_longitude=longitude,
             shipping_location_link=location_link,
             total_price=cart.get_total_price(),
-            status='pending'
+            status=OrderStatus.objects.filter(slug='pending').first()
         )
 
         # Create OrderItems

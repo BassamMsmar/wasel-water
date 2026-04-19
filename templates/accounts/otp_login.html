@@ -3,17 +3,26 @@
 
 {% block title %}تسجيل الدخول - واصل مياه{% endblock %}
 
+{# ─── إخفاء الـ header والـ footer في صفحة تسجيل الدخول ─── #}
+{% block site_header %}{% endblock %}
+{% block site_footer %}{% endblock %}
+{% block site_extras %}{% endblock %}
+
 {% block extra_head %}
 <!-- Tajawal Font -->
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 
 <style>
+    /* No header on this page — remove main top spacing */
+    body.otp-page .main,
+    body.otp-page main { padding-top: 0 !important; margin-top: 0 !important; }
+
     :root {
         --otp-primary: #004d7a;
         --otp-secondary: #00b4d8;
         --otp-text-main: #2c3e50;
         --otp-text-muted: #5a6a7a;
-        --otp-bg: #f8fbfb;
+        --otp-bg: #ffffff;
         --card-bg: #ffffff;
     }
 
@@ -34,13 +43,13 @@
     }
 
     .otp-card {
-        background: var(--card-bg);
-        border: 1px solid rgba(0, 77, 122, 0.12);
-        border-radius: 16px;
-        padding: 40px;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 40px 10px;
         width: 100%;
-        max-width: 330px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+        max-width: 380px;
+        box-shadow: none;
         animation: fadeIn 0.6s ease-out;
     }
 
@@ -266,32 +275,6 @@
         display: none;
     }
 
-    /* Login Toggle */
-    .login-toggle {
-        display: flex;
-        background: #f1f3f5;
-        border-radius: 12px;
-        padding: 4px;
-        margin-bottom: 30px;
-    }
-
-    .toggle-btn {
-        flex: 1;
-        border: none;
-        background: transparent;
-        padding: 10px;
-        font-weight: 700;
-        font-size: 0.9rem;
-        color: var(--otp-text-muted);
-        border-radius: 10px;
-        transition: all 0.3s;
-    }
-
-    .toggle-btn.active {
-        background: #fff;
-        color: var(--otp-primary);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
     
     /* Input with Icon Group */
     .input-icon-group {
@@ -383,96 +366,198 @@
         to { transform: rotate(360deg); }
     }
 
+    /* ─── Apple-style progressive field ─── */
+    .apple-field-group {
+        margin-bottom: 0;
+        position: relative;
+    }
+    .apple-field-group + .apple-field-group {
+        margin-top: -1px; /* merge borders */
+    }
+    .apple-field-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border: 1.5px solid #8e8e93;  /* Clearer border color */
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
+    }
+    /* rounded corners: top pair vs bottom pair */
+    #apple-identifier-group .apple-field-wrap {
+        border-radius: 12px;
+    }
+    .apple-pw-field:not(.hidden) ~ * ,
+    #apple-identifier-group:has(+ .apple-pw-field:not(.hidden)) .apple-field-wrap {
+        border-radius: 12px 12px 0 0;
+    }
+    .apple-pw-field:not(.hidden) .apple-field-wrap {
+        border-radius: 0 0 12px 12px;
+    }
+    .apple-field-wrap:focus-within {
+        border-color: var(--otp-primary);
+        box-shadow: 0 0 0 3px rgba(0,77,122,0.08);
+        z-index: 1;
+        position: relative;
+    }
+    .apple-field-label {
+        position: absolute;
+        top: 50%;
+        right: 14px;
+        transform: translateY(-50%);
+        font-size: 0.95rem;
+        color: #6e6e73;
+        pointer-events: none;
+        transition: all 0.18s ease;
+        z-index: 2;
+        font-family: inherit;
+    }
+    .apple-field-input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 22px 14px 8px;
+        font-size: 1rem;
+        color: var(--otp-text-main);
+        font-weight: 500;
+        outline: none;
+        font-family: inherit;
+        box-sizing: border-box;
+    }
+    /* float label on focus / has value */
+    .apple-field-wrap:focus-within .apple-field-label,
+    .apple-field-input:not(:placeholder-shown) + .apple-field-label /* won't work in RTL order */,
+    .apple-field-label.floated {
+        top: 10px;
+        font-size: 0.72rem;
+        color: var(--otp-primary);
+        transform: none;
+    }
+    /* password reveal button */
+    .apple-pw-toggle {
+        background: none;
+        border: none;
+        padding: 0 14px;
+        color: #6e6e73;
+        font-size: 1rem;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    /* slide-down animation for pw field */
+    .apple-pw-field {
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.2s;
+        margin-top: 0;
+    }
+    .apple-pw-field.visible {
+        max-height: 80px;
+        opacity: 1;
+        margin-top: 0;
+    }
+    .apple-pw-field.hidden {
+        display: block !important; /* override .hidden so transition works */
+        max-height: 0;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .apple-forgot-link {
+        font-size: 0.88rem;
+        color: var(--otp-primary);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .apple-forgot-link:hover { text-decoration: underline; }
+    /* Fix label position inside apple-field-wrap (RTL) */
+    [dir='rtl'] .apple-field-label {
+        right: 14px; left: auto;
+    }
+
     /* Fix Autofill background color */
     input:-webkit-autofill,
     input:-webkit-autofill:hover, 
     input:-webkit-autofill:focus, 
     input:-webkit-autofill:active  {
-        -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+        
         -webkit-text-fill-color: var(--otp-text-main) !important;
         transition: background-color 5000s ease-in-out 0s;
     }
 </style>
 {% endblock %}
 
-{% block body_class %}otp_page{% endblock %}
+{% block body_class %}otp-page{% endblock %}
 
 {% block content %}
 <div class="otp-container">
-    <!-- Step 1: Login Choice (Phone or Password) -->
-    <div id="step-phone" class="otp-card">
+    <!-- Step 1: Login Choice (Email or Phone) -->
+    <div id="step-unified" class="otp-card">
         <div class="otp-header">
             {% if company.logo %}
             <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="otp-logo">
             {% endif %}
-            <h1>مرحباً بك</h1>
-            <p>سجل دخولك للمتابعة</p>
+            <h1>تسجيل الدخول بشكل أسرع</h1>
+            <p>سجّل دخولك للمتابعة</p>
         </div>
 
-        <!-- Toggle -->
-        <div class="login-toggle">
-            <button type="button" class="toggle-btn active" data-target="form-otp">الدخول السريع</button>
-            <button type="button" class="toggle-btn" data-target="form-password">كلمة المرور</button>
-        </div>
-
-        <!-- OTP Form -->
-        <div id="form-otp" class="login-form-method">
-            <div class="form-group">
-                <label class="form-label">رقم الجوال</label>
-                <div class="phone-input-wrapper" dir="ltr">
-                    <div class="phone-prefix">
-                        <img src="https://flagcdn.com/w20/sa.png" width="20" alt="SA">
-                        <span>+966</span>
+        <div id="form-unified">
+            <div id="pw-step-identifier">
+                <div class="apple-field-group" id="apple-identifier-group">
+                    <label class="apple-field-label" for="input-identifier">البريد الإلكتروني أو رقم الهاتف</label>
+                    <div class="apple-field-wrap">
+                        <input type="text" id="input-identifier"
+                               class="apple-field-input"
+                               autocomplete="username" dir="ltr">
                     </div>
-                    <input type="tel" id="input-phone" class="phone-input" placeholder="5xxxxxxxx" maxlength="9" autocomplete="tel">
                 </div>
-                <div id="phone-error" class="text-danger small mt-2 hidden"></div>
-            </div>
 
-            <button id="btn-send-otp" class="btn-submit" disabled>
-                <span class="btn-text">إرسال كود التحقق</span>
-                <div class="loader"></div>
-            </button>
-        </div>
-
-        <!-- Password Form -->
-        <div id="form-password" class="login-form-method hidden">
-            <div class="form-group">
-                <label class="form-label">اسم المستخدم أو الجوال</label>
-                <div class="input-icon-group">
-                    <div class="input-icon">
-                        <i class="bi bi-person"></i>
+                <!-- Password field – hidden initially -->
+                <div class="apple-field-group apple-pw-field hidden" id="apple-password-group">
+                    <label class="apple-field-label" for="input-password">كلمة المرور</label>
+                    <div class="apple-field-wrap">
+                        <input type="password" id="input-password"
+                               class="apple-field-input"
+                               placeholder="••••••••"
+                               autocomplete="current-password">
+                        <button type="button" id="btn-toggle-pw" class="apple-pw-toggle" tabindex="-1" aria-label="إظهار كلمة المرور">
+                            <i class="bi bi-eye" id="pw-eye-icon"></i>
+                        </button>
                     </div>
-                    <input type="text" id="input-username" placeholder="أدخل اسمك أو رقم جوالك">
                 </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">كلمة المرور</label>
-                <div class="input-icon-group">
-                    <div class="input-icon">
-                        <i class="bi bi-shield-lock"></i>
-                    </div>
-                    <input type="password" id="input-password" placeholder="••••••••">
+
+                <div id="unified-error" class="text-danger small mt-2 hidden" style="margin-bottom: 12px; text-align: right;"></div>
+
+                <div class="form-check mt-3" style="text-align: right; display: flex; align-items: center; gap: 8px; justify-content: flex-start;">
+                    <input class="form-check-input m-0" type="checkbox" value="" id="rememberMe" checked style="width: 18px; height: 18px; cursor: pointer;">
+                    <label class="form-check-label m-0" for="rememberMe" style="font-size: 0.95rem; color: var(--otp-text-main); cursor: pointer; padding-top: 1px;">
+                        تذكرني
+                    </label>
+                </div>
+
+                <button id="btn-unified-continue" class="btn-submit mt-3" disabled>
+                    <span class="btn-text">متابعة</span>
+                    <div class="loader"></div>
+                </button>
+
+                <div class="text-center mt-4 d-flex flex-column gap-3" style="align-items: center;">
+                    <a href="#" class="apple-forgot-link" id="btn-forgot-pw">هل نسيت كلمة السر؟ <i class="bi bi-arrow-left-short"></i></a>
+                    <a href="{% url 'accounts:signup' %}" class="apple-forgot-link">ليس لديك حساب؟ إنشاء حساب خاص بك <i class="bi bi-arrow-left-short"></i></a>
                 </div>
             </div>
-            <div id="password-error" class="text-danger small mt-2 hidden" style="margin-bottom: 15px;"></div>
-            <button id="btn-login-password" class="btn-submit">
-                <span class="btn-text">تسجيل الدخول</span>
-                <div class="loader"></div>
-            </button>
         </div>
 
         <!-- Google Login -->
-        <div class="social-login">
-            <div class="divider"><span>أو</span></div>
+        <div class="social-login mt-4">
+            <div class="divider"></div>
             <a href="{% url 'google_login' %}" class="btn-google">
                 <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" class="google-icon" alt="Google">
                 <span>المتابعة عبر جوجل</span>
             </a>
         </div>
 
-        <div class="divider"></div>
-        <a href="{% url 'home' %}" class="guest-link">المتابعة كزائر</a>
+        <div class="text-center mt-3">
+            <a href="{% url 'home' %}" class="guest-link">المتابعة كزائر</a>
+        </div>
     </div>
 
     <!-- Step 2: OTP Verification -->
@@ -510,17 +595,27 @@
 {% block extra_js %}
 <script>
     $(document).ready(function() {
-        const stepPhone = $('#step-phone');
+        const stepUnified = $('#step-unified');
         const stepOtp = $('#step-otp');
-        const inputPhone = $('#input-phone');
-        const phoneError = $('#phone-error');
-        const btnSendOtp = $('#btn-send-otp');
+        const inputIdentifier = $('#input-identifier');
+        const inputPassword = $('#input-password');
+        const errorDiv = $('#unified-error');
+        const btnContinue = $('#btn-unified-continue');
+        
+        const pwGroup = $('#apple-password-group');
+        const pwLabel = pwGroup.find('.apple-field-label');
+        const identifierLabel = $('#apple-identifier-group .apple-field-label');
+        
+        let pwVisible = false;
+        let isPhoneMode = false;
+        let activePhoneValue = '';
+
+        const otpInputs = $('.otp-digit');
+        const btnVerifyOtp = $('#btn-verify-otp');
         const displayPhone = $('#display-phone');
         const resendLink = $('#btn-resend');
         const timerSpan = $('#timer');
-        
         let countdown;
-        let phoneValue = '';
 
         // CSRF Token
         function getCookie(name) {
@@ -539,54 +634,153 @@
         }
         const csrftoken = getCookie('csrftoken');
 
-        // Phone Input UI
-        inputPhone.on('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-            if (this.value.length === 9) {
-                btnSendOtp.prop('disabled', false);
+        // Float label when input has value
+        function updateLabel(input, label) {
+            if (input.val().trim()) {
+                label.addClass('floated');
             } else {
-                btnSendOtp.prop('disabled', true);
+                label.removeClass('floated');
             }
+        }
+
+        // Identifier Input handler
+        inputIdentifier.on('input focus', function() {
+            // allow english nums and letters
+            updateLabel($(this), identifierLabel);
+            const val = $(this).val().trim();
+            btnContinue.prop('disabled', val.length === 0);
+            errorDiv.addClass('hidden');
         });
 
-        // Send OTP
-        btnSendOtp.on('click', function() {
-            phoneValue = inputPhone.val();
-            if (!phoneValue.startsWith('5') || phoneValue.length !== 9) {
-                phoneError.text('يرجى إدخال رقم جوال سعودي صحيح يبدأ بـ 5').removeClass('hidden');
+        inputPassword.on('input focus', function() {
+            updateLabel($(this), pwLabel);
+            errorDiv.addClass('hidden');
+        });
+
+        // Show/hide password toggle
+        $('#btn-toggle-pw').on('click', function() {
+            const type = inputPassword.attr('type') === 'password' ? 'text' : 'password';
+            inputPassword.attr('type', type);
+            $('#pw-eye-icon').toggleClass('bi-eye bi-eye-slash');
+        });
+
+        // Continue Button Logic
+        btnContinue.on('click', function() {
+            const val = inputIdentifier.val().trim();
+            errorDiv.addClass('hidden');
+
+            if (!val) {
+                errorDiv.text('يرجى إدخال البريد الإلكتروني أو رقم الهاتف').removeClass('hidden');
+                inputIdentifier.focus();
                 return;
             }
-            
-            phoneError.addClass('hidden');
-            const fullPhone = '+966' + phoneValue;
-            
-            setLoading(btnSendOtp, true);
 
-            fetch('{% url "accounts:otp_request" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
-                body: JSON.stringify({ phone: fullPhone })
-            })
-            .then(res => res.json())
-            .then(data => {
-                setLoading(btnSendOtp, false);
-                if (data.success) {
-                    switchToOtp(fullPhone);
+            // Check if input looks like a phone number (all digits)
+            const isAllDigits = /^\d+$/.test(val);
+
+            if (!pwVisible) {
+                if (isAllDigits) {
+                    // Treat as Phone Number
+                    let phoneNum = val;
+                    // Auto correct 05 -> 5
+                    if (phoneNum.startsWith('05')) {
+                        phoneNum = phoneNum.substring(1);
+                        inputIdentifier.val(phoneNum); // update visual
+                    }
+                    
+                    if (!phoneNum.startsWith('5') || phoneNum.length !== 9) {
+                        errorDiv.text('يرجى إدخال رقم جوال سعودي صحيح (مثال: 5xxxxxxxx)').removeClass('hidden');
+                        return;
+                    }
+
+                    isPhoneMode = true;
+                    activePhoneValue = phoneNum;
+                    const fullPhone = '+966' + phoneNum;
+                    
+                    setLoading(btnContinue, true);
+
+                    fetch('{% url "accounts:otp_request" %}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                        body: JSON.stringify({ phone: fullPhone })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        setLoading(btnContinue, false);
+                        if (data.success) {
+                            switchToOtp(fullPhone);
+                            if (data.debug_code) {
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'وضع التطوير 🛠️',
+                                    text: 'كود التحقق (OTP) هو: ' + data.debug_code,
+                                    confirmButtonColor: '#00b4d8'
+                                });
+                            }
+                        } else {
+                            errorDiv.text(data.error).removeClass('hidden');
+                        }
+                    })
+                    .catch(err => {
+                        setLoading(btnContinue, false);
+                        errorDiv.text('حدث خطأ ما، يرجى المحاولة لاحقاً').removeClass('hidden');
+                    });
+
                 } else {
-                    phoneError.text(data.error).removeClass('hidden');
+                    // Treat as Email / Username -> Reveal Password
+                    isPhoneMode = false;
+                    $('#apple-identifier-group .apple-field-wrap').css('border-radius', '12px 12px 0 0');
+                    pwGroup.removeClass('hidden').addClass('visible');
+                    pwVisible = true;
+                    btnContinue.find('.btn-text').text('تسجيل الدخول');
+                    setTimeout(() => { inputPassword.focus(); }, 350);
                 }
-            })
-            .catch(err => {
-                setLoading(btnSendOtp, false);
-                phoneError.text('حدث خطأ ما، يرجى المحاولة لاحقاً').removeClass('hidden');
-            });
+                return;
+            }
+
+            // If pw is visible, we are logging in via username/password
+            if (pwVisible && !isPhoneMode) {
+                const password = inputPassword.val();
+                if (!password) {
+                    errorDiv.text('يرجى إدخال كلمة المرور').removeClass('hidden');
+                    inputPassword.focus();
+                    return;
+                }
+
+                setLoading(btnContinue, true);
+
+                fetch('{% url "accounts:traditional_login" %}' + window.location.search, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+                    body: JSON.stringify({ username: val, password: password })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    setLoading(btnContinue, false);
+                    if (data.success) {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        errorDiv.text(data.error).removeClass('hidden');
+                        pwGroup.find('.apple-field-wrap').css('border-color','#ff3b30');
+                        setTimeout(() => pwGroup.find('.apple-field-wrap').css('border-color',''), 1200);
+                    }
+                })
+                .catch(() => {
+                    setLoading(btnContinue, false);
+                    errorDiv.text('حدث خطأ فني، يرجى المحاولة لاحقاً').removeClass('hidden');
+                });
+            }
         });
 
-        // OTP Input UI
-        const otpInputs = $('.otp-digit');
+        // Allow Enter key to trigger button
+        inputIdentifier.on('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); btnContinue.trigger('click'); }
+        });
+        inputPassword.on('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); btnContinue.trigger('click'); }
+        });
+
+        // --- OTP Logic ---
         otpInputs.on('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
             if (this.value.length === 1) {
@@ -606,37 +800,30 @@
             otpInputs.each(function() {
                 if (this.value.length === 0) complete = false;
             });
-            $('#btn-verify-otp').prop('disabled', !complete);
+            btnVerifyOtp.prop('disabled', !complete);
             if (complete) {
-                // Auto verify if you want
-                // verifyOtp();
+                // Auto verify
+                verifyOtp();
             }
         }
 
-        // Verify OTP
-        $('#btn-verify-otp').on('click', verifyOtp);
+        btnVerifyOtp.on('click', verifyOtp);
 
         function verifyOtp() {
             let code = '';
             otpInputs.each(function() { code += this.value; });
-            const fullPhone = '+966' + phoneValue;
-            const btnVerify = $('#btn-verify-otp');
+            const fullPhone = '+966' + activePhoneValue;
 
-            setLoading(btnVerify, true);
-
-            const nextUrl = new URLSearchParams(window.location.search).get('next') || '{% url "home" %}';
+            setLoading(btnVerifyOtp, true);
 
             fetch('{% url "accounts:otp_verify" %}' + (window.location.search), {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
                 body: JSON.stringify({ phone: fullPhone, code: code })
             })
             .then(res => res.json())
             .then(data => {
-                setLoading(btnVerify, false);
+                setLoading(btnVerifyOtp, false);
                 if (data.success) {
                     window.location.href = data.redirect_url;
                 } else {
@@ -646,20 +833,18 @@
                         text: data.error,
                         confirmButtonColor: '#00b4d8'
                     });
-                    // Clear inputs on error
                     otpInputs.val('');
                     otpInputs.first().focus();
                 }
             })
             .catch(err => {
-                setLoading(btnVerify, false);
-                console.error(err);
+                setLoading(btnVerifyOtp, false);
             });
         }
 
         // Navigation
         function switchToOtp(phone) {
-            stepPhone.addClass('hidden');
+            stepUnified.addClass('hidden');
             stepOtp.removeClass('hidden');
             displayPhone.text(phone);
             otpInputs.first().focus();
@@ -669,36 +854,42 @@
         $('#btn-back').on('click', function(e) {
             e.preventDefault();
             stepOtp.addClass('hidden');
-            stepPhone.removeClass('hidden');
+            stepUnified.removeClass('hidden');
             clearInterval(countdown);
         });
 
-        // Resend
+        // Resend OTP
         resendLink.on('click', function(e) {
             e.preventDefault();
             if ($(this).hasClass('disabled')) return;
             
-            const fullPhone = '+966' + phoneValue;
+            const fullPhone = '+966' + activePhoneValue;
             fetch('{% url "accounts:otp_request" %}', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
                 body: JSON.stringify({ phone: fullPhone })
             })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
                     startTimer(60);
-                    Swal.fire({
-                        toast: true,
-                        position: 'top',
-                        icon: 'success',
-                        title: 'تم إعادة إرسال الكود',
-                        showConfirmButton: false,
-                        timer: 2000
-                    });
+                    if (data.debug_code) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'وضع التطوير 🛠️ (إعادة إرسال)',
+                            text: 'كود التحقق الجديد هو: ' + data.debug_code,
+                            confirmButtonColor: '#00b4d8'
+                        });
+                    } else {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top',
+                            icon: 'success',
+                            title: 'تم إعادة إرسال الكود',
+                            showConfirmButton: false,
+                            timer: 2000
+                        });
+                    }
                 }
             });
         });
@@ -721,7 +912,6 @@
         function startTimer(seconds) {
             resendLink.addClass('disabled');
             let timeLeft = seconds;
-            
             updateTimerDisplay(timeLeft);
             
             clearInterval(countdown);
@@ -742,46 +932,9 @@
             timerSpan.text(`(${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')})`);
         }
 
-        // --- NEW: Toggle & Traditional Login ---
-        $('.toggle-btn').on('click', function() {
-            const target = $(this).data('target');
-            $('.toggle-btn').removeClass('active');
-            $(this).addClass('active');
-            $('.login-form-method').addClass('hidden');
-            $('#' + target).removeClass('hidden');
-        });
-
-        $('#btn-login-password').on('click', function() {
-            const username = $('#input-username').val();
-            const password = $('#input-password').val();
-            const errorDiv = $('#password-error');
-
-            if (!username || !password) {
-                errorDiv.text('يرجى تعبئة جميع الحقول').removeClass('hidden');
-                return;
-            }
-
-            setLoading($(this), true);
-            errorDiv.addClass('hidden');
-
-            fetch('{% url "accounts:traditional_login" %}' + window.location.search, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
-                body: JSON.stringify({ username, password })
-            })
-            .then(res => res.json())
-            .then(data => {
-                setLoading($(this), false);
-                if (data.success) {
-                    window.location.href = data.redirect_url;
-                } else {
-                    errorDiv.text(data.error).removeClass('hidden');
-                }
-            })
-            .catch(err => {
-                setLoading($(this), false);
-                errorDiv.text('حدث خطأ فني، يرجى المحاولة لاحقاً').removeClass('hidden');
-            });
+        $('#btn-forgot-pw').on('click', function(e) {
+            e.preventDefault();
+            Swal.fire({ icon: 'info', title: 'نسيت كلمة المرور؟', text: 'يرجى التواصل مع مدير النظام أو استخدام الدخول السريع عبر رقم الجوال.', confirmButtonColor: '#004d7a' });
         });
     });
 </script>

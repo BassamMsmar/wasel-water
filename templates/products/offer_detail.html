@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}عرض خاص: {{ offer.title }} - {{ company.name|default:"متاجر 360" }}{% endblock %}
+{% block title %}{{ offer.seo_title|default:offer.title }} - {{ company.name|default:"متاجر 360" }}{% endblock %}
+{% block meta_description %}{{ offer.seo_description|default:offer.description|striptags|truncatechars:160 }}{% endblock %}
+{% block meta_keywords %}{{ offer.seo_keywords }}{% endblock %}
+{% block canonical_url %}{% if offer.seo_canonical_url %}<link rel="canonical" href="{{ offer.seo_canonical_url }}">{% endif %}{% endblock %}
+{% block og_title %}{{ offer.seo_title|default:offer.title }}{% endblock %}
+{% block og_description %}{{ offer.seo_description|default:offer.description|striptags|truncatechars:160 }}{% endblock %}
+{% block og_image %}{% if offer.seo_image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ offer.seo_image.url }}">{% elif offer.image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ offer.image.url }}">{% endif %}{% endblock %}
 
 {% block content %}
 <!-- Page Title -->

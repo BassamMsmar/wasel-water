@@ -8,10 +8,11 @@ class Cart:
         Initialize the cart.
         """
         self.session = request.session
-        cart = self.session.get(settings.CART_SESSION_ID)
+        self.session_id = getattr(settings, 'CART_SESSION_ID', 'cart')
+        cart = self.session.get(self.session_id)
         if not cart:
             # save an empty cart in the session
-            cart = self.session[settings.CART_SESSION_ID] = {}
+            cart = self.session[self.session_id] = {}
         self.cart = cart
 
     def add(self, product, quantity=1, override_quantity=False, item_type='product'):
@@ -108,5 +109,7 @@ class Cart:
 
     def clear(self):
         # remove cart from session
-        del self.session[settings.CART_SESSION_ID]
+        session_id = getattr(settings, 'CART_SESSION_ID', 'cart')
+        if session_id in self.session:
+            del self.session[session_id]
         self.save()

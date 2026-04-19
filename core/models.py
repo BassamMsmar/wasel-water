@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 
 # Create your models here.\
@@ -17,6 +18,8 @@ class Section(models.Model):
     ordering = models.IntegerField(default=0)
 
     class Meta:
+        verbose_name = _("القسم")
+        verbose_name_plural = _("الأقسام")
         ordering = ['ordering']
 
     def __str__(self):
@@ -38,6 +41,10 @@ class Company(models.Model):
     tiktok = models.URLField( blank=True , null=True)
     whatsapp = models.CharField(max_length=100 , blank=True , null=True)
 
+    class Meta:
+        verbose_name = _("الشركة")
+        verbose_name_plural = _("الشركات")
+
     def __str__(self):
         return self.name
 
@@ -54,6 +61,10 @@ class Banner(models.Model):
     link = models.URLField()
     type = models.CharField(max_length=10, choices=TYPE_BANNER, default='offer')   
 
+
+    class Meta:
+        verbose_name = _("البانر الإعلاني")
+        verbose_name_plural = _("البانرات الإعلانية")
     def __str__(self):
         return self.title 
 
