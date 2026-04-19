@@ -10,6 +10,7 @@
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;">
     <a href="{% url 'settings:admin_orders' %}" class="adm-btn adm-btn-white adm-btn-sm"><i class="bi bi-bag"></i> الطلبات</a>
+    <a href="/admin/products/featuredproduct/" class="adm-btn adm-btn-white adm-btn-sm"><i class="bi bi-star"></i> المميزة 🌟</a>
     <a href="{% url 'settings:admin_product_create' %}" class="adm-btn adm-btn-black adm-btn-sm"><i class="bi bi-plus"></i> منتج جديد</a>
   </div>
 </div>
@@ -137,7 +138,7 @@
     <div class="adm-card-body">
       {% for row in status_rows %}
         <div class="dash-row">
-          <span>{{ row.status }}</span>
+          <span>{{ row.status__name|default:"غير محدد" }}</span>
           <strong>{{ row.total }}</strong>
         </div>
       {% empty %}

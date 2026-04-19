@@ -10,7 +10,7 @@
         <div class="card shadow-sm border-0 rounded-4 mb-4">
             <div class="card-header bg-white p-4 border-bottom d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fw-bold">المنتجات المطلوبة</h5>
-                <span class="badge rounded-pill {% if order.status == 'delivered' %}bg-success{% elif order.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %} px-3 py-2">
+                <span class="badge rounded-pill bg-warning px-3 py-2">
                     {{ order.get_status_display }}
                 </span>
             </div>
@@ -65,8 +65,8 @@
                     {% csrf_token %}
                     <div class="col-md-8">
                         <select name="status" class="form-select form-select-lg rounded-pill shadow-sm">
-                            {% for code, label in order.STATUS_CHOICES %}
-                            <option value="{{ code }}" {% if order.status == code %}selected{% endif %}>{{ label }}</option>
+                            {% for status in order_statuses %}
+                            <option value="{{ status.id }}" {% if order.status_id == status.id %}selected{% endif %}>{{ status.name }}</option>
                             {% endfor %}
                         </select>
                     </div>

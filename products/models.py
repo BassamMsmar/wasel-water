@@ -12,11 +12,29 @@ from decimal import Decimal
 from django.core.validators import MinValueValidator
 from .utils import convert_image_to_webp
 
-FLAG_TYPES = (
-    ('sale', 'sale'),
-    ('new', 'new'),
-    ('feature', 'feature'),
-)
+class FeaturedProduct(models.Model):
+    product = models.OneToOneField('Product', on_delete=models.CASCADE, verbose_name=_("المنتج"))
+    order = models.PositiveIntegerField(default=0, verbose_name=_("الترتيب"), help_text=_("ترتيب الظهور في الصفحة الرئيسية"))
+    active = models.BooleanField(default=True, verbose_name=_("نشط"))
+
+    class Meta:
+        verbose_name = _("المنتج المميز (للرئيسية)")
+        verbose_name_plural = _("المنتجات المميزة (للرئيسية) 🌟")
+        ordering = ['order', '-id']
+
+    def __str__(self):
+        return f"مميز: {self.product.name}"
+
+class Flag(models.Model):
+    name = models.CharField(_("Name"), max_length=50)
+
+    class Meta:
+        verbose_name = _("الوسم الترويجي") # تاق المنتج مثل جديد، خصم..
+        verbose_name_plural = _("الوسوم الترويجية")
+
+    def __str__(self):
+        return self.name
+
 
 PRODUCT_TYPES = (
     ('single', 'منتج أساسي مفرد'),
@@ -25,7 +43,7 @@ PRODUCT_TYPES = (
 # Create your models here.
 class Product(models.Model):
     name = models.CharField(_("Name"), max_length=120)
-    flag = models.CharField(_("Flag"),max_length=10, choices=FLAG_TYPES)    
+    flag = models.ForeignKey(Flag, verbose_name=_("Flag"), on_delete=models.SET_NULL, null=True, blank=True)    
     image = models.ImageField(_("Image"), upload_to='products', default='products/default.jpg')
     old_price  = models.FloatField(_("السعر الأصلي") , default=0)
     new_price = models.FloatField(_("السعر المخفض (اختياري)"), default=0, blank=True)

@@ -152,6 +152,42 @@
       -moz-appearance: textfield; 
       appearance: textfield;
     }
+    /* Amazon/Noon Style Product Cards Override */
+    .pcard, .item-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+      background: #fff;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .pcard:hover, .item-card:hover {
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      border-color: #cbd5e1;
+    }
+    .pcard-img-wrap, .item-media {
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      height: 180px;
+    }
+    .pcard-img, .primary-img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+    }
+    .pcard-badge, .item-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-size: 0.7rem;
+      padding: 3px 8px;
+    }
   </style>
   {% block extra_head %}{% endblock %}
 </head>

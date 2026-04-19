@@ -1,0 +1,79 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{% if object %}تعديل مجموعة{% else %}إضافة مجموعة{% endif %}{% endblock %}
+{% block page_title %}{% if object %}تعديل المجموعة: {{ object.name }}{% else %}إضافة مجموعة جديدة{% endif %}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+      <div class="card-header bg-dark text-white p-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 fw-bold"><i class="bi bi-shield-lock me-2"></i> بيانات المجموعة والصلاحيات</h5>
+          <a href="{% url 'settings:admin_groups' %}" class="btn btn-outline-light btn-sm px-3">
+            <i class="bi bi-arrow-right"></i> العودة للمجموعات
+          </a>
+        </div>
+      </div>
+      <div class="card-body p-5">
+        <form method="post">
+          {% csrf_token %}
+
+          {% if form.errors %}
+          <div class="adm-alert adm-alert-danger">
+            <i class="bi bi-exclamation-circle"></i>
+            <span>يرجى مراجعة الحقول المطلوبة قبل الحفظ.</span>
+          </div>
+          {% endif %}
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">اسم الدور / المجموعة</label>
+            {{ form.name }}
+            <div class="form-text">مثال: مدير الطلبات، مشرف المنتجات، فريق خدمة العملاء.</div>
+          </div>
+
+          <div class="seo-panel">
+            <div class="seo-panel-title"><i class="bi bi-key"></i> الصلاحيات</div>
+            <div class="seo-panel-sub">الصلاحيات المعروضة هنا فقط هي الصلاحيات المستخدمة في لوحة التحكم: إضافة، عرض، تعديل، وحذف.</div>
+            <div class="permission-grid">
+              <!-- DEBUG COUNT: {{ form.permission_sections|length }} -->
+              {% for section in form.permission_sections %}
+              <div class="permission-section">
+                <div class="permission-title">{{ section.title }}</div>
+                <div class="permission-actions">
+                  {% for item in section.items %}
+                  <label class="permission-check">
+                    <input type="checkbox" name="permissions" value="{{ item.id }}" {% if item.checked %}checked{% endif %}>
+                    <span>{{ item.label }}</span>
+                  </label>
+                  {% endfor %}
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="mt-5 text-center">
+            <button type="submit" class="btn btn-primary btn-lg px-5 shadow fw-bold">
+              <i class="bi bi-save me-2"></i> حفظ المجموعة
+            </button>
+            <a href="{% url 'settings:admin_groups' %}" class="btn btn-outline-secondary btn-lg px-4 ms-2">تراجع</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+.permission-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.permission-section { background: #fff; border: 1px solid var(--brs); border-radius: var(--rx); padding: 14px; }
+.permission-title { font-weight: 800; color: var(--txt); margin-bottom: 10px; }
+.permission-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.permission-check { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: var(--rx); padding: 7px 10px; cursor: pointer; background: var(--sf2); font-weight: 700; font-size: .82rem; }
+.permission-check input { accent-color: var(--black); }
+@media (max-width: 700px) { .permission-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}

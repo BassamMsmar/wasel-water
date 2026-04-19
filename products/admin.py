@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Brand, Category, Offer, ProductImages, Review, BundleItem
+from .models import Product, Brand, Category, Offer, ProductImages, Review, BundleItem, Flag, FeaturedProduct
 from .models import Bundle, BundleItem
 
 class BundleItemInline(admin.TabularInline):
@@ -46,4 +46,12 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(Offer)
 admin.site.register(ProductImages)
 admin.site.register(Review)
+admin.site.register(Flag)
 # admin.site.register(Bundle, BundleAdmin)
+
+class FeaturedProductAdmin(admin.ModelAdmin):
+    list_display = ('product', 'order', 'active')
+    list_editable = ('order', 'active')
+    search_fields = ('product__name',)
+
+admin.site.register(FeaturedProduct, FeaturedProductAdmin)

@@ -433,6 +433,12 @@
       .adm-table thead th { font-size: .6rem; padding: 7px 8px; }
       .adm-table tbody td { padding: 8px 8px; font-size: .79rem; }
     }
+
+    select.form-select, select.adm-input {
+        background-position: right 0.75rem center !important;
+        padding-right: 2.25rem !important;
+        padding-left: 0.75rem !important;
+    }
   </style>
 
   {% block extra_css %}{% endblock %}
@@ -472,6 +478,11 @@
         <i class="bi bi-box"></i> المنتجات
       </a>
 
+      <a href="/admin/products/featuredproduct/" id="nav-featured"
+         class="adm-nav-lnk {% if "featuredproduct" in request.path %}here{% endif %}">
+        <i class="bi bi-star"></i> المنتجات المميزة 🌟
+      </a>
+
       <a href="{% url 'settings:admin_categories' %}" id="nav-categories"
          class="adm-nav-lnk {% if '/categor' in request.path %}here{% endif %}">
         <i class="bi bi-square-half"></i> التصنيفات
@@ -494,6 +505,11 @@
         <i class="bi bi-bag"></i> الطلبات
       </a>
 
+      <a href="{% url 'settings:admin_branches' %}" id="nav-branches"
+         class="adm-nav-lnk {% if '/branches' in request.path %}here{% endif %}">
+        <i class="bi bi-signpost"></i> الفروع
+      </a>
+
       <a href="{% url 'settings:admin_customers' %}" id="nav-customers"
          class="adm-nav-lnk {% if '/customer' in request.path %}here{% endif %}">
         <i class="bi bi-person"></i> العملاء
@@ -502,6 +518,11 @@
       <a href="{% url 'settings:admin_staff' %}" id="nav-staff"
          class="adm-nav-lnk {% if '/staff' in request.path %}here{% endif %}">
         <i class="bi bi-person-badge"></i> الموظفون
+      </a>
+
+      <a href="{% url 'settings:admin_groups' %}" id="nav-groups"
+         class="adm-nav-lnk {% if '/groups' in request.path %}here{% endif %}">
+        <i class="bi bi-shield-lock"></i> الأدوار والصلاحيات
       </a>
 
       <div class="adm-nav-div"></div>
