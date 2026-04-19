@@ -1,23 +1,45 @@
 from django import forms
 from django.forms import inlineformset_factory
-from .models import Order, OrderItem
-from products.models import Product, Bundle
+from products.models import Bundle, Product
+from .models import Branch, Order, OrderItem
+
+
+class BranchForm(forms.ModelForm):
+    class Meta:
+        model = Branch
+        fields = ['name', 'active']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'مثال: فرع جدة'}),
+            'active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
 
 class OrderForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['representative'].queryset = self.fields['representative'].queryset.filter(is_staff=True)
+        self.fields['representative'].empty_label = 'بدون مندوب'
+        self.fields['branch'].choices = [('', 'بدون فرع')] + [
+            (branch.name, branch.name) for branch in Branch.objects.filter(active=True).order_by('name')
+        ]
+
     class Meta:
         model = Order
         fields = [
             'user', 'status', 'total_price', 'is_paid',
+            'branch', 'representative',
             'shipping_full_name', 'shipping_address', 'shipping_phone', 'shipping_city',
             'shipping_country', 'shipping_postal_code', 'shipping_latitude', 'shipping_longitude'
         ]
         widgets = {
             'user': forms.Select(attrs={'class': 'form-select'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
+            'branch': forms.Select(attrs={'class': 'form-select'}),
+            'representative': forms.Select(attrs={'class': 'form-select'}),
             'total_price': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly', 'lang': 'en', 'style': 'direction: ltr;'}),
             'is_paid': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'shipping_full_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الاسم الكامل للمستلم'}),
-            'shipping_address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'العنوان التفصيلي (الشارع، الحي، المعلم)'}),
+            'shipping_address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'العنوان التفصيلي'}),
             'shipping_phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '05xxxxxxxx', 'lang': 'en', 'style': 'direction: ltr;'}),
             'shipping_city': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'المدينة'}),
             'shipping_country': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الدولة'}),
@@ -25,6 +47,7 @@ class OrderForm(forms.ModelForm):
             'shipping_latitude': forms.HiddenInput(),
             'shipping_longitude': forms.HiddenInput(),
         }
+
 
 OrderItemFormSet = inlineformset_factory(
     Order, OrderItem,

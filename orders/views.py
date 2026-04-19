@@ -2,7 +2,7 @@ from django.views.generic import ListView, DetailView, TemplateView, View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
-from .models import Order
+from .models import Order, OrderStatus
 
 class OrderListView(LoginRequiredMixin, ListView):
     model = Order
@@ -10,21 +10,16 @@ class OrderListView(LoginRequiredMixin, ListView):
     context_object_name = 'orders'
 
     def get_queryset(self):
-        # Return all orders effectively, or just completed ones if strict separation is needed
-        # User requested "Orders (Paid/Old/New)" vs "Pending (Waiting Payment)"
-        # So here we exclude pending/cancelled maybe?
-        # Let's show all non-pending for "Orders" to be safe, or just "Paid/Shipped/Delivered"
-        # Show all orders ordered by newest first
         return Order.objects.filter(user=self.request.user).order_by('-created_at')
 
 class PendingOrderListView(LoginRequiredMixin, ListView):
     model = Order
-    template_name = 'orders/order_list.html' # Reuse template or create separate one
+    template_name = 'orders/order_list.html'
     context_object_name = 'orders'
     extra_context = {'is_pending': True}
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user, status='pending')
+        return Order.objects.filter(user=self.request.user, status__slug='pending')
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
@@ -44,7 +39,7 @@ class PaymentSelectionView(LoginRequiredMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if self.object.status != 'pending':
+        if self.object.status and self.object.status.slug != 'pending':
             messages.info(request, "تمت معالجة بيانات الدفع لهذا الطلب مسبقاً.")
             return redirect('orders:detail', pk=self.object.pk)
         context = self.get_context_data(object=self.object)
@@ -53,7 +48,7 @@ class PaymentSelectionView(LoginRequiredMixin, DetailView):
 class CompletePaymentView(LoginRequiredMixin, View):
     def post(self, request, pk):
         order = get_object_or_404(Order, pk=pk, user=request.user)
-        if order.status != 'pending':
+        if order.status and order.status.slug != 'pending':
             messages.info(request, "تمت معالجة بيانات الدفع لهذا الطلب مسبقاً.")
             return redirect('orders:detail', pk=order.pk)
             
@@ -61,7 +56,8 @@ class CompletePaymentView(LoginRequiredMixin, View):
         
         if payment_method == 'cod':
             # Update status to processing (confirmed but not yet delivered)
-            order.status = 'processing'
+            processing_status = OrderStatus.objects.filter(slug='processing').first()
+            order.status = processing_status
             order.save()
             messages.success(request, 'تم اختيار طريقة الدفع بنجاح. سنقوم بتجهيز طلبك.')
             return redirect('orders:detail', pk=order.pk)
@@ -79,11 +75,7 @@ class OrderTrackingView(TemplateView):
         
         if order_id and phone:
             try:
-                # Assuming your Order model has a phone field or user has a phone
-                # If not, we might need to adjust this lookup
                 order = Order.objects.get(id=order_id)
-                # For safety, we should verify the phone number matches the order
-                # If order.phone doesn't exist, we might check order.billing_address phone
                 context['order_found'] = order
             except Order.DoesNotExist:
                 context['error'] = 'لم يتم العثور على طلب بهذا الرقم.'

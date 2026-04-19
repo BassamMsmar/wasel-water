@@ -5,13 +5,33 @@ from django.utils import timezone
 from datetime import timedelta
 
 class Customer(models.Model):
+    ROLE_CHOICES = (
+        ('customer', _('مستخدم عادي')),
+        ('delivery_rep', _('مندوب')),
+        ('store_manager', _('مدير متجر')),
+        ('system_admin', _('مدير النظام')),
+    )
+
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='customer')
     phone_number = models.CharField(_("Phone Number"), max_length=20, blank=True)
     birth_date = models.DateField(_("Birth Date"), null=True, blank=True)
     image = models.ImageField(_("Profile Image"), upload_to='profile_images/', null=True, blank=True)
+    role = models.CharField(_("Role"), max_length=30, choices=ROLE_CHOICES, default='customer')
+    branch = models.ForeignKey(
+        'orders.Branch',
+        verbose_name=_("Branch"),
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='staff_profiles',
+    )
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("العميل")
+        verbose_name_plural = _("العملاء")
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
@@ -52,8 +72,8 @@ class Address(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = _("Address")
-        verbose_name_plural = _("Addresses")
+        verbose_name = _("العنوان")
+        verbose_name_plural = _("العناوين")
         ordering = ['-is_default', '-created_at']
 
     def __str__(self):
@@ -72,6 +92,10 @@ class OTPToken(models.Model):
     expires_at = models.DateTimeField()
     is_used = models.BooleanField(default=False)
     attempts = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name = _("رمز التحقق")
+        verbose_name_plural = _("رموز التحقق")
 
     def save(self, *args, **kwargs):
         if not self.expires_at:

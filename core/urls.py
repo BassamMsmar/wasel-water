@@ -4,8 +4,10 @@ from .views import (
     home, about, contact, privacy, tos, return_policy,
     AdminDashboardView, AdminProductListView, AdminProductCreateView, AdminProductUpdateView, AdminProductDeleteView,
     AdminOrderListView, AdminOrderCreateView, AdminOrderUpdateStatusView, AdminOrderDetailView, AdminOrderUpdateView, AdminOrderDeleteView,
+    AdminBranchListView, AdminBranchCreateView, AdminBranchUpdateView, AdminBranchDeleteView,
     AdminCustomerListView, AdminCustomerDeleteView, AdminOfferListView, AdminOfferCreateView, AdminOfferUpdateView, AdminOfferDeleteView,
     AdminStaffListView, AdminStaffCreateView, AdminStaffUpdateView, AdminStaffDeleteView,
+    AdminGroupListView, AdminGroupCreateView, AdminGroupUpdateView, AdminGroupDeleteView,
     AdminBrandListView, AdminBrandCreateView, AdminBrandUpdateView, AdminBrandDeleteView,
     AdminCategoryListView, AdminCategoryCreateView, AdminCategoryUpdateView, AdminCategoryDeleteView
 )
@@ -55,6 +57,12 @@ urlpatterns = [
     path('admin/orders/<int:pk>/delete/', AdminOrderDeleteView.as_view(), name='admin_order_delete'),
     path('admin/orders/<int:pk>/status/', AdminOrderUpdateStatusView.as_view(), name='admin_order_update_status'),
 
+    # Branches
+    path('admin/branches/', AdminBranchListView.as_view(), name='admin_branches'),
+    path('admin/branches/add/', AdminBranchCreateView.as_view(), name='admin_branch_create'),
+    path('admin/branches/<int:pk>/edit/', AdminBranchUpdateView.as_view(), name='admin_branch_update'),
+    path('admin/branches/<int:pk>/delete/', AdminBranchDeleteView.as_view(), name='admin_branch_delete'),
+
     # Customers/Users
     path('admin/customers/', AdminCustomerListView.as_view(), name='admin_customers'),
     path('admin/customers/<int:pk>/delete/', AdminCustomerDeleteView.as_view(), name='admin_customer_delete'),
@@ -64,4 +72,10 @@ urlpatterns = [
     path('admin/staff/add/', AdminStaffCreateView.as_view(), name='admin_staff_create'),
     path('admin/staff/<int:pk>/edit/', AdminStaffUpdateView.as_view(), name='admin_staff_update'),
     path('admin/staff/<int:pk>/delete/', AdminStaffDeleteView.as_view(), name='admin_staff_delete'),
+
+    # Roles / Groups
+    path('admin/groups/', AdminGroupListView.as_view(), name='admin_groups'),
+    path('admin/groups/add/', AdminGroupCreateView.as_view(), name='admin_group_create'),
+    path('admin/groups/<int:pk>/edit/', AdminGroupUpdateView.as_view(), name='admin_group_update'),
+    path('admin/groups/<int:pk>/delete/', AdminGroupDeleteView.as_view(), name='admin_group_delete'),
 ]

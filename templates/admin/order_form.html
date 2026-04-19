@@ -40,6 +40,16 @@
                         {{ form.user }}
                     </div>
                     <div class="mb-3">
+                        <label class="form-label small fw-bold">الفرع</label>
+                        {{ form.branch }}
+                        <div class="form-text">يستخدم لتصفية لوحة البيانات حسب الفرع.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">المندوب</label>
+                        {{ form.representative }}
+                        <div class="form-text">يستخدم لتتبع أداء المندوب في لوحة البيانات.</div>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label small fw-bold">الاسم الكامل للشحن</label>
                         {{ form.shipping_full_name }}
                     </div>

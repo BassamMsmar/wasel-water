@@ -14,7 +14,7 @@
           <p class="mb-0" style="color: var(--ac-txt-sec); font-size: 0.9rem;"><i class="bi bi-calendar3 me-1"></i> تم الطلب في {{ order.created_at|date:"Y-m-d H:i" }}</p>
       </div>
       <div class="mt-3 mt-md-0">
-          <span class="acc-badge {% if order.status == 'delivered' %}acc-badge-success{% elif order.status == 'cancelled' %}acc-badge-danger{% else %}acc-badge-warning{% endif %}" style="font-size: 0.85rem; padding: 8px 16px;">
+          <span class="acc-badge {% if order.status_slug == 'delivered' %}acc-badge-success{% elif order.status_slug == 'cancelled' %}acc-badge-danger{% else %}acc-badge-warning{% endif %}" style="font-size: 0.85rem; padding: 8px 16px;">
               {{ order.get_status_display }}
           </span>
       </div>
@@ -43,7 +43,7 @@
                   <span class="text-warning fw-bold"><i class="bi bi-clock-fill"></i> بانتظار الدفع</span>
                 {% endif %}
               </p>
-              {% if not order.paid and order.status != 'cancelled' %}
+              {% if not order.is_paid and order.status_slug != 'cancelled' %}
               <a href="{% url 'orders:payment_selection' order.id %}" class="acc-btn acc-btn-black mt-4 w-100 justify-content-center">
                   إكمال الدفع الآن
               </a>

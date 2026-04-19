@@ -3,23 +3,28 @@
 {% block page_title %}الموظفون{% endblock %}
 
 {% block admin_content %}
-
 <div class="adm-page-hd">
   <div>
-    <h1 class="adm-page-title">إدارة الموظفين</h1>
-    <p class="adm-page-sub">إدارة حسابات الموظفين وصلاحياتهم</p>
+    <h1 class="adm-page-title">إدارة الموظفين والصلاحيات</h1>
+    <p class="adm-page-sub">أضف الموظفين إلى مجموعات Django وحدد صلاحياتهم المباشرة عند الحاجة.</p>
   </div>
-  <a href="{% url 'settings:admin_staff_create' %}" class="adm-btn adm-btn-black" id="btn-create-staff"><i class="bi bi-plus"></i> موظف جديد</a>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="{% url 'settings:admin_groups' %}" class="adm-btn adm-btn-white"><i class="bi bi-shield-lock"></i> الأدوار والمجموعات</a>
+    <a href="{% url 'settings:admin_staff_create' %}" class="adm-btn adm-btn-black"><i class="bi bi-plus"></i> موظف جديد</a>
+  </div>
 </div>
 
-<div class="adm-card" id="staff-card">
+<div class="adm-card">
   <div class="adm-card-header"><span class="adm-card-title"><i class="bi bi-person-badge"></i> قائمة الموظفين</span></div>
   <div class="adm-table-wrap">
-    <table class="adm-table" id="staff-table">
+    <table class="adm-table">
       <thead>
         <tr>
           <th>الموظف</th>
           <th>البريد الإلكتروني</th>
+          <th>الدور</th>
+          <th>الفرع</th>
+          <th>المجموعات</th>
           <th>الصلاحية</th>
           <th>الحالة</th>
           <th style="text-align:center;">إجراء</th>
@@ -35,27 +40,36 @@
               </div>
               <div>
                 <div style="font-weight:600;">{{ m.get_full_name|default:m.username }}</div>
-                <div style="font-size:.72rem;color:var(--text-tertiary);">ID #{{ m.id }}</div>
+                <div style="font-size:.72rem;color:var(--txt3);">ID #{{ m.id }}</div>
               </div>
             </div>
           </td>
-          <td style="color:var(--text-secondary);">{{ m.email|default:"—" }}</td>
+          <td style="color:var(--txt2);">{{ m.email|default:"-" }}</td>
+          <td>{% if m.customer %}{{ m.customer.get_role_display }}{% else %}-{% endif %}</td>
+          <td>{% if m.customer and m.customer.branch %}{{ m.customer.branch.name }}{% else %}-{% endif %}</td>
           <td>
-            {% if m.is_superuser %}<span class="adm-badge adm-badge-black">مدير نظام</span>
+            {% for group in m.groups.all %}
+              <span class="adm-badge adm-badge-info" style="margin:2px;">{{ group.name }}</span>
+            {% empty %}
+              <span style="color:var(--txt3);">بدون مجموعة</span>
+            {% endfor %}
+          </td>
+          <td>
+            {% if m.is_superuser %}<span class="adm-badge adm-badge-black">مدير نظام كامل</span>
             {% elif m.is_staff %}<span class="adm-badge adm-badge-neutral">موظف</span>
             {% else %}<span class="adm-badge adm-badge-neutral">مستخدم</span>{% endif %}
           </td>
           <td>
             {% if m.is_active %}<span class="adm-badge adm-badge-success"><span class="adm-badge-dot"></span>نشط</span>
-            {% else %}<span class="adm-badge adm-badge-danger"><span class="adm-badge-dot"></span>معطّل</span>{% endif %}
+            {% else %}<span class="adm-badge adm-badge-danger"><span class="adm-badge-dot"></span>معطل</span>{% endif %}
           </td>
           <td style="text-align:center;">
-            <a href="{% url 'settings:admin_staff_update' m.id %}" class="adm-btn adm-btn-white adm-btn-sm" id="staff-edit-{{ m.id }}"><i class="bi bi-pencil"></i> تعديل</a>
+            <a href="{% url 'settings:admin_staff_update' m.id %}" class="adm-btn adm-btn-white adm-btn-sm"><i class="bi bi-pencil"></i> تعديل</a>
           </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="5" style="text-align:center;padding:48px 0;color:var(--text-tertiary);">
+          <td colspan="8" style="text-align:center;padding:48px 0;color:var(--txt3);">
             <i class="bi bi-people" style="font-size:2rem;display:block;margin-bottom:8px;"></i>لا يوجد موظفون
           </td>
         </tr>
@@ -64,5 +78,4 @@
     </table>
   </div>
 </div>
-
 {% endblock %}
