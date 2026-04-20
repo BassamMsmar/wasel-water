@@ -272,6 +272,11 @@ class AdminProductCreateView(AdminPermissionRequiredMixin, StaffRequiredMixin, C
     success_url = reverse_lazy('settings:admin_products')
     permission_required = 'products.add_product'
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['all_products'] = Product.objects.only('id', 'name', 'active').order_by('name')
+        return ctx
+
     def form_valid(self, form):
         messages.success(self.request, 'تم إضافة المنتج بنجاح.')
         return super().form_valid(form)
@@ -282,6 +287,11 @@ class AdminProductUpdateView(AdminPermissionRequiredMixin, StaffRequiredMixin, U
     template_name = 'admin/product_form.html'
     success_url = reverse_lazy('settings:admin_products')
     permission_required = 'products.change_product'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['all_products'] = Product.objects.only('id', 'name', 'active').order_by('name')
+        return ctx
 
     def form_valid(self, form):
         messages.success(self.request, 'تم تحديث بيانات المنتج بنجاح.')

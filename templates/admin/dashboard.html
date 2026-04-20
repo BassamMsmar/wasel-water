@@ -29,13 +29,13 @@
     </div>
 
     <div>
-      <label class="adm-label" for="date_from">من تاريخ</label>
-      <input class="adm-input" type="date" name="date_from" id="date_from" value="{{ date_from }}">
+      <label class="adm-label" for="date_from"><i class="bi bi-calendar"></i> من تاريخ</label>
+      <div class="fp-wrap"><input class="adm-input flatpickr-input" type="text" name="date_from" id="date_from" value="{{ date_from }}" placeholder="اختر تاريخاً..." autocomplete="off" readonly></div>
     </div>
 
     <div>
-      <label class="adm-label" for="date_to">إلى تاريخ</label>
-      <input class="adm-input" type="date" name="date_to" id="date_to" value="{{ date_to }}">
+      <label class="adm-label" for="date_to"><i class="bi bi-calendar-check"></i> إلى تاريخ</label>
+      <div class="fp-wrap"><input class="adm-input flatpickr-input" type="text" name="date_to" id="date_to" value="{{ date_to }}" placeholder="اختر تاريخاً..." autocomplete="off" readonly></div>
     </div>
 
     <div>
@@ -187,7 +187,56 @@
 {% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
+/* Flatpickr overrides */
+.flatpickr-calendar {
+  font-family: inherit;
+  direction: ltr;
+  border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.18);
+  border: 1px solid var(--brs);
+  background: #fff;
+  opacity: 1 !important;
+  font-size: .78rem;
+  width: 230px;
+  padding: 6px;
+}
+.flatpickr-days, .dayContainer { min-width: unset; max-width: unset; width: 100%; }
+.flatpickr-day {
+  color: var(--txt);
+  border-radius: 6px;
+  max-width: 28px;
+  height: 28px;
+  line-height: 28px;
+}
+.flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #fff;
+}
+.flatpickr-day:hover { background: rgba(0,0,0,.07); }
+.flatpickr-months .flatpickr-month { background: transparent; color: var(--txt); height: 30px; }
+.flatpickr-weekday { background: transparent; color: var(--txt3); font-size: .7rem; }
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year { color: var(--txt); font-size: .8rem; }
+.flatpickr-current-month { font-size: .82rem; padding: 2px 0 0; }
+.numInputWrapper span { border-color: var(--brs); }
+.flatpickr-day.flatpickr-disabled { color: var(--txt3); }
+.fp-wrap { position: relative; }
+.fp-wrap::after {
+  content: "\F1F3";
+  font-family: bootstrap-icons;
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--txt3);
+  pointer-events: none;
+  font-size: .9rem;
+}
+.fp-wrap input { padding-left: 32px; cursor: pointer; }
+
 .dash-filter { padding: 16px; margin-bottom: 18px; }
 .dash-filter-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; align-items: end; }
 .dash-filter-actions { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -207,4 +256,34 @@
   .dash-filter-grid, .dash-grid { grid-template-columns: 1fr; }
 }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const sharedConfig = {
+    dateFormat: 'Y-m-d',
+    locale: 'ar',
+    allowInput: false,
+    disableMobile: true,
+    monthSelectorType: 'dropdown',
+  };
+
+  const fpFrom = flatpickr('#date_from', {
+    ...sharedConfig,
+    onChange: function(dates) {
+      if (dates[0]) fpTo.set('minDate', dates[0]);
+    }
+  });
+
+  const fpTo = flatpickr('#date_to', {
+    ...sharedConfig,
+    onChange: function(dates) {
+      if (dates[0]) fpFrom.set('maxDate', dates[0]);
+    }
+  });
+});
+</script>
 {% endblock %}
