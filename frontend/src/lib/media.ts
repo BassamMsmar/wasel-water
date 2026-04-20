@@ -10,9 +10,21 @@ export const fallbackBrandImage =
 
 export function absoluteMediaUrl(value: string | null | undefined, fallback = fallbackProductImage) {
   if (!value) return fallback;
-  if (value.startsWith("http://") || value.startsWith("https://")) return value;
-  if (value.startsWith("/")) return `${API_ORIGIN}${value}`;
-  return `${API_ORIGIN}/${value}`;
+
+  let finalUrl = value;
+  if (!value.startsWith("http://") && !value.startsWith("https://")) {
+    finalUrl = value.startsWith("/") ? `${API_ORIGIN}${value}` : `${API_ORIGIN}/${value}`;
+  }
+
+  // Next.js <Image /> component automatically url-encodes the `src` attribute 
+  // into its internal `/_next/image?url=...` endpoint.
+  // If we pass an already encoded URL (with %), Next.js will double encode it to %25, causing a 400 Bad Request.
+  // By explicitly decoding the URL here, we give Next.js the raw Arabic string to encode correctly.
+  try {
+    return decodeURI(finalUrl);
+  } catch {
+    return finalUrl;
+  }
 }
 
 export function money(value: string | number | null | undefined) {

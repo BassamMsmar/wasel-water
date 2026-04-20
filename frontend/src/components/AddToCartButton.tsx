@@ -51,7 +51,7 @@ export function AddToCartButton({ product, showQty = false }: { product: Product
           className={`btn btn-cart btn-lg btn-block ${added ? "added" : ""}`}
           onClick={handleAdd}
         >
-          {added ? "✅ تمت الإضافة للسلة!" : `🛒 أضف للسلة`}
+          {added ? "تمت الإضافة للسلة" : "أضف للسلة"}
         </button>
       </div>
     );
@@ -64,7 +64,7 @@ export function AddToCartButton({ product, showQty = false }: { product: Product
       onClick={handleAdd}
       style={{ width: "100%", marginTop: ".5rem" }}
     >
-      {added ? "✅ أُضيف!" : "🛒 أضف للسلة"}
+      {added ? "أُضيف" : "أضف للسلة"}
     </button>
   );
 }

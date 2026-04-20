@@ -116,7 +116,7 @@ export default async function ProductDetailsPage({ params }: Props) {
             {/* Availability */}
             <div>
               <span className={`availability-chip ${available ? "available" : "unavailable"}`}>
-                {available ? "✅ متوفر في المخزون" : "❌ غير متوفر حالياً"}
+                {available ? "متوفر في المخزون" : "غير متوفر حالياً"}
               </span>
             </div>
 
@@ -126,7 +126,7 @@ export default async function ProductDetailsPage({ params }: Props) {
             {/* Delivery Hint */}
             {available && (
               <div className="delivery-hint">
-                🚚 <span>توصيل سريع — <strong>اطلب الآن وتوصل خلال 24 ساعة</strong></span>
+                <span>توصيل سريع — <strong>اطلب الآن وتوصل خلال 24 ساعة</strong></span>
               </div>
             )}
 
@@ -172,7 +172,7 @@ export default async function ProductDetailsPage({ params }: Props) {
               className="btn btn-whatsapp"
               style={{ justifyContent:"center" }}
             >
-              💬 استفسر عبر واتساب
+              استفسر عبر واتساب
             </a>
           </div>
         </div>

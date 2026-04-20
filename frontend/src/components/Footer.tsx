@@ -9,8 +9,8 @@ export function Footer() {
         <div className="footer-brand">
           <div style={{ display:"flex", alignItems:"center", gap:".75rem", marginBottom:".75rem" }}>
             <span style={{
-              width:40, height:40, borderRadius:8, background:"linear-gradient(135deg,#0ea5e9,#38bdf8)",
-              display:"grid", placeItems:"center", fontWeight:900, fontSize:"1.2rem", color:"#0c1f3f", flexShrink:0
+              width:40, height:40, borderRadius:8, background:"#D5E3FF",
+              display:"grid", placeItems:"center", fontWeight:900, fontSize:"1.2rem", color:"#000000", flexShrink:0
             }}>و</span>
             <div>
               <strong style={{ color:"#fff", fontSize:"1rem", fontWeight:900, display:"block" }}>واصل للمياه</strong>
@@ -53,20 +53,20 @@ export function Footer() {
         <div className="footer-col">
           <h4>تواصل معنا</h4>
           <div className="footer-contact-item">
-            <span>📞</span>
+            <span>هاتف</span>
             <a href="tel:+966500000000" style={{ color:"rgba(255,255,255,.6)" }}>920-000-0000</a>
           </div>
           <div className="footer-contact-item">
-            <span>💬</span>
+            <span>واتساب</span>
             <a href="https://wa.me/966500000000" target="_blank" rel="noreferrer"
-               style={{ color:"#25d366", fontWeight:700 }}>واتساب — 24/7</a>
+               style={{ color:"#D5E3FF", fontWeight:700 }}>واتساب — 24/7</a>
           </div>
           <div className="footer-contact-item">
-            <span>✉️</span>
+            <span>بريد</span>
             <a href="mailto:info@wasel.sa" style={{ color:"rgba(255,255,255,.6)" }}>info@wasel.sa</a>
           </div>
           <div className="footer-contact-item" style={{ marginTop:".5rem" }}>
-            <span>⏰</span>
+            <span>الوقت</span>
             <span>السبت – الخميس: 8ص – 10م</span>
           </div>
         </div>
@@ -76,9 +76,9 @@ export function Footer() {
         <div className="footer-bottom-inner">
           <span>© {new Date().getFullYear()} واصل للمياه. جميع الحقوق محفوظة.</span>
           <div className="footer-bottom-badges">
-            <span className="footer-badge">🔒 دفع آمن</span>
-            <span className="footer-badge">🇸🇦 منتجات سعودية</span>
-            <span className="footer-badge">✅ ضمان الجودة</span>
+            <span className="footer-badge">دفع آمن</span>
+            <span className="footer-badge">منتجات سعودية</span>
+            <span className="footer-badge">ضمان الجودة</span>
           </div>
         </div>
       </div>

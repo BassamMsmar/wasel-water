@@ -58,7 +58,7 @@ export default async function BrandDetailsPage({ params }: Props) {
           </div>
         ) : (
           <div className="empty-state">
-            <div className="empty-icon">📦</div>
+            <div className="empty-icon">المنتجات</div>
             <h3>لا توجد منتجات</h3>
             <p>نفدت الكمية من منتجات هذا البراند حالياً. يرجى التحقق لاحقاً.</p>
           </div>

@@ -102,28 +102,28 @@ export default function DashboardPage() {
       {/* Stats Grid */}
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon">📦</div>
+          <div className="stat-icon">طلب</div>
           <div>
             <div className="stat-value">{orders.length}</div>
             <div className="stat-label">إجمالي الطلبات</div>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background:"var(--mint-light)", color:"#065f46" }}>✅</div>
+          <div className="stat-icon" style={{ background:"var(--mint-light)", color:"var(--navy)" }}>مدفوع</div>
           <div>
             <div className="stat-value">{paid}</div>
             <div className="stat-label">طلبات مدفوعة</div>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background:"var(--gold-light)", color:"#b45309" }}>⏱️</div>
+          <div className="stat-icon" style={{ background:"var(--gold-light)", color:"var(--navy)" }}>قيد</div>
           <div>
             <div className="stat-value">{pending}</div>
             <div className="stat-label">قيد المعالجة</div>
           </div>
         </div>
         <div className="stat-card accent">
-          <div className="stat-icon">💰</div>
+          <div className="stat-icon">ر.س</div>
           <div>
             <div className="stat-value">{money(totalSpent)}</div>
             <div className="stat-label">إجمالي المشتريات</div>

@@ -41,7 +41,7 @@ export function Header() {
     <header className="site-header">
       {/* Top Banner */}
       <div className="header-top">
-        🚚 توصيل مجاني للطلبات فوق 100 ريال ·{" "}
+        توصيل مجاني للطلبات فوق 100 ريال ·{" "}
         <a href="https://wa.me/9660000000000" target="_blank" rel="noreferrer">
           تواصل عبر واتساب
         </a>
@@ -75,7 +75,7 @@ export function Header() {
           <Link href="/brands"   className="nav-link">البراندات</Link>
 
           <Link href="/cart" className="cart-nav-btn" aria-label={`السلة — ${count} عناصر`}>
-            🛒
+            السلة
             <span className="cart-count-badge" aria-live="polite">{count}</span>
           </Link>
 
@@ -85,7 +85,7 @@ export function Header() {
             </Link>
           ) : (
             <Link href="/login" className="nav-login-btn" id="header-login-btn">
-              👤 دخول
+              دخول
             </Link>
           )}
         </nav>

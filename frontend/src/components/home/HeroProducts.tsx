@@ -12,7 +12,7 @@ export function HeroProducts({ products }: { products: Product[] }) {
     return (
       <section className="hero-section" style={{ gridTemplateColumns:"1fr" }}>
         <div className="hero-content" style={{ textAlign:"center", maxWidth:640, margin:"0 auto" }}>
-          <div className="hero-badge">💧 متجر المياه السعودي</div>
+          <div className="hero-badge">متجر المياه السعودي</div>
           <h1>اطلب مياهك بكل سهولة ووثوقية</h1>
           <p className="hero-subtitle">أفضل براندات المياه بتوصيل سريع لباب بيتك في الرياض وجدة والمدن الكبرى.</p>
           <div className="hero-actions">
@@ -28,7 +28,7 @@ export function HeroProducts({ products }: { products: Product[] }) {
     <section className="hero-section">
       {/* Copy */}
       <div className="hero-content">
-        <div className="hero-badge">🔥 الأكثر طلباً اليوم</div>
+        <div className="hero-badge">الأكثر طلباً اليوم</div>
         <h1>
           {hero.brand_data?.name ? <>{hero.brand_data.name}<br /><span>{hero.name}</span></> : <span>{hero.name}</span>}
         </h1>

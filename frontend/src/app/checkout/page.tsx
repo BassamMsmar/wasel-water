@@ -43,7 +43,7 @@ export default function CheckoutPage() {
     return (
       <section className="page-shell">
         <div className="order-success">
-          <div className="success-icon-wrap">✅</div>
+          <div className="success-icon-wrap">تم</div>
           <h2>تم استلام طلبك بنجاح!</h2>
           <div className="order-number-tag">طلب رقم #{orderId}</div>
           <p>شكراً لثقتك بواصل للمياه. سنقوم بمعالجة طلبك والتواصل معك قريباً لتأكيد التوصيل.</p>
@@ -54,7 +54,7 @@ export default function CheckoutPage() {
               className="btn btn-whatsapp"
               target="_blank" rel="noreferrer"
             >
-              💬 تتبع عبر واتساب
+              تتبع عبر واتساب
             </a>
             <Link href="/products" className="btn btn-secondary">
               متابعة التسوق
@@ -77,7 +77,7 @@ export default function CheckoutPage() {
       <section className="page-shell">
         {items.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">🛒</div>
+            <div className="empty-icon">السلة</div>
             <h3>السلة فارغة</h3>
             <p>لا توجد منتجات لشرائها حالياً.</p>
             <Link href="/products" className="btn btn-primary" style={{ marginTop: "1rem" }}>العودة للمنتجات</Link>
@@ -87,7 +87,7 @@ export default function CheckoutPage() {
             
             {/* Form */}
             <div className="checkout-form-section">
-              <div className="checkout-section-title">📍 عنوان التوصيل والتواصل</div>
+              <div className="checkout-section-title">عنوان التوصيل والتواصل</div>
               
               <form id="checkout-form" className="form-grid" onSubmit={submit}>
                 <div className="form-group">
@@ -142,7 +142,7 @@ export default function CheckoutPage() {
 
                 {error && (
                   <div className="alert alert-error" style={{ marginTop: "1rem" }}>
-                    <span>⚠️</span> {error}
+                    <span>تنبيه</span> {error}
                   </div>
                 )}
               </form>
@@ -150,7 +150,7 @@ export default function CheckoutPage() {
 
             {/* Order Summary Sidebar */}
             <aside className="order-summary-box">
-              <div className="checkout-section-title">🛒 ملخص الطلب</div>
+              <div className="checkout-section-title">ملخص الطلب</div>
               
               <div style={{ display:"grid", gap:"1rem", marginBottom:"1.5rem" }}>
                 {items.map(item => (
@@ -180,7 +180,7 @@ export default function CheckoutPage() {
               </div>
               
               <p style={{ fontSize:".8rem", color:"var(--text-muted)", marginTop:".5rem", display:"flex", alignItems:"center", gap:".3rem" }}>
-                <span>✅</span> يتضمن ضريبة القيمة المضافة إن وجدت
+                <span>ملاحظة</span> يتضمن ضريبة القيمة المضافة إن وجدت
               </p>
 
               <button 
@@ -190,7 +190,7 @@ export default function CheckoutPage() {
                 disabled={loading}
                 style={{ marginTop:"1.5rem" }}
               >
-                {loading ? "جارِ الإرسال..." : "تأكيد الطلب 🚀"}
+                {loading ? "جارِ الإرسال..." : "تأكيد الطلب"}
               </button>
               
               <div style={{ textAlign:"center", marginTop:"1rem", fontSize:".8rem", color:"var(--text-muted)" }}>

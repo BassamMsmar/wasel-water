@@ -36,9 +36,9 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="login-logo">
           <span style={{
-              width:48, height:48, borderRadius:12, background:"linear-gradient(135deg,#0ea5e9,#38bdf8)",
-              display:"grid", placeItems:"center", fontWeight:900, fontSize:"1.4rem", color:"#0c1f3f", flexShrink:0,
-              boxShadow:"0 8px 24px rgba(14,165,233,0.3)"
+              width:48, height:48, borderRadius:8, background:"#D5E3FF",
+              display:"grid", placeItems:"center", fontWeight:900, fontSize:"1.4rem", color:"#000000", flexShrink:0,
+              boxShadow:"0 8px 24px rgba(0,0,0,0.12)"
           }}>و</span>
           <div style={{ textAlign:"right" }}>
             <strong>واصل للمياه</strong>
@@ -78,7 +78,7 @@ export default function LoginPage() {
 
           {error && (
             <div className="alert alert-error" role="alert">
-              <span>⚠️</span> {error}
+              <span>تنبيه</span> {error}
             </div>
           )}
 
@@ -89,7 +89,7 @@ export default function LoginPage() {
             disabled={loading}
             style={{ marginTop:".5rem" }}
           >
-            {loading ? "جار التحقق..." : "دخول 🔓"}
+            {loading ? "جار التحقق..." : "دخول"}
           </button>
         </form>
 

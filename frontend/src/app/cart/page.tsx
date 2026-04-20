@@ -38,7 +38,7 @@ export default function CartPage() {
       <section className="page-shell">
         {items.length === 0 ? (
           <div className="empty-state" style={{ maxWidth: 480, margin: "0 auto" }}>
-            <div className="empty-icon">🛒</div>
+            <div className="empty-icon">السلة</div>
             <h3>سلتك فارغة</h3>
             <p>لم تضف أي منتج بعد. تصفح منتجاتنا الرائعة!</p>
             <Link href="/products" className="btn btn-primary" style={{ marginTop: "1.25rem" }}>
@@ -111,7 +111,7 @@ export default function CartPage() {
                 </Link>
               </div>
               <div className="delivery-hint" style={{ marginTop:"1rem" }}>
-                🔒 <span>دفع آمن عند الاستلام</span>
+                <span>دفع آمن عند الاستلام</span>
               </div>
             </aside>
           </div>
