@@ -19,6 +19,10 @@ export function writeCart(items: CartItem[]) {
   window.dispatchEvent(new Event("cart:changed"));
 }
 
+export function clearCart() {
+  writeCart([]);
+}
+
 export function addToCart(product: Product, quantity = 1) {
   const items = readCart();
   const index = items.findIndex((item) => item.product.id === product.id);

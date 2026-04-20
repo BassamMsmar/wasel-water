@@ -1,0 +1,12 @@
+{
+  "name": "wasel-water-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build",
+    "frontend:start": "npm --prefix frontend run start",
+    "backend:run": "cd backend && venv\\Scripts\\python.exe manage.py runserver 127.0.0.1:8000",
+    "backend:check": "cd backend && venv\\Scripts\\python.exe manage.py check"
+  }
+}

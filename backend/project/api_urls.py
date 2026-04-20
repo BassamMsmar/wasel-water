@@ -11,7 +11,7 @@ from products.api import (
     ProductViewSet, BrandViewSet, CategoryViewSet,
     OfferViewSet, ReviewViewSet, BundleViewSet, BundleItemViewSet
 )
-from orders.api import OrderViewSet, OrderItemViewSet
+from orders.api import CheckoutAPIView, OrderViewSet, OrderItemViewSet
 from cart.api import CartViewSet
 from core.api import SectionViewSet, CompanyViewSet, BannerViewSet
 
@@ -44,6 +44,7 @@ router.register(r'banners', BannerViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('checkout/', CheckoutAPIView.as_view(), name='api_checkout'),
     path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),
