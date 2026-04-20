@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product, Brand, Category, Offer
+from .models import Product, Brand, Category, Offer, FeaturedProduct
 
 
 SEO_FIELDS = ['seo_title', 'seo_description', 'seo_keywords', 'seo_canonical_url', 'seo_image']
@@ -107,3 +107,14 @@ class OfferForm(forms.ModelForm):
             'products': forms.Select(attrs={'class': 'form-select'}),
             **seo_widgets(),
         }
+
+class FeaturedProductForm(forms.ModelForm):
+    class Meta:
+        model = FeaturedProduct
+        fields = ['product', 'order', 'active']
+        widgets = {
+            'product': forms.Select(attrs={'class': 'form-select'}),
+            'order': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0', 'lang': 'en', 'style': 'direction: ltr;'}),
+            'active': forms.CheckboxInput(attrs={'class': 'form-check-input'})
+        }
+
