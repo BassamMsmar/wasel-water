@@ -47,12 +47,13 @@ class ProductSerializer(TaggitSerializer, serializers.ModelSerializer):
     discount_percent = serializers.SerializerMethodField()
     is_new = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
+    flag_name = serializers.SerializerMethodField()
     images = ProductImagesSerializer(source='product_image', many=True, read_only=True)
 
     class Meta:
         model = Product
         fields = [
-            'id', 'name', 'slug', 'flag', 'image',
+            'id', 'name', 'slug', 'flag', 'flag_name', 'image',
             'old_price', 'new_price',
             'price', 'stock', 'is_available',
             'discount_percent', 'is_new',
@@ -85,7 +86,10 @@ class ProductSerializer(TaggitSerializer, serializers.ModelSerializer):
         return obj.discount_percentage
 
     def get_is_new(self, obj):
-        return obj.flag == 'new'
+        return bool(obj.flag and obj.flag.name.lower() == 'new')
+
+    def get_flag_name(self, obj):
+        return obj.flag.name.lower() if obj.flag else None
 
     def get_description(self, obj):
         return obj.descriptions or obj.subtitle or ''

@@ -5,31 +5,50 @@ import { getBrands } from "@/lib/api";
 import { absoluteMediaUrl, fallbackBrandImage } from "@/lib/media";
 
 export const metadata: Metadata = {
-  title: "البراندات",
-  description: "كل العلامات التجارية المتاحة في متجر واصل للمياه."
+  title: "العلامات التجارية",
+  description: "تصفح منتجاتنا عبر أفضل العلامات التجارية والبراندات لمياه الشرب."
 };
 
 export default async function BrandsPage() {
   const brands = await getBrands();
 
   return (
-    <section className="page-shell">
-      <div className="page-heading">
-        <span className="eyebrow">العلامات التجارية</span>
-        <h1>براندات المياه في مكان واحد</h1>
-        <p>اختيار سريع حسب البراند مع ظهور عدد المنتجات عند توفره.</p>
+    <>
+      <div className="page-hero">
+        <span className="eyebrow">شركاء النجاح</span>
+        <h1>العلامات التجارية الموثوقة</h1>
+        <p>نعمل مع أفضل مصانع المياه في المملكة لنضمن لك جودة ونقاوة عالية في كل قطرة.</p>
       </div>
-      <div className="brand-grid">
-        {brands.map((brand) => (
-          <article key={brand.id} id={brand.slug} className="brand-card">
-            <Image src={absoluteMediaUrl(brand.logo || brand.image, fallbackBrandImage)} alt={brand.name} width={220} height={160} />
-            <h2>{brand.name}</h2>
-            <p>{brand.products_count ?? 0} منتج</p>
-            <Link href={`/products?search=${encodeURIComponent(brand.name)}`}>عرض المنتجات</Link>
-          </article>
-        ))}
-      </div>
-      {!brands.length ? <p className="empty-state">لا توجد براندات مضافة حاليا.</p> : null}
-    </section>
+
+      <section className="page-shell">
+        <div className="brand-grid">
+          {brands.map((brand) => (
+            <Link key={brand.id} href={`/brands/${brand.slug}`} className="brand-card" id={brand.slug}>
+              <div className="brand-card-image">
+                <Image
+                  src={absoluteMediaUrl(brand.logo || brand.image, fallbackBrandImage)}
+                  alt={brand.name}
+                  width={120}
+                  height={80}
+                  style={{ width:"100%", height:"100%", objectFit:"contain" }}
+                />
+              </div>
+              <div className="brand-card-name">{brand.name}</div>
+              {brand.products_count !== undefined && (
+                <div className="brand-card-count">{brand.products_count} منتجات متاحة</div>
+              )}
+            </Link>
+          ))}
+        </div>
+
+        {!brands.length ? (
+          <div className="empty-state">
+            <div className="empty-icon">🏭</div>
+            <h3>لا توجد علامات تجارية</h3>
+            <p>لم يتم إضافة أي براندات للمتجر حتى الآن.</p>
+          </div>
+        ) : null}
+      </section>
+    </>
   );
 }

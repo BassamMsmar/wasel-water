@@ -12,10 +12,10 @@ from .serializers import (
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.filter(active=True).select_related('brand').prefetch_related('category', 'product_image')
+    queryset = Product.objects.filter(active=True).select_related('brand', 'flag').prefetch_related('category', 'product_image')
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['brand', 'category', 'flag', 'product_type']
+    filterset_fields = ['brand', 'category', 'product_type']
     search_fields = ['name', 'subtitle', 'descriptions']
     ordering_fields = ['new_price', 'old_price', 'sales_count', 'create_at']
     ordering = ['-create_at']
@@ -25,10 +25,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         qs = super().get_queryset()
         flag = self.request.query_params.get('flag')
         if flag:
-            qs = qs.filter(flag=flag)
-        featured = self.request.query_params.get('featured')
-        if featured:
-            qs = qs.filter(flag='feature')
+            qs = qs.filter(flag__name__iexact=flag)
         min_price = self.request.query_params.get('min_price')
         max_price = self.request.query_params.get('max_price')
         if min_price:
@@ -39,7 +36,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='featured')
     def featured(self, request):
-        qs = self.get_queryset().filter(flag='feature')
+        qs = self.get_queryset().filter(flag__name__iexact='feature')
         serializer = self.get_serializer(qs[:20], many=True)
         return Response(serializer.data)
 
@@ -61,6 +58,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         )
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
+
 
 
 class BrandViewSet(viewsets.ModelViewSet):

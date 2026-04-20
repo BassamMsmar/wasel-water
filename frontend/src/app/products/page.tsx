@@ -3,8 +3,8 @@ import { ProductCard } from "@/components/ProductCard";
 import { getCategories, getProducts } from "@/lib/api";
 
 export const metadata: Metadata = {
-  title: "المنتجات",
-  description: "تصفح منتجات المياه حسب البحث والتصنيف والسعر."
+  title: "كل المنتجات",
+  description: "تصفح أفضل براندات المياه في السوق السعودي — فلترة حسب التصنيف والسعر والأكثر طلبًا."
 };
 
 type Props = {
@@ -19,38 +19,58 @@ export default async function ProductsPage({ searchParams }: Props) {
   ]);
 
   return (
-    <section className="page-shell">
-      <div className="page-heading">
+    <>
+      {/* Page Hero */}
+      <div className="page-hero">
         <span className="eyebrow">كل المنتجات</span>
         <h1>اختر المياه المناسبة لك</h1>
-        <p>فلترة وبحث سريع مع بطاقات واضحة للسعر والتوفر.</p>
+        <p>فلترة وبحث سريع مع أسعار واضحة وتوفر فوري.</p>
       </div>
 
-      <form className="filters-bar">
-        <input name="search" defaultValue={params.search ?? ""} placeholder="اسم المنتج أو البراند" aria-label="بحث المنتجات" />
-        <select name="category" defaultValue={params.category ?? ""} aria-label="التصنيف">
-          <option value="">كل التصنيفات</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-        <select name="ordering" defaultValue={params.ordering ?? "-create_at"} aria-label="الترتيب">
-          <option value="-create_at">الأحدث</option>
-          <option value="new_price">الأقل سعرا</option>
-          <option value="-sales_count">الأكثر طلبا</option>
-        </select>
-        <button type="submit">تطبيق</button>
-      </form>
+      <section className="page-shell">
+        {/* Filters */}
+        <form className="filters-bar" role="search" aria-label="فلترة المنتجات">
+          <input
+            name="search"
+            defaultValue={params.search ?? ""}
+            placeholder="ابحث عن منتج أو براند..."
+            aria-label="بحث المنتجات"
+            className="form-input"
+          />
+          <select name="category" defaultValue={params.category ?? ""} aria-label="التصنيف" className="form-select">
+            <option value="">كل التصنيفات</option>
+            {categories.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+          <select name="ordering" defaultValue={params.ordering ?? "-create_at"} aria-label="الترتيب" className="form-select">
+            <option value="-create_at">الأحدث</option>
+            <option value="new_price">أقل سعر</option>
+            <option value="-sales_count">الأكثر طلباً</option>
+          </select>
+          <button type="submit" className="btn btn-primary">تطبيق</button>
+        </form>
 
-      <div className="product-grid">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+        {/* Results count */}
+        {products.length > 0 && (
+          <p style={{ color:"var(--text-muted)", fontSize:".88rem", marginBottom:"1.25rem" }}>
+            {products.length} منتج
+          </p>
+        )}
 
-      {!products.length ? <p className="empty-state">لا توجد منتجات مطابقة حاليا.</p> : null}
-    </section>
+        {/* Grid */}
+        {products.length > 0 ? (
+          <div className="product-grid">
+            {products.map(p => <ProductCard key={p.id} product={p} />)}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <div className="empty-icon">🔍</div>
+            <h3>لا توجد منتجات مطابقة</h3>
+            <p>جرب تعديل معايير البحث أو تصفح كل المنتجات.</p>
+          </div>
+        )}
+      </section>
+    </>
   );
 }

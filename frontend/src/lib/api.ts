@@ -18,15 +18,17 @@ async function apiFetch<T>(path: string, query?: Record<string, QueryValue>, fal
   try {
     const response = await fetch(buildUrl(path, query), {
       headers: { Accept: "application/json" },
-      next: { revalidate: 90 }
+      next: { revalidate: 60 }
     });
 
     if (!response.ok) {
+      console.error(`API Error ${response.status} for ${path}`);
       return fallback as T;
     }
 
     return (await response.json()) as T;
-  } catch {
+  } catch (error) {
+    console.error(`API fetch failed for ${path}:`, error);
     return fallback as T;
   }
 }
@@ -35,6 +37,8 @@ function normalizeList<T>(payload: Paginated<T> | T[] | undefined | null): T[] {
   if (!payload) return [];
   return Array.isArray(payload) ? payload : payload.results ?? [];
 }
+
+// ─── Products ────────────────────────────────────────────────────────────────
 
 export async function getProducts(query?: Record<string, QueryValue>) {
   const payload = await apiFetch<Paginated<Product> | Product[]>("/products/", query, []);
@@ -52,28 +56,59 @@ export async function getBestSellers() {
 }
 
 export async function getProduct(slug: string) {
-  return apiFetch<Product | null>(`/products/${encodeURIComponent(slug)}/`, undefined, null);
+  return apiFetch<Product | null>(`/products/${slug}/`, undefined, null);
 }
 
 export async function getRelatedProducts(slug: string) {
-  const payload = await apiFetch<Paginated<Product> | Product[]>(`/products/${encodeURIComponent(slug)}/related/`, undefined, []);
+  const payload = await apiFetch<Paginated<Product> | Product[]>(
+    `/products/${slug}/related/`,
+    undefined,
+    []
+  );
   return normalizeList(payload);
 }
+
+// ─── Brands ──────────────────────────────────────────────────────────────────
 
 export async function getBrands() {
   const payload = await apiFetch<Paginated<Brand> | Brand[]>("/brands/", undefined, []);
   return normalizeList(payload);
 }
 
+export async function getBrand(slug: string) {
+  return apiFetch<Brand | null>(`/brands/${slug}/`, undefined, null);
+}
+
+export async function getBrandProducts(slug: string) {
+  const payload = await apiFetch<Paginated<Product> | Product[]>(
+    `/brands/${slug}/products/`,
+    undefined,
+    []
+  );
+  return normalizeList(payload);
+}
+
+// ─── Categories ──────────────────────────────────────────────────────────────
+
 export async function getCategories() {
   const payload = await apiFetch<Paginated<Category> | Category[]>("/categories/", undefined, []);
   return normalizeList(payload);
 }
 
+export async function getCategory(slug: string) {
+  return apiFetch<Category | null>(`/categories/${slug}/`, undefined, null);
+}
+
 export async function getCategoryProducts(slug: string) {
-  const payload = await apiFetch<Paginated<Product> | Product[]>(`/categories/${encodeURIComponent(slug)}/products/`, undefined, []);
+  const payload = await apiFetch<Paginated<Product> | Product[]>(
+    `/categories/${slug}/products/`,
+    undefined,
+    []
+  );
   return normalizeList(payload);
 }
+
+// ─── Offers ──────────────────────────────────────────────────────────────────
 
 export async function getOffers() {
   const payload = await apiFetch<Paginated<Offer> | Offer[]>("/offers/", undefined, []);

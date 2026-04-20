@@ -26,6 +26,8 @@ export type Product = {
   name: string;
   slug: string;
   image?: ImageValue;
+  flag?: number | null;
+  flag_name?: string | null;
   old_price?: string | number | null;
   new_price?: string | number | null;
   price?: string | number | null;

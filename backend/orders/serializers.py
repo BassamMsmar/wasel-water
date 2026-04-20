@@ -6,6 +6,12 @@ from .models import OrderStatus
 from products.models import Product
 from products.serializers import ProductSerializer, BundleSerializer
 
+class OrderStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderStatus
+        fields = ['id', 'name', 'slug', 'color']
+
+
 class OrderItemSerializer(serializers.ModelSerializer):
     product_details = ProductSerializer(source='product', read_only=True)
     bundle_details = BundleSerializer(source='bundle', read_only=True)
@@ -16,11 +22,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
-    
+    status = OrderStatusSerializer(read_only=True)
+
     class Meta:
         model = Order
         fields = '__all__'
-        read_only_fields = ['user', 'total_price', 'status', 'is_paid']
+        read_only_fields = ['user', 'total_price', 'is_paid']
 
 
 class CheckoutItemSerializer(serializers.Serializer):

@@ -1,37 +1,56 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
-import { getCategoryProducts } from "@/lib/api";
+import { getCategory, getProducts } from "@/lib/api";
 
-type Props = {
-  params: Promise<{ slug: string }>;
-};
+type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  const category = await getCategory(slug);
+  if (!category) return { title: "التصنيف غير موجود" };
   return {
-    title: "تصنيف المنتجات",
-    description: `منتجات تصنيف ${slug} في متجر واصل للمياه.`,
-    alternates: { canonical: `/categories/${slug}` }
+    title: category.name,
+    description: `تصفح المنتجات في قسم ${category.name}`
   };
 }
 
-export default async function CategoryPage({ params }: Props) {
+export default async function CategoryDetailsPage({ params }: Props) {
   const { slug } = await params;
-  const products = await getCategoryProducts(slug);
+  const category = await getCategory(slug);
+
+  if (!category) notFound();
+
+  // Fetch all products that belong to this category
+  const products = await getProducts({ category: category.id.toString(), ordering: "-create_at" });
 
   return (
-    <section className="page-shell">
-      <div className="page-heading">
-        <span className="eyebrow">تصنيف</span>
-        <h1>منتجات التصنيف</h1>
-        <p>منتجات مرتبطة بالتصنيف المحدد من لوحة التحكم.</p>
+    <>
+      <div className="page-hero">
+        <span className="eyebrow">التصنيفات</span>
+        <h1>{category.name}</h1>
+        <p>تصفح أفضل المنتجات ضمن قائمة {category.name} بأسعار مميزة.</p>
       </div>
-      <div className="product-grid">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
-      {!products.length ? <p className="empty-state">لا توجد منتجات في هذا التصنيف حاليا.</p> : null}
-    </section>
+
+      <section className="page-shell">
+        <div className="section-head" style={{ marginBottom: "1.5rem" }}>
+          <h2>المنتجات المتوفرة ({products.length})</h2>
+        </div>
+
+        {products.length > 0 ? (
+          <div className="product-grid">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <div className="empty-icon">🗂️</div>
+            <h3>لا توجد منتجات</h3>
+            <p>هذا التصنيف فارغ حالياً. يرجى التحقق لاحقاً أو تصفح الأقسام الأخرى.</p>
+          </div>
+        )}
+      </section>
+    </>
   );
 }

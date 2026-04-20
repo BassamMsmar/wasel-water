@@ -21,9 +21,25 @@ export default async function HomePage() {
       <HeroProducts products={heroProducts} />
       <TrustBar />
       <BrandStrip brands={brands} categories={categories} />
-      <SectionRail title="الأكثر مبيعا" subtitle="طلب سريع" products={bestSellers.length ? bestSellers.slice(0, 8) : products.slice(0, 8)} />
-      <SectionRail title="منتجات مميزة" subtitle="مختارة من المتجر" products={featured.slice(0, 8)} />
-      <SectionRail title="وصل حديثا" subtitle={offers.length ? "عروض ومنتجات جديدة" : "تحديثات المتجر"} products={products.slice(0, 8)} />
+      
+      {/* Offers always get priority if they exist */}
+      {offers.length > 0 && products.length > 0 && (
+        <SectionRail title="عروض الصيف الحصرية" subtitle="لفترة محدودة" products={products.filter(p => p.discount_percent).slice(0, 8) || products.slice(0, 8)} />
+      )}
+
+      <SectionRail 
+        title="الأكثر مبيعاً" 
+        subtitle="طلب سريع" 
+        products={bestSellers.length ? bestSellers.slice(0, 8) : products.slice(0, 8)} 
+      />
+
+      {featured.length > 0 && (
+        <SectionRail title="منتجات مميزة" subtitle="مختارة من المتجر" products={featured.slice(0, 8)} />
+      )}
+
+      {products.length > 0 && (
+        <SectionRail title="وصل حديثاً" subtitle="تحديثات المتجر" products={products.slice(0, 8)} />
+      )}
     </>
   );
 }
