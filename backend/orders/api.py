@@ -2,12 +2,14 @@ from rest_framework import status, viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from drf_spectacular.utils import extend_schema
-from .models import Order, OrderItem
+from .models import Order, OrderItem, Branch, OrderStatus
 from .serializers import (
     CheckoutSerializer,
     CheckoutResponseSerializer,
     OrderSerializer,
     OrderItemSerializer,
+    BranchSerializer,
+    OrderStatusSerializer,
 )
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -16,6 +18,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return Order.objects.all().select_related('status', 'user').prefetch_related('items')
         return Order.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
@@ -28,6 +32,18 @@ class OrderItemViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return OrderItem.objects.filter(order__user=self.request.user)
+
+
+class BranchViewSet(viewsets.ModelViewSet):
+    queryset = Branch.objects.all().order_by('name')
+    serializer_class = BranchSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class OrderStatusViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = OrderStatus.objects.all().order_by('display_order', 'id')
+    serializer_class = OrderStatusSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class CheckoutAPIView(GenericAPIView):

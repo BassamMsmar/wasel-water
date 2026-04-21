@@ -85,7 +85,20 @@ class CustomerViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return Customer.objects.select_related('user').all()
         return Customer.objects.filter(user=self.request.user)
+
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return User.objects.all().order_by('-date_joined')
+        return User.objects.filter(id=self.request.user.id)
 
 
 class AddressViewSet(viewsets.ModelViewSet):

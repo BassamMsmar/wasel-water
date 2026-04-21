@@ -79,3 +79,20 @@ export async function getMyOrders() {
   const data = await res.json();
   return Array.isArray(data) ? data : data.results ?? [];
 }
+
+export async function authFetchList<T>(path: string): Promise<T[]> {
+  const token = getAccessToken();
+  if (!token) return [];
+
+  const res = await fetch(`${API_BASE}${path.startsWith("/") ? path : `/${path}`}`, {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) return [];
+
+  const data = await res.json();
+  return Array.isArray(data) ? data : data.results ?? [];
+}

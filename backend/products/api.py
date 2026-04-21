@@ -3,11 +3,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Avg, Count
-from .models import Product, ProductImages, Brand, Category, Offer, Review, Bundle, BundleItem
+from .models import Product, ProductImages, Brand, Category, Offer, Review, Bundle, BundleItem, Flag, FeaturedProduct
 from .serializers import (
     ProductSerializer, ProductImagesSerializer, BrandSerializer,
     CategorySerializer, OfferSerializer, ReviewSerializer,
-    BundleSerializer, BundleItemSerializer
+    BundleSerializer, BundleItemSerializer, FlagSerializer, FeaturedProductSerializer
 )
 
 
@@ -90,6 +90,16 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all()
     serializer_class = OfferSerializer
+
+
+class FlagViewSet(viewsets.ModelViewSet):
+    queryset = Flag.objects.all().order_by('name')
+    serializer_class = FlagSerializer
+
+
+class FeaturedProductViewSet(viewsets.ModelViewSet):
+    queryset = FeaturedProduct.objects.select_related('product').filter(active=True).order_by('order', '-id')
+    serializer_class = FeaturedProductSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

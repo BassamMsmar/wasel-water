@@ -1,63 +1,85 @@
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
-import { MessageCircle, Mail, Phone, MapPin, ExternalLink } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getCompanies } from "@/lib/api";
+import { absoluteMediaUrl } from "@/lib/media";
+import type { Company } from "@/lib/types";
 
 export function Footer() {
+  const [company, setCompany] = useState<Company | null>(null);
+
+  useEffect(() => {
+    getCompanies().then((companies) => setCompany(companies[0] ?? null)).catch(() => setCompany(null));
+  }, []);
+
   return (
-    <footer className="w-full bg-black text-white py-16 px-6 border-t-[8px] border-brand-ocean">
-      <div className="mx-auto max-w-[1400px] grid grid-cols-1 md:grid-cols-3 gap-12 text-sm">
-        
-        {/* Right (RTL) - Brand Info */}
-        <div className="flex flex-col gap-4">
-          <h2 className="text-2xl font-black text-white">واصل لتوزيع المياه</h2>
-          <p className="text-gray-400 font-medium">متجر متخصص في توزيع المياه.</p>
-          <div className="mt-4">
-             <span className="font-bold mb-2 block">تواصل معنا</span>
-             <Link href="https://wa.me/something" className="inline-flex items-center gap-2 text-gray-400 hover:text-brand-ocean transition-colors">
-               <MessageCircle className="w-5 h-5" />
-             </Link>
+    <footer className="mt-16 border-t border-[#d9e4ef] bg-[#08131d] text-white">
+      <div className="site-container grid gap-10 py-14 md:grid-cols-2 xl:grid-cols-[1.3fr,0.8fr,0.8fr,1fr]">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white">
+              <Image
+                src={absoluteMediaUrl(company?.logo || "/media/images/logo.png")}
+                alt={company?.name || "شعار واصل"}
+                width={34}
+                height={34}
+                unoptimized
+                className="h-9 w-9 object-contain"
+              />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black">{company?.name || "واصل لتوزيع المياه"}</h2>
+              <p className="mt-1 text-sm font-semibold text-[#8ea0b1]">
+                {company?.title || "تجربة شراء مرتبة وسريعة للمنازل والشركات"}
+              </p>
+            </div>
           </div>
+          <p className="max-w-[34rem] text-sm leading-8 text-[#9babb9]">
+            {company?.description || "نوفّر مياهًا بعلامات موثوقة مع عرض واضح للأسعار، أقسام مرتبة، وتجربة طلب سهلة من التصفح حتى تأكيد الشحنة."}
+          </p>
         </div>
 
-        {/* Center - Support Links */}
-        <div className="flex flex-col gap-4">
-          <h3 className="text-lg font-bold text-white border-b border-gray-800 pb-2 inline-block w-fit mb-2">الدعم</h3>
-          <nav className="flex flex-col gap-3 font-medium text-gray-400">
-            <Link href="/faq" className="hover:text-brand-ocean transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-brand-ocean rounded-full"></span> الشروط والأحكام</Link>
-            <Link href="/privacy" className="hover:text-brand-ocean transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-brand-ocean rounded-full"></span> سياسة الخصوصية</Link>
-            <Link href="/shipping" className="hover:text-brand-ocean transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-brand-ocean rounded-full"></span> معلومات الشحن</Link>
-            <Link href="/returns" className="hover:text-brand-ocean transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-brand-ocean rounded-full"></span> سياسة الإسترجاع</Link>
+        <div>
+          <h3 className="mb-5 text-base font-black">المتجر</h3>
+          <nav className="flex flex-col gap-3 text-sm font-semibold text-[#9babb9]">
+            <Link href="/" className="transition hover:text-white">الرئيسية</Link>
+            <Link href="/products" className="transition hover:text-white">المنتجات</Link>
+            <Link href="/brands" className="transition hover:text-white">العلامات التجارية</Link>
+            <Link href="/cart" className="transition hover:text-white">السلة</Link>
           </nav>
         </div>
 
-        {/* Left (RTL) - Contact Info */}
-        <div className="flex flex-col gap-4">
-          <h3 className="text-lg font-bold text-white border-b border-gray-800 pb-2 inline-block w-fit mb-2">معلومات الاتصال</h3>
-          <ul className="flex flex-col gap-4 font-medium text-gray-400">
-            <li className="flex items-center gap-3">
-              <MessageCircle className="w-4 h-4 text-brand-ocean" />
-              <span dir="ltr">+966 50 000 0000</span>
-            </li>
-            <li className="flex items-center gap-3">
-              <Phone className="w-4 h-4 text-brand-ocean" />
-              <span dir="ltr">+966 11 000 0000</span>
-            </li>
-            <li className="flex items-center gap-3">
-              <Mail className="w-4 h-4 text-brand-ocean" />
-              <span>info@waselwater.com</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <MapPin className="w-4 h-4 text-brand-ocean mt-1" />
-              <span>الرياض، المملكة العربية السعودية<br/>أوقات العمل: 8 ص - 10 م</span>
-            </li>
-          </ul>
+        <div>
+          <h3 className="mb-5 text-base font-black">الدعم</h3>
+          <nav className="flex flex-col gap-3 text-sm font-semibold text-[#9babb9]">
+            <Link href="/checkout" className="transition hover:text-white">إتمام الطلب</Link>
+            <Link href="/dashboard" className="transition hover:text-white">حسابي</Link>
+            <Link href="/products?ordering=-sales_count" className="transition hover:text-white">الأكثر مبيعًا</Link>
+            <Link href="/brands" className="transition hover:text-white">الشركاء</Link>
+          </nav>
         </div>
 
+        <div>
+          <h3 className="mb-5 text-base font-black">معلومات التواصل</h3>
+          <div className="space-y-3 text-sm leading-8 text-[#9babb9]">
+            <p>الهاتف: {company?.phone || "920000000"}</p>
+            <p>واتساب: {company?.whatsapp || "0532388929"}</p>
+            <p>البريد: {company?.email || "wasel.store1@gmail.com"}</p>
+            <p>{company?.address || "الرياض، المملكة العربية السعودية"}</p>
+            <p>أوقات العمل: 8 صباحًا - 11 مساءً</p>
+          </div>
+        </div>
       </div>
 
-      <div className="mx-auto max-w-[1400px] mt-16 pt-8 border-t border-gray-900 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500 font-medium">
-        <p>© {new Date().getFullYear()} واصل لتوزيع المياه. جميع الحقوق محفوظة.</p>
-        <div className="flex items-center gap-2">
-          <span>تصميم وتطوير</span>
+      <div className="border-t border-white/10">
+        <div className="site-container flex flex-col gap-3 py-5 text-xs font-semibold text-[#7f91a3] md:flex-row md:items-center md:justify-between">
+          <span>© {new Date().getFullYear()} جميع الحقوق محفوظة لـ {company?.name || "مجموعة واصل لتوزيع المياه"}</span>
+          <div className="flex gap-4">
+            <Link href="/dashboard" className="transition hover:text-white">الحساب</Link>
+            <Link href="/checkout" className="transition hover:text-white">الطلب</Link>
+          </div>
         </div>
       </div>
     </footer>

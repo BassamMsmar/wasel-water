@@ -1,8 +1,7 @@
 from decimal import Decimal
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Order, OrderItem
-from .models import OrderStatus
+from .models import Order, OrderItem, OrderStatus, Branch
 from products.models import Product
 from products.serializers import ProductSerializer, BundleSerializer
 
@@ -10,6 +9,12 @@ class OrderStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderStatus
         fields = ['id', 'name', 'slug', 'color']
+
+
+class BranchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Branch
+        fields = '__all__'
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

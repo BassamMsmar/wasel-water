@@ -1,4 +1,18 @@
-import type { Brand, Category, Offer, Paginated, Product } from "./types";
+import type {
+  Banner,
+  Brand,
+  Branch,
+  Category,
+  Company,
+  Customer,
+  FeaturedProduct,
+  Flag,
+  Offer,
+  OrderStatus,
+  Paginated,
+  Product,
+  UserAccount,
+} from "./types";
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000/api/v1").replace(/\/$/, "");
 
@@ -112,5 +126,45 @@ export async function getCategoryProducts(slug: string) {
 
 export async function getOffers() {
   const payload = await apiFetch<Paginated<Offer> | Offer[]>("/offers/", undefined, []);
+  return normalizeList(payload);
+}
+
+export async function getCompanies() {
+  const payload = await apiFetch<Paginated<Company> | Company[]>("/companies/", undefined, []);
+  return normalizeList(payload);
+}
+
+export async function getBanners() {
+  const payload = await apiFetch<Paginated<Banner> | Banner[]>("/banners/", undefined, []);
+  return normalizeList(payload);
+}
+
+export async function getFlags() {
+  const payload = await apiFetch<Paginated<Flag> | Flag[]>("/flags/", undefined, []);
+  return normalizeList(payload);
+}
+
+export async function getFeaturedProductRecords() {
+  const payload = await apiFetch<Paginated<FeaturedProduct> | FeaturedProduct[]>("/featured-products/", undefined, []);
+  return normalizeList(payload);
+}
+
+export async function getBranches() {
+  const payload = await apiFetch<Paginated<Branch> | Branch[]>("/branches/", undefined, []);
+  return normalizeList(payload);
+}
+
+export async function getOrderStatuses() {
+  const payload = await apiFetch<Paginated<OrderStatus> | OrderStatus[]>("/order-statuses/", undefined, []);
+  return normalizeList(payload);
+}
+
+export async function getUsers() {
+  const payload = await apiFetch<Paginated<UserAccount> | UserAccount[]>("/users/", undefined, []);
+  return normalizeList(payload);
+}
+
+export async function getCustomers() {
+  const payload = await apiFetch<Paginated<Customer> | Customer[]>("/customers/", undefined, []);
   return normalizeList(payload);
 }

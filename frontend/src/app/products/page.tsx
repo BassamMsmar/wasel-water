@@ -4,7 +4,7 @@ import { getCategories, getProducts } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "كل المنتجات | واصل لتوزيع المياه",
-  description: "تصفح أفضل براندات المياه في السوق السعودي — فلترة حسب التصنيف والسعر والأكثر طلبًا."
+  description: "تصفح جميع منتجات المياه مع فلترة مرتبة حسب التصنيف والترتيب."
 };
 
 type Props = {
@@ -19,92 +19,86 @@ export default async function ProductsPage({ searchParams }: Props) {
   ]);
 
   return (
-    <div className="bg-[#fafcff] min-h-screen">
-
-      {/* Hero Section - consistent with homepage gradient */}
-      <section className="bg-gradient-to-b from-[#eef6fc] to-[#fafcff] pt-14 pb-12 px-6 text-center">
-        <span className="text-[0.6rem] font-bold tracking-widest text-brand-ocean bg-brand-ocean/10 px-4 py-1.5 rounded-full uppercase mb-5 inline-block">
-          كل المنتجات
-        </span>
-        <h1 className="text-4xl md:text-[3rem] font-black text-[#002640] mb-3 leading-tight tracking-tight">
-          اختر المياه المناسبة لك
-        </h1>
-        <p className="text-sm font-semibold text-gray-500 max-w-md mx-auto">
-          فلترة سريعة مع أسعار واضحة وتوفر فوري.
-        </p>
+    <div className="min-h-screen bg-[linear-gradient(180deg,#fbfdff_0%,#f3f8fd_100%)]">
+      <section className="border-b border-[#e9f1f7] bg-[linear-gradient(180deg,#ffffff_0%,#eef6ff_100%)]">
+        <div className="site-container py-14 text-center md:py-16">
+          <span className="eyebrow mb-4">المنتجات</span>
+          <h1 className="text-[2.2rem] font-black leading-[1.1] text-[#0b1d2d] md:text-[3.3rem]">
+            اختر المياه المناسبة لك
+          </h1>
+          <p className="mx-auto mt-4 max-w-2xl text-sm font-semibold leading-8 text-[#6f8192] md:text-base">
+            فلترة سريعة، عرض واضح للأسعار، وكروت مرتبة تساعدك على المقارنة والطلب بسهولة.
+          </p>
+        </div>
       </section>
 
-      {/* Filters Card - floating above content */}
-      <div className="mx-auto max-w-[1250px] px-6 -mt-6 relative z-10">
+      <section className="page-shell pt-6">
         <form
-          className="flex flex-wrap items-center justify-center gap-3 bg-white py-4 px-6 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-gray-100 mb-10"
+          className="mx-auto mb-8 grid gap-3 rounded-[28px] border border-[#dfeaf4] bg-white p-4 shadow-[0_14px_34px_rgba(10,34,56,0.05)] md:grid-cols-[minmax(0,1fr),minmax(0,1fr),auto]"
           role="search"
           aria-label="فلترة المنتجات"
         >
-          <div className="flex items-center gap-2 text-gray-400 border border-gray-200 rounded-xl px-4 py-2.5 bg-gray-50 min-w-[200px]">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <label className="flex items-center gap-3 rounded-[20px] border border-[#e2edf6] bg-[#f8fbff] px-4 py-3">
+            <span className="text-xs font-black text-[#7c90a3]">التصنيف</span>
             <select
               name="category"
               defaultValue={params.category ?? ""}
               aria-label="التصنيف"
-              className="bg-transparent outline-none text-sm font-bold text-gray-600 appearance-none w-full cursor-pointer"
+              className="w-full bg-transparent text-sm font-bold text-[#102231] outline-none"
             >
               <option value="">كل التصنيفات</option>
-              {categories.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
               ))}
             </select>
-          </div>
+          </label>
 
-          <div className="flex items-center gap-2 text-gray-400 border border-gray-200 rounded-xl px-4 py-2.5 bg-gray-50 min-w-[180px]">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          <label className="flex items-center gap-3 rounded-[20px] border border-[#e2edf6] bg-[#f8fbff] px-4 py-3">
+            <span className="text-xs font-black text-[#7c90a3]">الترتيب</span>
             <select
               name="ordering"
               defaultValue={params.ordering ?? "-create_at"}
               aria-label="الترتيب"
-              className="bg-transparent outline-none text-sm font-bold text-gray-600 appearance-none w-full cursor-pointer"
+              className="w-full bg-transparent text-sm font-bold text-[#102231] outline-none"
             >
               <option value="-create_at">الأحدث</option>
               <option value="new_price">أقل سعر</option>
-              <option value="-sales_count">الأكثر طلباً</option>
+              <option value="-sales_count">الأكثر طلبًا</option>
             </select>
-          </div>
+          </label>
 
           <button
             type="submit"
-            className="px-8 py-2.5 bg-[#002640] text-white font-bold text-sm rounded-xl hover:bg-brand-ocean transition-all shadow-sm"
+            className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-[linear-gradient(135deg,#123e67_0%,#2d78c8_100%)] px-8 text-sm font-black text-white shadow-[0_16px_32px_rgba(45,120,200,0.24)] transition hover:-translate-y-0.5"
           >
             تطبيق
           </button>
         </form>
 
-        {/* Results count */}
-        {products.length > 0 && (
-          <div className="flex items-center justify-between mb-8">
-            <p className="text-gray-400 font-bold text-xs tracking-widest uppercase">
-              {products.length} منتج
-            </p>
-          </div>
-        )}
-
-        {/* Products Grid */}
         {products.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 pb-24">
-            {products.map(p => <ProductCard key={p.id} product={p} />)}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm text-center mb-24">
-            <div className="w-16 h-16 mb-6 bg-gray-50 rounded-full flex items-center justify-center text-2xl border border-gray-100">
-              🔍
+          <>
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <p className="text-sm font-black text-[#5b7084]">
+                {products.length} منتج متاح
+              </p>
             </div>
-            <h3 className="text-xl font-black text-[#002640] mb-2">لا توجد منتجات مطابقة</h3>
-            <p className="text-sm text-gray-400 font-medium">جرب تعديل معايير البحث أو تصفح كل المنتجات.</p>
+
+            <div className="product-grid">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="empty-state">
+            <div className="empty-icon">!</div>
+            <h3>لا توجد منتجات مطابقة</h3>
+            <p>جرّب تغيير الفلاتر أو العودة إلى جميع المنتجات لإظهار خيارات أخرى.</p>
           </div>
         )}
-      </div>
-
+      </section>
     </div>
   );
 }
-
-

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { getMyOrders, getProfile, isLoggedIn, logout } from "@/lib/auth";
 import { money } from "@/lib/media";
 
@@ -46,13 +46,20 @@ export default function DashboardPage() {
       router.replace("/login");
       return;
     }
+
     const init = async () => {
-      const [p, o] = await Promise.all([getProfile(), getMyOrders()]);
-      if (!p) { router.replace("/login"); return; }
-      setProfile(p);
-      setOrders(o);
+      const [profileResponse, ordersResponse] = await Promise.all([getProfile(), getMyOrders()]);
+
+      if (!profileResponse) {
+        router.replace("/login");
+        return;
+      }
+
+      setProfile(profileResponse);
+      setOrders(ordersResponse);
       setLoading(false);
     };
+
     init();
   }, [router]);
 
@@ -66,40 +73,42 @@ export default function DashboardPage() {
     return (
       <section className="dash-loading">
         <div className="spinner" />
-        <p>جاري تحضير البيانات...</p>
+        <p>جارٍ تجهيز بيانات الحساب...</p>
       </section>
     );
   }
 
-  const paid = orders.filter((o) => o.is_paid).length;
-  const pending = orders.filter((o) => !o.is_paid).length;
-  const totalSpent = orders.reduce((sum, o) => sum + Number(o.total_price), 0);
+  const paid = orders.filter((order) => order.is_paid).length;
+  const pending = orders.filter((order) => !order.is_paid).length;
+  const totalSpent = orders.reduce((sum, order) => sum + Number(order.total_price), 0);
 
   return (
-    <section className="page-shell">
-      {/* Header Card */}
+    <section>
       <div className="dash-header-card">
         <div className="dash-user-info">
-          <div className="dash-avatar">{(profile?.first_name?.[0] || profile?.username?.[0] || "م").toUpperCase()}</div>
+          <div className="dash-avatar">
+            {(profile?.first_name?.[0] || profile?.username?.[0] || "و").toUpperCase()}
+          </div>
           <div>
-            <h1 className="dash-title">مرحباً، {profile?.first_name || profile?.username} 👋</h1>
-            <p className="dash-subtitle">{profile?.email} · {profile?.is_staff ? "🔑 مسؤول النظام" : "حساب العميل"}</p>
+            <h1 className="dash-title">مرحبًا، {profile?.first_name || profile?.username}</h1>
+            <p className="dash-subtitle">
+              {profile?.email} · {profile?.is_staff ? "وصول إداري متاح" : "حساب عميل"}
+            </p>
           </div>
         </div>
 
         <div className="dash-actions">
-          {profile?.is_staff && (
+          {profile?.is_staff ? (
             <a href="http://127.0.0.1:8000/admin/" target="_blank" rel="noreferrer" className="dash-btn-admin">
-              ⚙️ لوحة تحكم Django
+              فتح لوحة Django
             </a>
-          )}
+          ) : null}
           <button className="dash-btn-logout" onClick={handleLogout}>
             تسجيل الخروج
           </button>
         </div>
       </div>
 
-      {/* Stats Grid */}
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-icon">طلب</div>
@@ -109,14 +118,14 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background:"var(--mint-light)", color:"var(--navy)" }}>مدفوع</div>
+          <div className="stat-icon">دفع</div>
           <div>
             <div className="stat-value">{paid}</div>
             <div className="stat-label">طلبات مدفوعة</div>
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background:"var(--gold-light)", color:"var(--navy)" }}>قيد</div>
+          <div className="stat-icon">قيد</div>
           <div>
             <div className="stat-value">{pending}</div>
             <div className="stat-label">قيد المعالجة</div>
@@ -131,20 +140,19 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Orders Section */}
       <div className="dash-section">
         <div className="dash-section-header">
           <h2>سجل الطلبات</h2>
-          <Link href="/products">طلب جديد +</Link>
+          <Link href="/products">طلب جديد</Link>
         </div>
 
         {orders.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">📝</div>
+            <div className="empty-icon">٠</div>
             <h3>لا توجد طلبات سابقة</h3>
-            <p>سجل طلباتك فارغ حالياً. ابدأ التسوق الآن وتتبع طلباتك هنا.</p>
-            <Link href="/products" className="btn btn-primary" style={{ marginTop:"1rem" }}>
-              بدء التسوق
+            <p>ابدأ التسوق الآن وستظهر طلباتك هنا بشكل منظم وواضح.</p>
+            <Link href="/products" className="btn btn-primary" style={{ marginTop: "1rem" }}>
+              تصفح المنتجات
             </Link>
           </div>
         ) : (
@@ -156,7 +164,7 @@ export default function DashboardPage() {
                   <th>التاريخ</th>
                   <th>عدد العناصر</th>
                   <th>المبلغ الإجمالي</th>
-                  <th>حالة الطلب</th>
+                  <th>الحالة</th>
                   <th>الدفع</th>
                 </tr>
               </thead>
@@ -166,14 +174,23 @@ export default function DashboardPage() {
                     <td><span className="order-id-tag">#{order.id}</span></td>
                     <td>
                       {new Date(order.created_at).toLocaleDateString("ar-SA", {
-                        year: "numeric", month: "long", day: "numeric"
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric"
                       })}
                     </td>
                     <td>{order.items?.length ?? 0} عناصر</td>
-                    <td><strong style={{ color:"var(--navy)" }}>{money(order.total_price)}</strong></td>
+                    <td><strong style={{ color: "var(--navy-900)" }}>{money(order.total_price)}</strong></td>
                     <td>
                       {order.status ? (
-                        <span className="status-chip" style={{ background: order.status.color + "22", color: order.status.color, border: `1px solid ${order.status.color}44` }}>
+                        <span
+                          className="status-chip"
+                          style={{
+                            background: `${order.status.color}22`,
+                            color: order.status.color,
+                            border: `1px solid ${order.status.color}44`
+                          }}
+                        >
                           {order.status.name}
                         </span>
                       ) : (
@@ -195,20 +212,19 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Shipping Details for Last Order */}
-      {orders.length > 0 && (
-        <div className="dash-section" style={{ maxWidth: 640 }}>
+      {orders.length > 0 ? (
+        <div className="dash-section" style={{ maxWidth: 680 }}>
           <div className="dash-section-header">
             <h2>تفاصيل توصيل آخر طلب</h2>
           </div>
           <div className="lod-grid">
             <div className="lod-row"><span>المستلم</span><strong>{orders[0].shipping_full_name}</strong></div>
-            <div className="lod-row"><span>الجوال</span><strong style={{ direction:"ltr" }}>{orders[0].shipping_phone}</strong></div>
+            <div className="lod-row"><span>الجوال</span><strong style={{ direction: "ltr" }}>{orders[0].shipping_phone}</strong></div>
             <div className="lod-row"><span>المدينة</span><strong>{orders[0].shipping_city}</strong></div>
             <div className="lod-row"><span>العنوان</span><strong>{orders[0].shipping_address}</strong></div>
           </div>
         </div>
-      )}
+      ) : null}
     </section>
   );
 }

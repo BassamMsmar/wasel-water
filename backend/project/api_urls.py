@@ -6,12 +6,13 @@ from rest_framework_simplejwt.views import (
     TokenBlacklistView,
 )
 
-from accounts.api import CustomerViewSet, AddressViewSet, RegisterView, ProfileView
+from accounts.api import CustomerViewSet, AddressViewSet, RegisterView, ProfileView, UserViewSet
 from products.api import (
     ProductViewSet, BrandViewSet, CategoryViewSet,
-    OfferViewSet, ReviewViewSet, BundleViewSet, BundleItemViewSet
+    OfferViewSet, ReviewViewSet, BundleViewSet, BundleItemViewSet,
+    FlagViewSet, FeaturedProductViewSet
 )
-from orders.api import CheckoutAPIView, OrderViewSet, OrderItemViewSet
+from orders.api import CheckoutAPIView, OrderViewSet, OrderItemViewSet, BranchViewSet, OrderStatusViewSet
 from cart.api import CartViewSet
 from core.api import SectionViewSet, CompanyViewSet, BannerViewSet
 
@@ -20,6 +21,7 @@ router = DefaultRouter()
 # Accounts
 router.register(r'customers', CustomerViewSet)
 router.register(r'addresses', AddressViewSet)
+router.register(r'users', UserViewSet)
 
 # Products
 router.register(r'products', ProductViewSet)
@@ -29,10 +31,14 @@ router.register(r'offers', OfferViewSet)
 router.register(r'reviews', ReviewViewSet)
 router.register(r'bundles', BundleViewSet)
 router.register(r'bundle-items', BundleItemViewSet)
+router.register(r'flags', FlagViewSet)
+router.register(r'featured-products', FeaturedProductViewSet)
 
 # Orders
 router.register(r'orders', OrderViewSet)
 router.register(r'order-items', OrderItemViewSet)
+router.register(r'branches', BranchViewSet)
+router.register(r'order-statuses', OrderStatusViewSet)
 
 # Cart
 router.register(r'cart', CartViewSet)

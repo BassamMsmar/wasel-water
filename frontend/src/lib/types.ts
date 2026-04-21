@@ -62,6 +62,77 @@ export type Offer = {
   slug?: string;
   image?: ImageValue;
   description?: string | null;
+  products?: number | null;
+};
+
+export type Banner = {
+  id: number;
+  title?: string;
+  description?: string | null;
+  image?: ImageValue;
+  link?: string | null;
+  type?: string | null;
+};
+
+export type Flag = {
+  id: number;
+  name: string;
+};
+
+export type FeaturedProduct = {
+  id: number;
+  product?: number;
+  order?: number;
+  active?: boolean;
+  product_details?: Product | null;
+};
+
+export type Branch = {
+  id: number;
+  name: string;
+  active?: boolean;
+};
+
+export type UserAccount = {
+  id: number;
+  username: string;
+  email?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  is_staff?: boolean;
+  is_superuser?: boolean;
+};
+
+export type Customer = {
+  id: number;
+  user?: UserAccount | null;
+  phone_number?: string | null;
+  birth_date?: string | null;
+};
+
+export type OrderStatus = {
+  id: number;
+  name: string;
+  slug: string;
+  color: string;
+};
+
+export type Company = {
+  id: number;
+  name: string;
+  title?: string | null;
+  description?: string | null;
+  logo?: ImageValue;
+  cover?: ImageValue;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  whatsapp?: string | null;
+  facebook?: string | null;
+  twitter?: string | null;
+  instagram?: string | null;
+  linkedin?: string | null;
+  tiktok?: string | null;
 };
 
 export type Paginated<T> = {

@@ -7,33 +7,33 @@ export function BrandsSection({ brands }: { brands: Brand[] }) {
   if (!brands.length) return null;
 
   return (
-    <section className="bg-[#eef6fa] py-14 lg:py-16">
-      <div className="mx-auto max-w-[1320px] px-5 sm:px-6">
+    <section className="bg-[#edf5fb] py-14 lg:py-16">
+      <div className="site-container">
         <div className="text-center">
-          <h2 className="text-2xl font-black text-[#11304a] sm:text-[2rem]">
-            العلامات التجارية الموثوقة
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[#708191]">
-            نضمن لك الجودة عبر شراكاتنا مع أفضل العلامات العالمية والمحلية في قطاع المياه.
+          <span className="eyebrow mb-3">شركاؤنا</span>
+          <h2 className="section-title">العلامات التجارية الموثوقة</h2>
+          <p className="section-subtitle mx-auto mt-3">
+            نختار العلامات التي تضمن جودة ثابتة، تعبئة جيدة، وتوفراً مناسباً للمنازل والشركات والمنشآت.
           </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-7">
+        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
           {brands.map((brand) => (
             <Link
               key={brand.id}
               href={`/brands/${brand.slug}`}
-              className="group flex h-[92px] items-center justify-center rounded-[18px] border border-[#dfebf3] bg-white p-4 shadow-[0_8px_24px_rgba(11,31,53,0.04)] transition duration-300 hover:-translate-y-1 hover:border-[#c3d8ea] hover:shadow-[0_14px_32px_rgba(11,31,53,0.08)]"
+              className="group flex flex-col items-center justify-center gap-3 rounded-[24px] border border-[#dce8f2] bg-white p-4 text-center shadow-[0_12px_28px_rgba(10,34,56,0.05)] transition duration-300 hover:-translate-y-1 hover:border-[#c5dced] hover:shadow-[0_18px_40px_rgba(10,34,56,0.09)]"
             >
-              <div className="relative h-12 w-full">
+              <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border border-[#dce8f2] bg-[linear-gradient(180deg,#ffffff_0%,#f3f8fe_100%)] p-4">
                 <Image
                   src={absoluteMediaUrl(brand.logo || brand.image, fallbackBrandImage)}
                   alt={brand.name}
                   fill
                   unoptimized
-                  className="object-contain"
+                  className="object-contain p-4"
                 />
               </div>
+              <span className="text-sm font-black text-[#15324b]">{brand.name}</span>
             </Link>
           ))}
         </div>

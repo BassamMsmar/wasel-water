@@ -1,51 +1,51 @@
 import Link from "next/link";
-import { LayoutDashboard, Droplet, ShoppingCart, Truck, BarChart2, Settings, HelpCircle, LogOut } from "lucide-react";
+import { CirclePlus, LayoutDashboard, PackageSearch } from "lucide-react";
+
+const navigation = [
+  { href: "/dashboard", label: "نظرة عامة", icon: LayoutDashboard },
+  { href: "/dashboard/inventory/add", label: "إضافة منتج", icon: CirclePlus },
+  { href: "http://127.0.0.1:8000/admin/", label: "لوحة Django", icon: PackageSearch, external: true },
+];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex bg-gray-50 min-h-screen">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[#f8fafc] border-r border-[#e2e8f0] flex flex-col pt-8 pb-6 sticky top-0 h-screen">
-        <div className="px-8 mb-10">
-          <h1 className="text-sm font-black text-brand-dark tracking-tight leading-tight">Wasel Admin</h1>
-          <p className="text-[0.6rem] text-gray-400 font-bold uppercase tracking-widest mt-1">Premium Fleet Management</p>
-        </div>
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f7fbff_0%,#eef5fb_100%)]">
+      <div className="site-container grid gap-6 py-6 lg:grid-cols-[280px,minmax(0,1fr)]">
+        <aside className="rounded-[30px] border border-[#dfeaf4] bg-white p-5 shadow-[0_18px_42px_rgba(10,34,56,0.06)]">
+          <div className="border-b border-[#edf3f8] pb-4">
+            <p className="text-xs font-black tracking-[0.25em] text-[#89a0b6]">WASEL PANEL</p>
+            <h1 className="mt-2 text-xl font-black text-[#102231]">لوحة التحكم</h1>
+            <p className="mt-2 text-sm leading-7 text-[#6b7f92]">
+              وصول سريع إلى الحساب والمنتجات وروابط الإدارة المتاحة.
+            </p>
+          </div>
 
-        <nav className="flex-1 px-4 flex flex-col gap-1">
-          <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold text-gray-500 hover:text-brand-dark transition-colors">
-            <LayoutDashboard className="w-4 h-4" /> Dashboard
-          </Link>
-          <Link href="/dashboard/inventory" className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold text-brand-dark bg-white shadow-sm border border-gray-100 transition-colors">
-            <Droplet className="w-4 h-4 text-brand-ocean" /> Inventory
-          </Link>
-          <Link href="/dashboard/orders" className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold text-gray-500 hover:text-brand-dark transition-colors">
-            <ShoppingCart className="w-4 h-4" /> Orders
-          </Link>
-          <Link href="/dashboard/fleet" className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold text-gray-500 hover:text-brand-dark transition-colors">
-            <Truck className="w-4 h-4" /> Fleet Logistics
-          </Link>
-          <Link href="/dashboard/analytics" className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold text-gray-500 hover:text-brand-dark transition-colors">
-            <BarChart2 className="w-4 h-4" /> Analytics
-          </Link>
-          <Link href="/dashboard/settings" className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-bold text-gray-500 hover:text-brand-dark transition-colors">
-            <Settings className="w-4 h-4" /> Settings
-          </Link>
-        </nav>
+          <nav className="mt-5 grid gap-2">
+            {navigation.map((item) => {
+              const Icon = item.icon;
+              const className = "flex items-center gap-3 rounded-[20px] px-4 py-3 text-sm font-black text-[#4f6477] transition hover:bg-[#f3f8fc] hover:text-[#102231]";
 
-        <div className="px-4 mt-auto pt-8 flex flex-col gap-1">
-          <button className="flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-bold text-gray-500 hover:text-brand-dark transition-colors text-left">
-            <HelpCircle className="w-4 h-4" /> Support
-          </button>
-          <button className="flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-bold text-gray-500 hover:text-brand-dark transition-colors text-left">
-            <LogOut className="w-4 h-4" /> Sign Out
-          </button>
-        </div>
-      </aside>
+              if (item.external) {
+                return (
+                  <a key={item.href} href={item.href} target="_blank" rel="noreferrer" className={className}>
+                    <Icon className="h-4 w-4 text-[#2d78c8]" />
+                    {item.label}
+                  </a>
+                );
+              }
 
-      {/* Main Content Area */}
-      <main className="flex-1">
-        {children}
-      </main>
+              return (
+                <Link key={item.href} href={item.href} className={className}>
+                  <Icon className="h-4 w-4 text-[#2d78c8]" />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </aside>
+
+        <main>{children}</main>
+      </div>
     </div>
   );
 }

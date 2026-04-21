@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from taggit.serializers import TagListSerializerField, TaggitSerializer
 from django.db.models import Avg
-from .models import Product, ProductImages, Brand, Category, Offer, Review, Bundle, BundleItem
+from .models import Product, ProductImages, Brand, Category, Offer, Review, Bundle, BundleItem, Flag, FeaturedProduct
 
 
 class BrandSerializer(serializers.ModelSerializer):
@@ -98,6 +98,20 @@ class ProductSerializer(TaggitSerializer, serializers.ModelSerializer):
 class OfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offer
+        fields = '__all__'
+
+
+class FlagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Flag
+        fields = '__all__'
+
+
+class FeaturedProductSerializer(serializers.ModelSerializer):
+    product_details = ProductSerializer(source='product', read_only=True)
+
+    class Meta:
+        model = FeaturedProduct
         fields = '__all__'
 
 
