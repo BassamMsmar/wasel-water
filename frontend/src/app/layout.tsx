@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { BottomNav } from "@/components/BottomNav";
+import { LayoutWrapper } from "@/components/LayoutWrapper";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "واصل للمياه",
     description: "أفضل براندات المياه بتوصيل سريع لباب بيتك",
-    locale: "ar_SA",
+    locale: "en_US",
     type: "website"
   },
   robots: { index: true, follow: true }
@@ -27,13 +25,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
-      <body>
-        <Header />
-        <main id="main-content">{children}</main>
-        <Footer />
-        <BottomNav />
+      <body className="font-sans antialiased text-brand-dark bg-gray-50/50">
+        <LayoutWrapper>
+          <main id="main-content" className="flex-1 w-full">{children}</main>
+        </LayoutWrapper>
       </body>
     </html>
   );

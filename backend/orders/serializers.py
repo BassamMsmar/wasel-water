@@ -123,3 +123,10 @@ class CheckoutSerializer(serializers.Serializer):
             ]
         )
         return order
+
+
+class CheckoutResponseSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    status = serializers.CharField()
+    total_price = serializers.CharField()
+    message = serializers.CharField()

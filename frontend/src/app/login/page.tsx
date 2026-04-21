@@ -37,8 +37,8 @@ export default function LoginPage() {
         <div className="login-logo">
           <span style={{
               width:48, height:48, borderRadius:8, background:"#D5E3FF",
-              display:"grid", placeItems:"center", fontWeight:900, fontSize:"1.4rem", color:"#000000", flexShrink:0,
-              boxShadow:"0 8px 24px rgba(0,0,0,0.12)"
+              display:"grid", placeItems:"center", fontWeight:900, fontSize:"1.4rem", color:"var(--navy)", flexShrink:0,
+              boxShadow:"0 8px 24px rgba(14,165,233,0.12)"
           }}>و</span>
           <div style={{ textAlign:"right" }}>
             <strong>واصل للمياه</strong>

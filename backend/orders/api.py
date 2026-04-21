@@ -1,8 +1,14 @@
 from rest_framework import status, viewsets, permissions
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
+from drf_spectacular.utils import extend_schema
 from .models import Order, OrderItem
-from .serializers import CheckoutSerializer, OrderSerializer, OrderItemSerializer
+from .serializers import (
+    CheckoutSerializer,
+    CheckoutResponseSerializer,
+    OrderSerializer,
+    OrderItemSerializer,
+)
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
@@ -24,9 +30,14 @@ class OrderItemViewSet(viewsets.ModelViewSet):
         return OrderItem.objects.filter(order__user=self.request.user)
 
 
-class CheckoutAPIView(APIView):
+class CheckoutAPIView(GenericAPIView):
+    serializer_class = CheckoutSerializer
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(
+        request=CheckoutSerializer,
+        responses={status.HTTP_201_CREATED: CheckoutResponseSerializer},
+    )
     def post(self, request):
         serializer = CheckoutSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)

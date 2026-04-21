@@ -1,15 +1,23 @@
 from rest_framework import viewsets, permissions, generics, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from django.contrib.auth.models import User
 from .models import Customer, Address
-from .serializers import CustomerSerializer, AddressSerializer, UserSerializer
+from drf_spectacular.utils import extend_schema
+from .serializers import (
+    CustomerSerializer,
+    AddressSerializer,
+    UserSerializer,
+    RegisterSerializer,
+    ProfileUpdateSerializer,
+)
 
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
+    serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(responses=UserSerializer)
     def create(self, request, *args, **kwargs):
         data = request.data
         username = data.get('username') or data.get('email', '').split('@')[0]
@@ -45,13 +53,16 @@ class RegisterView(generics.CreateAPIView):
         return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
 
 
-class ProfileView(APIView):
+class ProfileView(generics.GenericAPIView):
+    serializer_class = ProfileUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(responses=UserSerializer)
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
+    @extend_schema(request=ProfileUpdateSerializer, responses=UserSerializer)
     def patch(self, request):
         user = request.user
         data = request.data

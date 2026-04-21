@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { AddToCartButton } from "@/components/AddToCartButton";
-import { ProductCard }     from "@/components/ProductCard";
 import { getProduct, getRelatedProducts } from "@/lib/api";
 import { absoluteMediaUrl, money } from "@/lib/media";
 import Link from "next/link";
+import { Droplet, Leaf, Shield, Truck, ChevronDown, ShoppingBag } from "lucide-react";
+import { ProductCard } from "@/components/ProductCard";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product  = await getProduct(slug);
-  if (!product) return { title: "منتج غير موجود" };
-  const desc = product.description || product.subtitle || `${product.name} من متجر واصل للمياه`;
+  if (!product) return { title: "Product Not Found" };
+  const desc = product.description || product.subtitle || `${product.name} from Wasel Water`;
   return {
     title: product.name,
     description: desc,
@@ -22,177 +22,159 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-function Stars({ rating, count }: { rating: number | string | null | undefined; count?: number | null }) {
-  const n = Math.round(Number(rating) || 0);
-  if (!n) return null;
-  return (
-    <div className="detail-stars">
-      <div className="stars-row" aria-label={`${n} نجوم من 5`}>
-        {[1,2,3,4,5].map(i => <span key={i} className={`star ${i<=n?"filled":""}`}>★</span>)}
-      </div>
-      {count ? <span className="review-count">({count} تقييم)</span> : null}
-    </div>
-  );
-}
-
 export default async function ProductDetailsPage({ params }: Props) {
   const { slug }   = await params;
   const product    = await getProduct(slug);
   if (!product) notFound();
 
   const related  = await getRelatedProducts(product.slug);
-  const gallery  = [product.image, ...(product.images ?? product.product_image ?? []).map(i => i.image)].filter(Boolean);
+  const gallery  = [product.image, ...(product.images ?? product.product_image ?? []).map((i: any) => i.image)].filter(Boolean);
   const price    = product.new_price ?? product.price;
-  const oldPrice = product.old_price;
-  const discount = product.discount_percent;
-  const available = product.is_available !== false && product.stock !== 0;
 
   return (
-    <>
-      {/* Page Hero Banner */}
-      <div className="page-hero">
+    <div className="bg-brand-ice/20 min-h-screen py-12">
+      <div className="mx-auto max-w-[1400px] px-6">
+        
         {/* Breadcrumb */}
-        <nav className="breadcrumb" aria-label="مسار التنقل">
-          <Link href="/">الرئيسية</Link>
-          <span className="breadcrumb-sep">›</span>
-          <Link href="/products">المنتجات</Link>
-          {product.category_data && <>
-            <span className="breadcrumb-sep">›</span>
-            <Link href={`/categories/${product.category_data.slug}`}>{product.category_data.name}</Link>
-          </>}
-          <span className="breadcrumb-sep">›</span>
-          <span aria-current="page">{product.name}</span>
+        <nav className="flex items-center gap-2 text-xs font-bold text-gray-400 mb-8 uppercase tracking-widest">
+          <Link href="/" className="hover:text-brand-dark transition-colors">Home</Link>
+          <span>›</span>
+          <Link href="/products" className="hover:text-brand-dark transition-colors">Catalog</Link>
+          <span>›</span>
+          <span className="text-brand-dark">{product.name}</span>
         </nav>
-      </div>
 
-      <section className="page-shell">
-        <div className="product-detail-grid">
-          {/* Gallery */}
-          <div>
-            <div className="detail-gallery-main">
+        {/* Main Product Section */}
+        <div className="grid md:grid-cols-2 gap-12 lg:gap-20 mb-20">
+          
+          {/* Left Gallery */}
+          <div className="flex flex-col gap-4">
+            <div className="aspect-[4/5] relative rounded-3xl bg-brand-ice/50 border border-brand-ice overflow-hidden flex items-center justify-center p-8">
               <Image
                 src={absoluteMediaUrl(product.image)}
                 alt={product.name}
-                width={720} height={720}
+                fill
                 priority
-                style={{ width:"100%", height:"100%", objectFit:"contain", padding:"1.5rem" }}
+                unoptimized
+                className="object-contain"
               />
             </div>
             {gallery.length > 1 && (
-              <div className="thumb-grid">
-                {gallery.slice(0, 4).map((img, i) => (
-                  <Image
-                    key={`${img}-${i}`}
-                    src={absoluteMediaUrl(img)}
-                    alt={`${product.name} ${i+1}`}
-                    width={120} height={120}
-                    style={{ width:"100%", aspectRatio:"1", objectFit:"contain", background:"var(--surface-alt)", borderRadius:"var(--radius-md)", border:"1.5px solid var(--border)", padding:".4rem" }}
-                  />
+              <div className="grid grid-cols-3 gap-4">
+                {gallery.slice(0, 3).map((img, i) => (
+                  <div key={i} className="aspect-square relative rounded-xl bg-gray-100 overflow-hidden border border-gray-200 cursor-pointer hover:border-brand-ocean transition-all">
+                    <Image src={absoluteMediaUrl(img)} alt={`Thumb ${i}`} fill unoptimized className="object-cover" />
+                  </div>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Info */}
-          <div className="detail-info">
-            {product.brand_data?.name && (
-              <span className="detail-brand">{product.brand_data.name}</span>
-            )}
-            <h1 className="detail-title">{product.name}</h1>
+          {/* Right Info */}
+          <div className="flex flex-col py-6">
+            <span className="inline-flex items-center self-start text-[0.65rem] font-bold tracking-widest text-brand-dark uppercase bg-brand-ice px-3 py-1.5 rounded-sm mb-4">
+              Official Reserve
+            </span>
+            <h1 className="text-4xl md:text-5xl font-black text-brand-dark leading-tight tracking-tight mb-6">
+              {product.name}
+            </h1>
+            <p className="text-sm font-medium text-gray-500 leading-relaxed mb-8 max-w-lg">
+              Sourced from the heart of the untouched northern glaciers, our flagship water undergoes a natural 20-year filtration process through volcanic rock layers, resulting in unparalleled purity and a crisp, mineral-rich profile.
+            </p>
 
-            <Stars rating={product.rating} count={product.reviews_count} />
+            <div className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm mb-10">
+              <div className="flex justify-between items-end mb-6">
+                <div>
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Standard Unit</span>
+                  <div className="text-3xl font-black text-brand-dark">{money(price)}</div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-bold text-brand-dark block">In Stock</span>
+                  <span className="text-[0.65rem] font-medium text-gray-400">Available for Next-Day Delivery</span>
+                </div>
+              </div>
 
-            {product.description && (
-              <p className="detail-description">{product.description}</p>
-            )}
+              <div className="mb-6">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">Choose Package Size</span>
+                <div className="grid grid-cols-3 gap-3">
+                  <button className="border-2 border-brand-dark text-brand-dark rounded-md py-2.5 text-xs font-bold hover:bg-gray-50 transition">12 x 750ml</button>
+                  <button className="border border-gray-200 text-gray-500 rounded-md py-2.5 text-xs font-bold hover:text-brand-dark transition">24 x 500ml</button>
+                  <button className="border border-gray-200 text-gray-500 rounded-md py-2.5 text-xs font-bold hover:text-brand-dark transition">Bulk (5G)</button>
+                </div>
+              </div>
 
-            {/* Price */}
-            <div className="detail-price-block">
-              <strong>{money(price)}</strong>
-              {oldPrice && <del>{money(oldPrice)}</del>}
-              {discount ? <span className="detail-discount-badge">وفّر {discount}%</span> : null}
+              <button className="w-full flex items-center justify-center gap-2 bg-brand-dark text-white rounded-md py-4 font-bold hover:bg-brand transition-colors">
+                <ShoppingBag className="w-4 h-4" /> Add to Cart
+              </button>
             </div>
 
-            {/* Availability */}
-            <div>
-              <span className={`availability-chip ${available ? "available" : "unavailable"}`}>
-                {available ? "متوفر في المخزون" : "غير متوفر حالياً"}
-              </span>
+            {/* Accordions */}
+            <div className="flex flex-col gap-2">
+              <div className="border border-gray-200 bg-white rounded-lg p-5 flex justify-between items-center cursor-pointer hover:border-brand-ice">
+                <span className="text-sm font-bold text-brand-dark">Mineral Composition</span>
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="border border-gray-200 bg-white rounded-lg p-5 flex justify-between items-center cursor-pointer hover:border-brand-ice">
+                <span className="text-sm font-bold text-brand-dark">Sustainability & Source</span>
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+              </div>
             </div>
 
-            {/* Cart */}
-            <AddToCartButton product={product} showQty />
-
-            {/* Delivery Hint */}
-            {available && (
-              <div className="delivery-hint">
-                <span>توصيل سريع — <strong>اطلب الآن وتوصل خلال 24 ساعة</strong></span>
-              </div>
-            )}
-
-            {/* Specs */}
-            <dl className="spec-grid">
-              <div className="spec-row">
-                <dt>الحالة</dt>
-                <dd>{available ? "متوفر" : "غير متوفر"}</dd>
-              </div>
-              {product.category_data && (
-                <div className="spec-row">
-                  <dt>التصنيف</dt>
-                  <dd>
-                    <Link href={`/categories/${product.category_data.slug}`} style={{ color:"var(--cyan-dark)", fontWeight:700 }}>
-                      {product.category_data.name}
-                    </Link>
-                  </dd>
-                </div>
-              )}
-              {product.sku && (
-                <div className="spec-row">
-                  <dt>رمز المنتج (SKU)</dt>
-                  <dd>{product.sku}</dd>
-                </div>
-              )}
-              {product.brand_data && (
-                <div className="spec-row">
-                  <dt>البراند</dt>
-                  <dd>
-                    <Link href={`/brands/${product.brand_data.slug}`} style={{ color:"var(--cyan-dark)", fontWeight:700 }}>
-                      {product.brand_data.name}
-                    </Link>
-                  </dd>
-                </div>
-              )}
-            </dl>
-
-            {/* WhatsApp CTA */}
-            <a
-              href={`https://wa.me/9660000000000?text=مرحباً، أريد الاستفسار عن ${product.name}`}
-              target="_blank"
-              rel="noreferrer"
-              className="btn btn-whatsapp"
-              style={{ justifyContent:"center" }}
-            >
-              استفسر عبر واتساب
-            </a>
           </div>
         </div>
 
-        {/* Related */}
-        {related.length > 0 && (
-          <section style={{ marginTop:"4rem" }}>
-            <div className="section-head">
-              <div>
-                <span className="eyebrow">اقتراحات</span>
-                <h2>منتجات مشابهة</h2>
+        {/* The Purity Promise */}
+        <div className="mb-20">
+          <h2 className="text-2xl font-black text-brand-dark tracking-tight mb-6">The Purity Promise</h2>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 rounded-3xl bg-brand-dark text-white p-10 flex flex-col justify-end min-h-[300px] relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark to-brand-ocean/30 opacity-50 z-0"></div>
+              <div className="relative z-10">
+                <Droplet className="w-8 h-8 text-white mb-6" />
+                <h3 className="text-2xl font-bold mb-3">Zero-Impact Extraction</h3>
+                <p className="text-sm text-white/80 font-medium max-w-md">Our extraction method mimics the natural overflow of the aquifer, ensuring that the water table remains untouched and the local ecosystem thrives without human interference.</p>
               </div>
-              <Link href="/products" style={{ color:"var(--cyan-dark)", fontWeight:700 }}>عرض الكل ←</Link>
             </div>
-            <div className="product-grid">
+            
+            <div className="rounded-3xl bg-gray-200/60 p-10 flex flex-col justify-center">
+              <Leaf className="w-6 h-6 text-brand-dark mb-4" />
+              <h4 className="text-lg font-bold text-brand-dark mb-2">Circular Design</h4>
+              <p className="text-xs text-gray-500 font-medium">100% recycled PET or artisanal glass options designed for life-long reuse or infinite recyclability.</p>
+            </div>
+
+            <div className="rounded-3xl bg-white border border-gray-200 p-10 flex flex-col justify-center shadow-sm">
+              <Shield className="w-6 h-6 text-brand-dark mb-4" />
+              <h4 className="text-lg font-bold text-brand-dark mb-2">Certified Quality</h4>
+              <p className="text-xs text-gray-500 font-medium">Exceeding international standards for mineral consistency and microbial safety through rigorous daily testing.</p>
+            </div>
+
+            <div className="md:col-span-2 rounded-3xl bg-brand-ice/80 p-10 flex flex-col justify-center border border-brand-ice">
+              <h4 className="text-lg font-bold text-brand-dark mb-2">Delivery Network</h4>
+              <p className="text-sm text-brand-dark/70 font-medium max-w-lg">Direct-to-enterprise logistics network ensuring that every shipment arrives at the perfect cellar temperature.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Related Collections */}
+        {related && related.length > 0 && (
+          <section>
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-black text-brand-dark tracking-tight">Related Collections</h2>
+                <p className="text-xs text-gray-500 mt-2 font-medium">Curated selections for the discerning palate.</p>
+              </div>
+              <Link href="/products" className="text-xs font-bold text-brand-dark hover:text-brand-ocean flex items-center gap-1">
+                View Catalog <span>→</span>
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {related.slice(0, 4).map(p => <ProductCard key={p.id} product={p} />)}
             </div>
           </section>
         )}
-      </section>
-    </>
+
+      </div>
+    </div>
   );
 }

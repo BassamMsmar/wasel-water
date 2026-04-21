@@ -20,10 +20,15 @@ from django.contrib.auth import views as auth_views
 from core.views import home, custom_logout_view
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
-    path('', home, name='home'),
+    path('', RedirectView.as_view(pattern_name='swagger-ui', permanent=False), name='home'),
     path('admin/', admin.site.urls),
+    path('store/', home, name='store-home'),
+    path('api/schema/', SpectacularAPIView.as_view(), name='api-schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='api-schema'), name='swagger-ui'),
     
     # Authentication URLs
     path('accounts/', include('accounts.urls', namespace='accounts')),
