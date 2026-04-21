@@ -125,7 +125,7 @@ p {
 }
 
 .home-section {
-  padding-block: clamp(2.5rem, 4vw, 4.5rem);
+  padding-block: clamp(2rem, 3vw, 3.25rem);
 }
 
 .section-head {
@@ -200,8 +200,8 @@ p {
 .product-grid,
 .product-grid-auto {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: clamp(1rem, 2vw, 1.5rem);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: clamp(0.9rem, 1.5vw, 1.25rem);
   align-items: stretch;
 }
 

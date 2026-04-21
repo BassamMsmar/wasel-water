@@ -7,6 +7,12 @@ export type Brand = {
   image?: ImageValue;
   logo?: ImageValue;
   products_count?: number;
+  cover_image?: ImageValue;
+  description?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_keywords?: string | null;
+  seo_canonical_url?: string | null;
 };
 
 export type Category = {
@@ -14,6 +20,10 @@ export type Category = {
   name: string;
   slug: string;
   image?: ImageValue;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_keywords?: string | null;
+  seo_canonical_url?: string | null;
 };
 
 export type ProductImage = {
@@ -40,11 +50,12 @@ export type Product = {
   description?: string | null;
   subtitle?: string | null;
   descriptions?: string | null;
+  active?: boolean;
   quantity?: number | null;
   brand?: number | string | null;
   brand_data?: Brand | null;
-  category?: number | string | null;
-  category_data?: Category | null;
+  category?: number[] | number | string | null;
+  category_data?: Category[] | null;
   product_image?: ProductImage[];
   images?: ProductImage[];
   tags?: string[];
@@ -53,6 +64,10 @@ export type Product = {
   sku?: string | null;
   linkVideo?: string | null;
   create_at?: string;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_keywords?: string | null;
+  seo_canonical_url?: string | null;
 };
 
 export type Offer = {
@@ -63,6 +78,10 @@ export type Offer = {
   image?: ImageValue;
   description?: string | null;
   products?: number | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_keywords?: string | null;
+  seo_canonical_url?: string | null;
 };
 
 export type Banner = {

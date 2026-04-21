@@ -10,7 +10,11 @@ class BrandSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Brand
-        fields = ['id', 'name', 'slug', 'image', 'logo', 'products_count']
+        fields = [
+            'id', 'name', 'slug', 'image', 'logo', 'products_count',
+            'cover_image', 'description',
+            'seo_title', 'seo_description', 'seo_keywords', 'seo_canonical_url',
+        ]
 
     def get_products_count(self, obj):
         if hasattr(obj, 'products_count'):
@@ -24,7 +28,10 @@ class BrandSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name', 'slug', 'image']
+        fields = [
+            'id', 'name', 'slug', 'image',
+            'seo_title', 'seo_description', 'seo_keywords', 'seo_canonical_url',
+        ]
 
 
 class ProductImagesSerializer(serializers.ModelSerializer):
@@ -59,11 +66,13 @@ class ProductSerializer(TaggitSerializer, serializers.ModelSerializer):
             'discount_percent', 'is_new',
             'rating', 'reviews_count',
             'description', 'subtitle', 'descriptions',
+            'active',
             'quantity', 'brand', 'brand_data',
             'category', 'category_data',
             'product_image', 'images',
             'tags', 'sales_count', 'product_type',
             'sku', 'linkVideo', 'create_at',
+            'seo_title', 'seo_description', 'seo_keywords', 'seo_canonical_url',
         ]
 
     def get_price(self, obj):

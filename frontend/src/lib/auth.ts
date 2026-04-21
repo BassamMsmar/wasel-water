@@ -96,3 +96,48 @@ export async function authFetchList<T>(path: string): Promise<T[]> {
   const data = await res.json();
   return Array.isArray(data) ? data : data.results ?? [];
 }
+
+type AuthRequestOptions = {
+  method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
+  body?: unknown;
+};
+
+export async function authRequest<T>(path: string, options: AuthRequestOptions = {}): Promise<T> {
+  const token = getAccessToken();
+  if (!token) {
+    throw new Error("يجب تسجيل الدخول أولًا");
+  }
+
+  const { method = "GET", body } = options;
+  const headers: HeadersInit = {
+    Accept: "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+
+  const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
+
+  if (body !== undefined && !isFormData) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  const res = await fetch(`${API_BASE}${path.startsWith("/") ? path : `/${path}`}`, {
+    method,
+    headers,
+    body: body === undefined ? undefined : isFormData ? body : JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const errorBody = await res.json().catch(() => null);
+    const message =
+      errorBody?.detail ||
+      Object.values(errorBody ?? {})?.flat?.()?.[0] ||
+      "تعذر تنفيذ العملية";
+    throw new Error(String(message));
+  }
+
+  if (res.status === 204) {
+    return null as T;
+  }
+
+  return (await res.json()) as T;
+}

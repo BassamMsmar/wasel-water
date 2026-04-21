@@ -21,7 +21,7 @@ export default async function HomePage() {
   const bestSellers = [...products]
     .sort((a, b) => Number(b.sales_count ?? 0) - Number(a.sales_count ?? 0))
     .slice(0, 5);
-  const allProducts = products.slice(0, 10);
+  const allProducts = products.slice(0, 8);
   const featuredCategories = categories.slice(0, 3);
   const featuredBrands = brands.slice(0, 7);
 
