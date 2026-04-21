@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from taggit.serializers import TagListSerializerField, TaggitSerializer
-from django.db.models import Avg
+from django.db.models import Avg, Count
 from .models import Product, ProductImages, Brand, Category, Offer, Review, Bundle, BundleItem, Flag, FeaturedProduct
 
 
@@ -17,6 +17,7 @@ class BrandSerializer(serializers.ModelSerializer):
         ]
 
     def get_products_count(self, obj):
+        # يستخدم قيمة annotate إذا كانت موجودة لتفادي استعلام إضافي
         if hasattr(obj, 'products_count'):
             return obj.products_count
         return obj.product_brand.filter(active=True).count()
@@ -85,10 +86,16 @@ class ProductSerializer(TaggitSerializer, serializers.ModelSerializer):
         return obj.quantity > 0 and obj.active
 
     def get_rating(self, obj):
+        # إذا تم استخدام annotate() في القائمة سيتم استخدام القيمة المحسوبة مسبقاً
+        if hasattr(obj, 'avg_rating') and obj.avg_rating is not None:
+            return round(obj.avg_rating, 1)
         avg = obj.review_product.aggregate(avg=Avg('rate'))['avg']
         return round(avg, 1) if avg else 0.0
 
     def get_reviews_count(self, obj):
+        # إذا تم استخدام annotate() في القائمة سيتم استخدام القيمة المحسوبة مسبقاً
+        if hasattr(obj, 'reviews_count_annotated'):
+            return obj.reviews_count_annotated
         return obj.review_product.count()
 
     def get_discount_percent(self, obj):

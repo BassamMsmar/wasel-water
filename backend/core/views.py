@@ -34,31 +34,56 @@ def home(request):
 
     #products 
     # Featured Products for Hero
-    featured_qs = FeaturedProduct.objects.filter(active=True, product__active=True).order_by('order')
+    featured_qs = FeaturedProduct.objects.filter(
+        active=True, product__active=True
+    ).select_related('product__brand', 'product__flag').order_by('order')
     if featured_qs.exists():
         featured_products = [fp.product for fp in featured_qs[:3]]
     else:
         # Fallback to latest products if no featured products are set
-        featured_products = Product.objects.filter(active=True).order_by('-id')[:3]
+        featured_products = list(
+            Product.objects.filter(active=True)
+            .select_related('brand', 'flag')
+            .prefetch_related('category')
+            .order_by('-id')[:3]
+        )
 
-    offers = Offer.objects.all()
-    latest_products = Product.objects.filter(active=True)[:10]
-    bundle_products = Product.objects.filter(product_type='bundle')[:6]
+    offers = Offer.objects.select_related('products').all()
+    latest_products = (
+        Product.objects.filter(active=True)
+        .select_related('brand', 'flag')
+        .prefetch_related('category', 'product_image')[:10]
+    )
+    bundle_products = (
+        Product.objects.filter(product_type='bundle')
+        .select_related('brand', 'flag')
+        .prefetch_related('category', 'bundle_items__item')[:6]
+    )
     banners = Banner.objects.all()
     brands = Brand.objects.all()
     categories = Category.objects.all()
     company = Company.objects.first()
 
     # Sections Logic
-    sections = Section.objects.filter(active=True)
+    sections = Section.objects.filter(active=True).prefetch_related('products')
     for section in sections:
         if section.section_type == 'most_sold':
             # Order by sales_count descending
-            section.items = Product.objects.filter(active=True).order_by('-sales_count')[:10]
+            section.items = (
+                Product.objects.filter(active=True)
+                .select_related('brand', 'flag')
+                .prefetch_related('category', 'product_image')
+                .order_by('-sales_count')[:10]
+            )
         elif section.section_type == 'newest':
-            section.items = Product.objects.filter(active=True).order_by('-id')[:10]
+            section.items = (
+                Product.objects.filter(active=True)
+                .select_related('brand', 'flag')
+                .prefetch_related('category', 'product_image')
+                .order_by('-id')[:10]
+            )
         else:
-            section.items = section.products.all()
+            section.items = section.products.select_related('brand', 'flag').prefetch_related('category', 'product_image').all()
 
     #banners
     banner_offer = Banner.objects.filter(type='offer')
@@ -74,7 +99,12 @@ def home(request):
         'categories': categories,
         'company': company,
         'sections': sections,
-        'all_products': Product.objects.filter(active=True).order_by('-create_at')[:20],
+        'all_products': (
+            Product.objects.filter(active=True)
+            .select_related('brand', 'flag')
+            .prefetch_related('category', 'product_image')
+            .order_by('-create_at')[:20]
+        ),
     }
     
     return render(request, 'home.html', context)
@@ -264,6 +294,9 @@ class AdminProductListView(AdminPermissionRequiredMixin, StaffRequiredMixin, Lis
     context_object_name = 'products'
     paginate_by = 20
     permission_required = 'products.view_product'
+
+    def get_queryset(self):
+        return Product.objects.select_related('brand', 'flag').prefetch_related('category').order_by('-id')
 
 class AdminProductCreateView(AdminPermissionRequiredMixin, StaffRequiredMixin, CreateView):
     model = Product
@@ -716,6 +749,9 @@ class AdminCustomerListView(AdminPermissionRequiredMixin, StaffRequiredMixin, Li
     context_object_name = 'customers'
     paginate_by = 20
     permission_required = 'accounts.view_customer'
+
+    def get_queryset(self):
+        return User.objects.select_related('customer').order_by('-date_joined')
 
 class AdminStaffListView(AdminPermissionRequiredMixin, StaffRequiredMixin, ListView):
     model = User

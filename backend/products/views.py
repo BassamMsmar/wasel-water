@@ -18,7 +18,7 @@ from openpyxl.utils import get_column_letter
 
 class BundleList(ListView):
     model = Bundle
-    queryset = Bundle.objects.all()
+    queryset = Bundle.objects.prefetch_related('bundle_items__item')
     template_name = 'products/bundle_list.html'
     paginate_by = 20
 
@@ -28,7 +28,9 @@ class ProductList(ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        queryset = Product.objects.filter(product_type='single')
+        queryset = Product.objects.filter(product_type='single').select_related(
+            'brand', 'flag'
+        ).prefetch_related('category', 'product_image')
         query = self.request.GET.get('q')
         if query:
             queryset = queryset.filter(
@@ -41,15 +43,19 @@ class ProductList(ListView):
 
 
 class ProductDetail(DetailView):
-    model =Product
-    queryset = Product.objects.all()
-
-
+    model = Product
+    queryset = Product.objects.select_related(
+        'brand', 'flag'
+    ).prefetch_related('category', 'product_image', 'review_product__user')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["reviews"] = Review.objects.filter(product=self.get_object())
-        context["related_products"] = Product.objects.filter(brand=self.get_object().brand) 
+        # استخدام self.object بدلاً من self.get_object() لتفادي استعلام إضافي
+        product = self.object
+        context["reviews"] = product.review_product.select_related('user').all()
+        context["related_products"] = Product.objects.filter(
+            brand=product.brand
+        ).select_related('brand', 'flag').exclude(pk=product.pk)[:10]
         return context
     
 
@@ -63,15 +69,16 @@ class BrandDetail(ListView):
     model = Product     #context : object_list, model_list
     template_name = 'products/product_list.html'
 
-
     def get_queryset(self):
-        brand = get_object_or_404(Brand, slug=self.kwargs['slug'])
-        return super().get_queryset().filter(brand=brand) 
-    
+        # تخزين العلامة التجارية في الكائن لتفادي استعلام مزدوج
+        self._brand = get_object_or_404(Brand, slug=self.kwargs['slug'])
+        return Product.objects.filter(
+            brand=self._brand
+        ).select_related('brand', 'flag').prefetch_related('category', 'product_image')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["brand"] = get_object_or_404(Brand, slug=self.kwargs['slug'])
+        context["brand"] = self._brand
         return context
 
 
@@ -86,12 +93,15 @@ class CategoryDetail(ListView):
     template_name = 'products/product_list.html'
 
     def get_queryset(self):
-        category = get_object_or_404(Category, slug=self.kwargs['slug'])
-        return super().get_queryset().filter(category=category)  
-    
+        # تخزين الفئة في الكائن لتفادي استعلام مزدوج
+        self._category = get_object_or_404(Category, slug=self.kwargs['slug'])
+        return Product.objects.filter(
+            category=self._category
+        ).select_related('brand', 'flag').prefetch_related('category', 'product_image')
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["category"] = get_object_or_404(Category, slug=self.kwargs['slug'])
+        context["category"] = self._category
         return context
 
 
@@ -121,7 +131,7 @@ def export_products_excel(request):
     columns = ['Name', 'SKU', 'Old Price', 'New Price', 'Quantity', 'Brand', 'Categories', 'Flag', 'Type']
     ws.append(columns)
 
-    for product in Product.objects.all():
+    for product in Product.objects.select_related('brand', 'flag').prefetch_related('category').all():
         brand_name = product.brand.name if product.brand else ""
         categories = ", ".join([cat.name for cat in product.category.all()])
         ws.append([

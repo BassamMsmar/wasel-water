@@ -12,7 +12,16 @@ from .serializers import (
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.filter(active=True).select_related('brand', 'flag').prefetch_related('category', 'product_image')
+    # annotate مع prefetch يمنع N+1 في rating وreviews_count لكل منتج
+    queryset = (
+        Product.objects.filter(active=True)
+        .select_related('brand', 'flag')
+        .prefetch_related('category', 'product_image')
+        .annotate(
+            avg_rating=Avg('review_product__rate'),
+            reviews_count_annotated=Count('review_product'),
+        )
+    )
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['brand', 'category', 'product_type']
@@ -69,7 +78,15 @@ class BrandViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], url_path='products')
     def products(self, request, slug=None):
         brand = self.get_object()
-        qs = Product.objects.filter(brand=brand, active=True)
+        qs = (
+            Product.objects.filter(brand=brand, active=True)
+            .select_related('brand', 'flag')
+            .prefetch_related('category', 'product_image')
+            .annotate(
+                avg_rating=Avg('review_product__rate'),
+                reviews_count_annotated=Count('review_product'),
+            )
+        )
         serializer = ProductSerializer(qs, many=True, context={'request': request})
         return Response(serializer.data)
 
@@ -82,7 +99,15 @@ class CategoryViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], url_path='products')
     def products(self, request, slug=None):
         category = self.get_object()
-        qs = Product.objects.filter(category=category, active=True)
+        qs = (
+            Product.objects.filter(category=category, active=True)
+            .select_related('brand', 'flag')
+            .prefetch_related('category', 'product_image')
+            .annotate(
+                avg_rating=Avg('review_product__rate'),
+                reviews_count_annotated=Count('review_product'),
+            )
+        )
         serializer = ProductSerializer(qs, many=True, context={'request': request})
         return Response(serializer.data)
 

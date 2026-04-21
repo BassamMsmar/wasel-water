@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
+import { SafeImage } from "@/components/SafeImage";
 import { getProducts, getBrand } from "@/lib/api";
 import { absoluteMediaUrl, fallbackBrandImage } from "@/lib/media";
 
@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!brand) return { title: "براند غير موجود" };
   return {
     title: brand.name,
-    description: `تسوق جميع منتجات مياه ${brand.name}`
+    description: `تسوق جميع منتجات مياه ${brand.name}`,
   };
 }
 
@@ -23,20 +23,22 @@ export default async function BrandDetailsPage({ params }: Props) {
 
   if (!brand) notFound();
 
-  // Fetch all products that belong to this brand
   const products = await getProducts({ ordering: "-create_at" });
-  const brandProducts = products.filter(p => p.brand_data?.slug === brand.slug);
+  const brandProducts = products.filter((product) => product.brand_data?.slug === brand.slug);
 
   return (
     <>
-      <div className="page-hero" style={{ display:"flex", alignItems:"center", gap:"2rem", flexWrap:"wrap" }}>
-        <div style={{ background:"#fff", padding:"1rem", borderRadius:"var(--radius-xl)", width:140, height:140, display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <Image
-            src={absoluteMediaUrl(brand.logo || brand.image, fallbackBrandImage)}
-            alt={brand.name}
-            width={120} height={120}
-            style={{ objectFit: "contain" }}
-          />
+      <div className="page-hero" style={{ display: "flex", alignItems: "center", gap: "2rem", flexWrap: "wrap" }} dir="rtl">
+        <div style={{ background: "#fff", padding: "1rem", borderRadius: "24px", width: 140, height: 140, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div className="relative h-full w-full overflow-hidden rounded-[20px]">
+            <SafeImage
+              src={absoluteMediaUrl(brand.logo || brand.image, fallbackBrandImage)}
+              fallback={fallbackBrandImage}
+              alt={brand.name}
+              fill
+              className="object-cover"
+            />
+          </div>
         </div>
         <div>
           <span className="eyebrow">منتجات مختارة</span>
@@ -45,13 +47,13 @@ export default async function BrandDetailsPage({ params }: Props) {
         </div>
       </div>
 
-      <section className="page-shell">
+      <section className="page-shell" dir="rtl">
         <div className="section-head" style={{ marginBottom: "1.5rem" }}>
           <h2>المنتجات المتوفرة ({brandProducts.length})</h2>
         </div>
 
         {brandProducts.length > 0 ? (
-          <div className="product-grid">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {brandProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -60,7 +62,7 @@ export default async function BrandDetailsPage({ params }: Props) {
           <div className="empty-state">
             <div className="empty-icon">المنتجات</div>
             <h3>لا توجد منتجات</h3>
-            <p>نفدت الكمية من منتجات هذا البراند حالياً. يرجى التحقق لاحقاً.</p>
+            <p>نفدت الكمية من منتجات هذا البراند حاليًا. يرجى التحقق لاحقًا.</p>
           </div>
         )}
       </section>

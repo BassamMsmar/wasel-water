@@ -127,6 +127,21 @@ export type Customer = {
   user?: UserAccount | null;
   phone_number?: string | null;
   birth_date?: string | null;
+  role?: string | null;
+  branch?: number | null;
+};
+
+export type Address = {
+  id: number;
+  full_name?: string | null;
+  phone_number?: string | null;
+  city?: string | null;
+  neighborhood?: string | null;
+  street?: string | null;
+  building_number?: string | null;
+  apartment_number?: string | null;
+  location_link?: string | null;
+  is_default?: boolean;
 };
 
 export type OrderStatus = {

@@ -37,6 +37,7 @@ export function ProductCard({
   const pack = product.tags?.[1] ?? "40 عبوة";
   const disabled = product.is_available === false || product.stock === 0;
   const imageHeight = variant === "featured" ? "min-h-[270px]" : "min-h-[220px]";
+  const compactCard = variant !== "featured";
 
   const handleAdd = () => {
     if (disabled) return;
@@ -85,21 +86,19 @@ export function ProductCard({
           {product.description || product.subtitle || `توصيل سريع ومخزون جاهز من ${brand}.`}
         </p>
 
-        <div className="mt-3 flex items-end justify-between gap-3 text-right">
+        <div className="mt-3 flex items-end gap-1.5 text-right">
           <strong className="text-base font-black leading-none text-[#2d78c8]">
             {money(price)}
           </strong>
           {oldPrice ? (
-            <del className="text-xs font-bold text-[#97a7b7]">
+            <del className="text-xs font-bold leading-none text-[#97a7b7]">
               {money(oldPrice)}
             </del>
-          ) : (
-            <span />
-          )}
+          ) : null}
         </div>
 
         <div className="mt-auto pt-3">
-          <div className="flex items-center gap-2 border-t border-[#edf3f8] pt-3">
+          <div className={`flex border-t border-[#edf3f8] pt-3 ${compactCard ? "flex-row-reverse items-center justify-between gap-3" : "flex-row-reverse items-center justify-between gap-3"}`}>
             <div className="flex items-center gap-1 rounded-full border border-[#dbe7f2] bg-[#fbfdff] p-1">
               <button
                 type="button"
@@ -127,15 +126,16 @@ export function ProductCard({
               onClick={handleAdd}
               disabled={disabled}
               aria-label="إضافة إلى السلة"
-              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white transition ${
+              className={`flex shrink-0 items-center justify-center rounded-full text-white transition ${
                 disabled
                   ? "cursor-not-allowed bg-[#b8c5d2]"
                   : added
                     ? "bg-[#2d78c8]"
                     : "bg-[#123e67] hover:bg-[#2d78c8]"
-              }`}
+              } ${compactCard ? "h-10 w-10" : "min-h-[42px] gap-2 px-4 text-sm font-black"}`}
             >
               <CartIcon />
+              {!compactCard ? <span>{added ? "تمت الإضافة" : "أضف إلى السلة"}</span> : null}
             </button>
           </div>
         </div>

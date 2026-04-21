@@ -10,7 +10,11 @@ class OrderListView(LoginRequiredMixin, ListView):
     context_object_name = 'orders'
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user).order_by('-created_at')
+        return (
+            Order.objects.filter(user=self.request.user)
+            .select_related('status')
+            .order_by('-created_at')
+        )
 
 class PendingOrderListView(LoginRequiredMixin, ListView):
     model = Order
@@ -19,7 +23,10 @@ class PendingOrderListView(LoginRequiredMixin, ListView):
     extra_context = {'is_pending': True}
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user, status__slug='pending')
+        return (
+            Order.objects.filter(user=self.request.user, status__slug='pending')
+            .select_related('status')
+        )
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
     model = Order
@@ -27,7 +34,11 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'order'
 
     def get_queryset(self):
-         return Order.objects.filter(user=self.request.user)
+        return (
+            Order.objects.filter(user=self.request.user)
+            .select_related('status')
+            .prefetch_related('items__product', 'items__bundle')
+        )
 
 class PaymentSelectionView(LoginRequiredMixin, DetailView):
     model = Order
@@ -35,7 +46,11 @@ class PaymentSelectionView(LoginRequiredMixin, DetailView):
     context_object_name = 'order'
 
     def get_queryset(self):
-         return Order.objects.filter(user=self.request.user)
+        return (
+            Order.objects.filter(user=self.request.user)
+            .select_related('status')
+            .prefetch_related('items__product', 'items__bundle')
+        )
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()

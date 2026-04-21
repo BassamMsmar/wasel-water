@@ -426,7 +426,8 @@ p {
   place-items: center;
   width: 112px;
   height: 112px;
-  padding: 1rem;
+  padding: 0;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 50%;
   background: linear-gradient(180deg, #fff 0%, #f4f8fd 100%);
@@ -582,6 +583,58 @@ p {
   font-weight: 700;
 }
 
+.checkout-location-note {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid #dce8f2;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%);
+  color: var(--navy-900);
+}
+
+.checkout-location-note strong {
+  font-size: 0.92rem;
+  font-weight: 900;
+}
+
+.checkout-location-note span {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.payment-method-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 72px;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: #fbfdff;
+  color: var(--navy-900);
+  font-size: 0.9rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+}
+
+.payment-method-card input {
+  accent-color: var(--blue-600);
+}
+
+.payment-method-card.is-active {
+  border-color: #b9d4ec;
+  background: #eef6ff;
+}
+
+.payment-method-card.is-muted {
+  opacity: 0.65;
+}
+
 .form-grid {
   display: grid;
   gap: 1rem;
@@ -650,6 +703,94 @@ p {
   justify-items: center;
   gap: 1rem;
   text-align: center;
+}
+
+.location-prompt-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(10, 23, 37, 0.42);
+  backdrop-filter: blur(8px);
+}
+
+.location-prompt-card {
+  width: min(620px, 100%);
+  border: 1px solid #dce8f2;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 20px 50px rgba(10, 34, 56, 0.12);
+  padding: clamp(1.25rem, 2vw, 1.8rem);
+}
+
+.cart-bounce {
+  animation: cart-bounce 0.65s ease;
+}
+
+@keyframes cart-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(-4px) scale(1.08); }
+  60% { transform: translateY(0) scale(0.98); }
+}
+
+html[data-theme="dark"] body {
+  background: #08111b;
+  color: #eef5fb;
+}
+
+html[data-theme="dark"] header,
+html[data-theme="dark"] footer,
+html[data-theme="dark"] .checkout-form-section,
+html[data-theme="dark"] .order-summary-box,
+html[data-theme="dark"] .cart-items-list,
+html[data-theme="dark"] .brand-card,
+html[data-theme="dark"] .location-prompt-card,
+html[data-theme="dark"] .dash-section,
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .order-success {
+  background: rgba(9, 20, 31, 0.96);
+  border-color: rgba(149, 177, 204, 0.14);
+  color: #eef5fb;
+}
+
+html[data-theme="dark"] .page-hero,
+html[data-theme="dark"] .empty-state,
+html[data-theme="dark"] .product-grid > article,
+html[data-theme="dark"] .product-grid-auto > article,
+html[data-theme="dark"] .payment-method-card,
+html[data-theme="dark"] .checkout-location-note {
+  background: rgba(11, 26, 39, 0.96);
+  border-color: rgba(149, 177, 204, 0.14);
+  color: #eef5fb;
+}
+
+html[data-theme="dark"] .form-input,
+html[data-theme="dark"] .form-select,
+html[data-theme="dark"] .form-textarea {
+  background: #0d1b29;
+  border-color: rgba(149, 177, 204, 0.16);
+  color: #eef5fb;
+}
+
+html[data-theme="dark"] .form-label,
+html[data-theme="dark"] .section-title,
+html[data-theme="dark"] .checkout-section-title,
+html[data-theme="dark"] .summary-total,
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] strong {
+  color: #eef5fb;
+}
+
+html[data-theme="dark"] p,
+html[data-theme="dark"] .brand-card-count,
+html[data-theme="dark"] .summary-item-name,
+html[data-theme="dark"] .dash-subtitle,
+html[data-theme="dark"] .optional {
+  color: #9db3c7;
 }
 
 .success-icon-wrap {

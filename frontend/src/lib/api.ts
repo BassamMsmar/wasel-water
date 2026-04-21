@@ -32,7 +32,8 @@ async function apiFetch<T>(path: string, query?: Record<string, QueryValue>, fal
   try {
     const response = await fetch(buildUrl(path, query), {
       headers: { Accept: "application/json" },
-      next: { revalidate: 60 }
+      cache: process.env.NODE_ENV === "development" ? "no-store" : "force-cache",
+      next: process.env.NODE_ENV === "development" ? undefined : { revalidate: 60 }
     });
 
     if (!response.ok) {

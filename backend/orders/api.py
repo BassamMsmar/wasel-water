@@ -18,9 +18,13 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        base = (
+            Order.objects.select_related('status', 'user')
+            .prefetch_related('items__product', 'items__bundle')
+        )
         if self.request.user.is_staff:
-            return Order.objects.all().select_related('status', 'user').prefetch_related('items')
-        return Order.objects.filter(user=self.request.user)
+            return base
+        return base.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

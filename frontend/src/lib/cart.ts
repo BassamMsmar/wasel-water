@@ -32,6 +32,7 @@ export function addToCart(product: Product, quantity = 1) {
     items.push({ product, quantity });
   }
   writeCart(items);
+  window.dispatchEvent(new CustomEvent("cart:added", { detail: { productId: product.id, quantity } }));
 }
 
 export function updateCartQuantity(productId: number, quantity: number) {

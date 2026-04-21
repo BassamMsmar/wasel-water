@@ -1,6 +1,9 @@
 "use client";
 
+import { clearCart } from "./cart";
+
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000/api/v1").replace(/\/$/, "");
+const API_ORIGIN = API_BASE.replace(/\/api\/v\d+\/?$/, "");
 const TOKEN_KEY = "wasel-access";
 const REFRESH_KEY = "wasel-refresh";
 
@@ -44,6 +47,53 @@ export async function login(username: string, password: string) {
   return data;
 }
 
+export async function loginWithIdentifier(identifier: string, password: string) {
+  const res = await fetch(`${API_BASE}/auth/identifier-login/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ identifier, password }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.detail || "بيانات الدخول غير صحيحة");
+  }
+  const data = await res.json();
+  saveTokens(data.access, data.refresh);
+  return data;
+}
+
+export async function requestOtp(phone: string) {
+  const res = await fetch(`${API_BASE}/auth/otp/request/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone }),
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(data?.detail || "تعذر إرسال الرمز");
+  }
+  return data as { success: boolean; phone: string; message: string; debug_code?: string };
+}
+
+export async function verifyOtp(phone: string, code: string) {
+  const res = await fetch(`${API_BASE}/auth/otp/verify/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone, code }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.detail || "رمز التحقق غير صحيح");
+  }
+  const data = await res.json();
+  saveTokens(data.access, data.refresh);
+  return data;
+}
+
+export function getGoogleLoginUrl() {
+  return `${API_ORIGIN}/accounts/google/login/`;
+}
+
 export async function logout() {
   const refresh = localStorage.getItem(REFRESH_KEY);
   if (refresh) {
@@ -53,6 +103,7 @@ export async function logout() {
       body: JSON.stringify({ refresh }),
     }).catch(() => {});
   }
+  clearCart();
   clearTokens();
 }
 

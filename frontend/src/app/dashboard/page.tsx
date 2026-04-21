@@ -49,6 +49,7 @@ type Order = {
   created_at: string;
   total_price: string;
   is_paid: boolean;
+  branch?: string | null;
   shipping_full_name: string;
   shipping_phone: string;
   shipping_city: string;
@@ -374,7 +375,7 @@ function ProductEditor({
           </div>
         </div>
 
-        <div className="grid gap-5 2xl:grid-cols-[minmax(0,1.4fr),360px]">
+        <div className="grid gap-5 2xl:grid-cols-[minmax(0,1.55fr),380px]">
           <div className="grid gap-5">
             <section className="rounded-[24px] border border-[#e4edf5] bg-[#fbfdff] p-5">
               <h3 className="mb-4 text-lg font-black text-[#102231]">المعلومات الأساسية</h3>
@@ -439,33 +440,46 @@ function ProductEditor({
               </div>
             </section>
 
-            <section className="rounded-[24px] border border-[#e4edf5] bg-[#fbfdff] p-5">
+            <section className="rounded-[24px] border border-[#e4edf5] bg-[#f3f8fd] p-5">
               <h3 className="mb-4 text-lg font-black text-[#102231]">الظهور والربط</h3>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 lg:grid-cols-[220px,minmax(0,1fr),minmax(0,1fr)]">
+                <section className="rounded-[20px] border border-[#d7e5f1] bg-white p-4 lg:row-span-2">
+                  <h4 className="mb-3 text-sm font-black text-[#102231]">صورة المنتج</h4>
+                  <div className="relative min-h-[220px] overflow-hidden rounded-[18px] border border-dashed border-[#c8d9ea] bg-[#f8fbff]">
+                    {product?.image ? (
+                      <Image src={absoluteMediaUrl(product.image)} alt={product.name} fill unoptimized className="object-contain p-3" />
+                    ) : (
+                      <div className="flex h-full min-h-[220px] items-center justify-center text-sm font-bold text-[#8da0b3]">
+                        لا توجد صورة محفوظة بعد
+                      </div>
+                    )}
+                  </div>
+                </section>
+
                 <label className="form-group">
                   <span className="form-label">الرابط المختصر</span>
-                  <input className="form-input" value={form.slug} onChange={(event) => onChange("slug", event.target.value)} placeholder="يُترك فارغًا ليُولد تلقائيًا" />
-                </label>
-
-                <label className="form-group">
-                  <span className="form-label">SKU</span>
-                  <input className="form-input" value={form.sku} onChange={(event) => onChange("sku", event.target.value)} />
-                </label>
-
-                <label className="form-group">
-                  <span className="form-label">رابط الفيديو</span>
-                  <input className="form-input" value={form.linkVideo} onChange={(event) => onChange("linkVideo", event.target.value)} />
+                  <input className="form-input bg-white" value={form.slug} onChange={(event) => onChange("slug", event.target.value)} placeholder="يُترك فارغًا ليُولد تلقائيًا" />
                 </label>
 
                 <label className="form-group">
                   <span className="form-label">حالة الظهور</span>
-                  <select className="form-select" value={form.active ? "visible" : "hidden"} onChange={(event) => onChange("active", event.target.value === "visible")}>
+                  <select className="form-select bg-white" value={form.active ? "visible" : "hidden"} onChange={(event) => onChange("active", event.target.value === "visible")}>
                     <option value="visible">ظاهر في المتجر</option>
                     <option value="hidden">مخفي مؤقتًا</option>
                   </select>
                 </label>
 
-                <div className="form-group md:col-span-2">
+                <label className="form-group">
+                  <span className="form-label">SKU</span>
+                  <input className="form-input bg-white" value={form.sku} onChange={(event) => onChange("sku", event.target.value)} />
+                </label>
+
+                <label className="form-group">
+                  <span className="form-label">رابط الفيديو</span>
+                  <input className="form-input bg-white" value={form.linkVideo} onChange={(event) => onChange("linkVideo", event.target.value)} />
+                </label>
+
+                <div className="form-group lg:col-span-3">
                   <span className="form-label">الأصناف المرتبطة</span>
                   <div className="flex flex-wrap gap-2 rounded-[20px] border border-[#dfeaf4] bg-white p-3">
                     {categories.map((category) => {
@@ -491,7 +505,7 @@ function ProductEditor({
               </div>
             </section>
 
-            <section className="rounded-[24px] border border-[#e4edf5] bg-[#fbfdff] p-5">
+            <section className="rounded-[24px] border border-[#e4edf5] bg-[#f3f8fd] p-5">
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-lg font-black text-[#102231]">محركات البحث SEO</h3>
                 {featuredRecord ? (
@@ -500,41 +514,28 @@ function ProductEditor({
                   </span>
                 ) : null}
               </div>
-              <div className="grid gap-4">
+              <div className="grid gap-4 md:grid-cols-2">
                 <label className="form-group">
                   <span className="form-label">SEO Title</span>
-                  <input className="form-input" value={form.seo_title} onChange={(event) => onChange("seo_title", event.target.value)} />
-                </label>
-                <label className="form-group">
-                  <span className="form-label">SEO Description</span>
-                  <textarea className="form-textarea" rows={4} value={form.seo_description} onChange={(event) => onChange("seo_description", event.target.value)} />
+                  <input className="form-input bg-white" value={form.seo_title} onChange={(event) => onChange("seo_title", event.target.value)} />
                 </label>
                 <label className="form-group">
                   <span className="form-label">SEO Keywords</span>
-                  <input className="form-input" value={form.seo_keywords} onChange={(event) => onChange("seo_keywords", event.target.value)} />
+                  <input className="form-input bg-white" value={form.seo_keywords} onChange={(event) => onChange("seo_keywords", event.target.value)} />
                 </label>
-                <label className="form-group">
+                <label className="form-group md:col-span-2">
+                  <span className="form-label">SEO Description</span>
+                  <textarea className="form-textarea bg-white" rows={4} value={form.seo_description} onChange={(event) => onChange("seo_description", event.target.value)} />
+                </label>
+                <label className="form-group md:col-span-2">
                   <span className="form-label">Canonical URL</span>
-                  <input className="form-input" value={form.seo_canonical_url} onChange={(event) => onChange("seo_canonical_url", event.target.value)} />
+                  <input className="form-input bg-white" value={form.seo_canonical_url} onChange={(event) => onChange("seo_canonical_url", event.target.value)} />
                 </label>
               </div>
             </section>
           </div>
 
           <div className="grid gap-5">
-            <section className="rounded-[24px] border border-[#e4edf5] bg-[#fbfdff] p-5">
-              <h3 className="mb-4 text-lg font-black text-[#102231]">صورة المنتج</h3>
-              <div className="relative min-h-[280px] overflow-hidden rounded-[22px] border border-dashed border-[#c8d9ea] bg-white">
-                {product?.image ? (
-                  <Image src={absoluteMediaUrl(product.image)} alt={product.name} fill unoptimized className="object-contain p-5" />
-                ) : (
-                  <div className="flex h-full min-h-[280px] items-center justify-center text-sm font-bold text-[#8da0b3]">
-                    لا توجد صورة محفوظة بعد
-                  </div>
-                )}
-              </div>
-            </section>
-
             <GooglePreview title={previewTitle} description={previewDescription} slug={previewSlug} />
           </div>
         </div>
@@ -947,6 +948,12 @@ export default function DashboardPage() {
   const currentBranch = branches.find((item) => item.id === selectedId) || null;
   const currentOrder = orders.find((item) => item.id === selectedId) || null;
   const currentUser = users.find((item) => item.id === selectedId) || null;
+  const currentBranchUsers = currentBranch
+    ? customers.filter((item) => Number(item.branch) === currentBranch.id)
+    : [];
+  const currentBranchOrders = currentBranch
+    ? orders.filter((item) => (item.branch || "").trim() === currentBranch.name.trim())
+    : [];
 
   useEffect(() => {
     if (activeModule === "products") setProductForm(productToForm(mode === "edit" ? currentProduct : null));
@@ -1544,6 +1551,56 @@ export default function DashboardPage() {
             <label className="form-group"><span className="form-label">اسم الفرع</span><input className="form-input" value={branchForm.name} onChange={(event) => setBranchForm((current) => ({ ...current, name: event.target.value }))} /></label>
             <label className="form-group"><span className="form-label">الحالة</span><select className="form-select" value={branchForm.active ? "visible" : "hidden"} onChange={(event) => setBranchForm((current) => ({ ...current, active: event.target.value === "visible" }))}><option value="visible">نشط</option><option value="hidden">مخفي</option></select></label>
           </div>
+          {currentBranch ? (
+            <div className="mt-6 grid gap-4 2xl:grid-cols-2">
+              <div className="rounded-[24px] border border-[#dfeaf4] bg-[#f7fbff] p-5">
+                <div className="mb-4 flex items-center justify-between gap-3 border-b border-[#e6eef6] pb-3">
+                  <div>
+                    <h3 className="text-lg font-black text-[#102231]">موظفو الفرع</h3>
+                    <p className="mt-1 text-xs font-bold text-[#8396a8]">{currentBranchUsers.length} مستخدم مرتبط</p>
+                  </div>
+                  <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-[#1f69b1]">{currentBranch.name}</span>
+                </div>
+                <div className="grid gap-2">
+                  {currentBranchUsers.length ? currentBranchUsers.map((customer) => (
+                    <div key={customer.id} className="rounded-[18px] border border-[#dce7f2] bg-white px-4 py-3">
+                      <div className="text-sm font-black text-[#102231]">{customer.user?.first_name || customer.user?.username || "مستخدم"}</div>
+                      <div className="mt-1 text-xs font-bold text-[#7d91a4]">{customer.phone_number || customer.user?.email || "بدون بيانات إضافية"}</div>
+                    </div>
+                  )) : (
+                    <div className="rounded-[18px] border border-dashed border-[#d5e2ee] bg-white px-4 py-5 text-sm font-bold text-[#8aa0b4]">
+                      لا يوجد موظفون أو مستخدمون مربوطون بهذا الفرع حتى الآن.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-[24px] border border-[#dfeaf4] bg-[#f7fbff] p-5">
+                <div className="mb-4 flex items-center justify-between gap-3 border-b border-[#e6eef6] pb-3">
+                  <div>
+                    <h3 className="text-lg font-black text-[#102231]">طلبات الفرع</h3>
+                    <p className="mt-1 text-xs font-bold text-[#8396a8]">{currentBranchOrders.length} طلب مرتبط</p>
+                  </div>
+                  <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-[#1f69b1]">تحديث حي</span>
+                </div>
+                <div className="grid gap-2">
+                  {currentBranchOrders.length ? currentBranchOrders.slice(0, 8).map((order) => (
+                    <div key={order.id} className="rounded-[18px] border border-[#dce7f2] bg-white px-4 py-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <strong className="text-sm font-black text-[#102231]">الطلب #{order.id}</strong>
+                        <span className="text-xs font-black text-[#2d78c8]">{money(order.total_price)}</span>
+                      </div>
+                      <div className="mt-1 text-xs font-bold text-[#7d91a4]">{order.shipping_full_name} - {order.shipping_city}</div>
+                    </div>
+                  )) : (
+                    <div className="rounded-[18px] border border-dashed border-[#d5e2ee] bg-white px-4 py-5 text-sm font-bold text-[#8aa0b4]">
+                      لا توجد طلبات مربوطة بهذا الفرع حاليًا.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       );
     }
@@ -1606,7 +1663,7 @@ export default function DashboardPage() {
 
   return (
     <section className="dashboard-font dashboard-shell" dir="rtl">
-      <div className="sticky top-4 z-20 mb-5 rounded-[24px] border border-[#dfeaf4] bg-white/95 p-4 shadow-[0_2px_10px_rgba(10,34,56,0.02)] backdrop-blur">
+      <div className="sticky top-2 z-20 mb-4 rounded-[22px] border border-[#dfeaf4] bg-white/95 px-4 py-3 shadow-[0_1px_8px_rgba(10,34,56,0.02)] backdrop-blur">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex items-center gap-4">
             <div className="dash-avatar">
@@ -1614,8 +1671,8 @@ export default function DashboardPage() {
             </div>
             <div>
               <span className="eyebrow mb-2">لوحة التحكم</span>
-              <h1 className="text-[1.8rem] font-black text-[#102231]">إدارة المتجر</h1>
-              <p className="mt-2 text-sm leading-7 text-[#6b7f92]">
+              <h1 className="text-[1.7rem] font-black text-[#102231]">إدارة المتجر</h1>
+              <p className="hidden mt-2 text-sm leading-7 text-[#6b7f92]">
                 شريط ثابت شبيه بهوية المتجر الرئيسية، مع تنقل داخلي سريع بين المنتجات والأصناف والعروض والبنرات والطلبات.
               </p>
             </div>
@@ -1661,7 +1718,7 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="flex flex-col gap-5 xl:flex-row-reverse xl:items-start">
+      <div className="flex flex-col gap-5 xl:flex-row xl:items-start">
         <aside className="xl:sticky xl:top-[8.8rem] xl:w-[250px] xl:shrink-0">
           <div className="rounded-[24px] border border-[#dfeaf4] bg-white p-4 shadow-[0_2px_10px_rgba(10,34,56,0.015)]">
             <div className="border-b border-[#edf3f8] px-2 pb-4">

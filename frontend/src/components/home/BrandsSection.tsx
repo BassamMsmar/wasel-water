@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { SafeImage } from "@/components/SafeImage";
 import { absoluteMediaUrl, fallbackBrandImage } from "@/lib/media";
 import type { Brand } from "@/lib/types";
 
@@ -25,11 +25,11 @@ export function BrandsSection({ brands }: { brands: Brand[] }) {
               className="group flex flex-col items-center gap-3 text-center"
             >
               <div className="relative aspect-square w-full overflow-hidden rounded-full border border-[#dce8f2] bg-white shadow-[0_2px_10px_rgba(10,34,56,0.02)] transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-[0_4px_14px_rgba(10,34,56,0.03)]">
-                <Image
+                <SafeImage
                   src={absoluteMediaUrl(brand.logo || brand.image, fallbackBrandImage)}
+                  fallback={fallbackBrandImage}
                   alt={brand.name}
                   fill
-                  unoptimized
                   className="object-cover"
                 />
               </div>

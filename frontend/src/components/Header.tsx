@@ -27,14 +27,6 @@ function UserIcon() {
   );
 }
 
-function HeartIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m12 20-1.4-1.3C5.4 14 2 10.9 2 7.1 2 4.1 4.3 2 7.2 2c1.7 0 3.4.8 4.5 2.2C12.8 2.8 14.5 2 16.2 2 19.1 2 21.4 4.1 21.4 7.1c0 3.8-3.4 6.9-8.6 11.6L12 20Z" />
-    </svg>
-  );
-}
-
 function CartIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -51,6 +43,8 @@ export function Header() {
   const [count, setCount] = useState(0);
   const [company, setCompany] = useState<Company | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [cartPulse, setCartPulse] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -61,12 +55,10 @@ export function Header() {
     const updateAuth = async () => {
       const ok = isLoggedIn();
       setLoggedIn(ok);
-
       if (!ok) {
         setUser(null);
         return;
       }
-
       const profile = await getProfile();
       setUser(profile);
     };
@@ -77,17 +69,31 @@ export function Header() {
       }
     };
 
+    const onCartAdded = () => {
+      setCartPulse(true);
+      window.setTimeout(() => setCartPulse(false), 650);
+    };
+
     updateCart();
     updateAuth();
     getCompanies().then((companies) => setCompany(companies[0] ?? null)).catch(() => setCompany(null));
+    const savedTheme = localStorage.getItem("wasel-theme");
+    if (savedTheme === "dark" || savedTheme === "light") {
+      document.documentElement.dataset.theme = savedTheme;
+      setDarkMode(savedTheme === "dark");
+    } else {
+      setDarkMode(document.documentElement.dataset.theme === "dark");
+    }
 
     window.addEventListener("cart:changed", updateCart);
+    window.addEventListener("cart:added", onCartAdded);
     window.addEventListener("storage", updateCart);
     window.addEventListener("auth:changed", updateAuth);
     window.addEventListener("mousedown", onPointerDown);
 
     return () => {
       window.removeEventListener("cart:changed", updateCart);
+      window.removeEventListener("cart:added", onCartAdded);
       window.removeEventListener("storage", updateCart);
       window.removeEventListener("auth:changed", updateAuth);
       window.removeEventListener("mousedown", onPointerDown);
@@ -101,18 +107,25 @@ export function Header() {
     setMenuOpen(false);
   }
 
+  function toggleTheme() {
+    const nextDark = !darkMode;
+    setDarkMode(nextDark);
+    document.documentElement.dataset.theme = nextDark ? "dark" : "light";
+    localStorage.setItem("wasel-theme", nextDark ? "dark" : "light");
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-[#e6eef5] bg-white/92 backdrop-blur">
       <div className="site-container flex min-h-[76px] items-center justify-between gap-4 py-3">
         <Link href="/" className="flex min-w-0 items-center gap-3" aria-label="واصل لتوزيع المياه">
-          <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl border border-[#dce8f3] bg-white shadow-[0_4px_12px_rgba(10,34,56,0.04)]">
+          <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-transparent">
             <Image
               src={absoluteMediaUrl(company?.logo || "/media/images/logo.png")}
               alt={company?.name || "شعار واصل"}
-              width={34}
-              height={34}
+              width={44}
+              height={44}
               unoptimized
-              className="h-8.5 w-8.5 object-contain"
+              className="h-11 w-11 object-contain"
             />
           </div>
           <div className="min-w-0">
@@ -120,7 +133,7 @@ export function Header() {
               {company?.name || "واصل لتوزيع المياه"}
             </strong>
             <span className="hidden text-xs font-semibold text-[#7f91a3] sm:block">
-              {company?.title || "متجر مياه موثوق للأفراد والشركات والمنشآت"}
+              {company?.title || "واصل - المياه الصحية"}
             </span>
           </div>
         </Link>
@@ -143,15 +156,15 @@ export function Header() {
         </form>
 
         <nav className="flex items-center gap-1.5 sm:gap-2">
+          <button type="button" onClick={toggleTheme} className="hidden h-10 rounded-full px-3 text-sm font-bold text-[#476074] transition hover:bg-[#f3f8fc] hover:text-[#123e67] lg:inline-flex lg:items-center">
+            {darkMode ? "نهاري" : "ليلي"}
+          </button>
+
           <Link href="/products" className="hidden rounded-full px-3 py-2 text-sm font-bold text-[#5f7386] transition hover:bg-[#f3f8fc] hover:text-[#102231] lg:inline-flex">
             المنتجات
           </Link>
           <Link href="/brands" className="hidden rounded-full px-3 py-2 text-sm font-bold text-[#5f7386] transition hover:bg-[#f3f8fc] hover:text-[#102231] lg:inline-flex">
             العلامات
-          </Link>
-
-          <Link href="/products" className="flex h-10 w-10 items-center justify-center rounded-full text-[#476074] transition hover:bg-[#f3f8fc] hover:text-[#123e67]" aria-label="المفضلة">
-            <HeartIcon />
           </Link>
 
           <div className="relative" ref={menuRef}>
@@ -212,7 +225,7 @@ export function Header() {
             )}
           </div>
 
-          <Link href="/cart" className="relative flex h-10 w-10 items-center justify-center rounded-full text-[#476074] transition hover:bg-[#f3f8fc] hover:text-[#123e67]" aria-label="السلة">
+          <Link href="/cart" className={`relative flex h-10 w-10 items-center justify-center rounded-full text-[#476074] transition hover:bg-[#f3f8fc] hover:text-[#123e67] ${cartPulse ? "cart-bounce" : ""}`} aria-label="السلة">
             <CartIcon />
             {count > 0 ? (
               <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#2d78c8] px-1 text-[10px] font-black text-white">

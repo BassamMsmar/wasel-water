@@ -13,6 +13,11 @@ export type CheckoutPayload = {
   postal_code?: string;
   location_link?: string;
   note?: string;
+  payment_method?: "cod" | "bank_transfer" | "card";
+  transfer_reference?: string;
+  transfer_date?: string;
+  transfer_amount?: string;
+  transfer_receipt?: string;
   items: Array<{
     product_id: number;
     quantity: number;
@@ -36,6 +41,11 @@ export function buildCheckoutPayload(formData: FormData, items: CartItem[]): Che
     postal_code: String(formData.get("postal_code") ?? "").trim(),
     location_link: String(formData.get("location_link") ?? "").trim(),
     note: String(formData.get("note") ?? "").trim(),
+    payment_method: String(formData.get("payment_method") ?? "cod").trim() as "cod" | "bank_transfer" | "card",
+    transfer_reference: String(formData.get("transfer_reference") ?? "").trim(),
+    transfer_date: String(formData.get("transfer_date") ?? "").trim(),
+    transfer_amount: String(formData.get("transfer_amount") ?? "").trim(),
+    transfer_receipt: String(formData.get("transfer_receipt") ?? "").trim(),
     items: items.map((item) => ({
       product_id: item.product.id,
       quantity: item.quantity

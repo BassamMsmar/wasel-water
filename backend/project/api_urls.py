@@ -6,7 +6,17 @@ from rest_framework_simplejwt.views import (
     TokenBlacklistView,
 )
 
-from accounts.api import CustomerViewSet, AddressViewSet, RegisterView, ProfileView, UserViewSet
+from accounts.api import (
+    AddressViewSet,
+    CustomerViewSet,
+    IdentifierLoginView,
+    LocationSyncView,
+    OTPRequestView,
+    OTPVerifyView,
+    ProfileView,
+    RegisterView,
+    UserViewSet,
+)
 from products.api import (
     ProductViewSet, BrandViewSet, CategoryViewSet,
     OfferViewSet, ReviewViewSet, BundleViewSet, BundleItemViewSet,
@@ -54,6 +64,10 @@ urlpatterns = [
     path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),
+    path('auth/identifier-login/', IdentifierLoginView.as_view(), name='auth_identifier_login'),
+    path('auth/location/', LocationSyncView.as_view(), name='auth_location_sync'),
+    path('auth/otp/request/', OTPRequestView.as_view(), name='auth_otp_request'),
+    path('auth/otp/verify/', OTPVerifyView.as_view(), name='auth_otp_verify'),
     path('auth/register/', RegisterView.as_view(), name='auth_register'),
     path('auth/profile/', ProfileView.as_view(), name='auth_profile'),
 ]
