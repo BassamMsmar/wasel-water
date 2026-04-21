@@ -1,6 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Ping AR LT";
+  src:
+    local("Ping AR LT"),
+    local("PingARLT"),
+    local("PingAR-LT"),
+    local("Ping ARLT");
+  font-display: swap;
+}
+
 @theme {
   --color-brand-dark: #102231;
   --color-brand: #123e67;
@@ -10,6 +20,7 @@
 }
 
 :root {
+  --font-dashboard: "Ping AR LT", "PingARLT", "PingAR-LT", "Cairo", system-ui, sans-serif;
   --navy-950: #081522;
   --navy-900: #102231;
   --navy-800: #123e67;
@@ -122,6 +133,16 @@ p {
 .page-shell {
   width: min(1320px, calc(100% - clamp(1rem, 4vw, 3rem)));
   margin-inline: auto;
+}
+
+.dashboard-font {
+  font-family: var(--font-dashboard);
+}
+
+.dashboard-shell {
+  width: 100%;
+  padding-inline: clamp(0.75rem, 2vw, 1.75rem);
+  padding-block: 1rem 2rem;
 }
 
 .home-section {
@@ -276,12 +297,12 @@ p {
 .btn-cart {
   background: linear-gradient(135deg, var(--navy-800) 0%, var(--blue-600) 100%);
   color: white;
-  box-shadow: 0 16px 34px rgba(45, 120, 200, 0.24);
+  box-shadow: 0 2px 8px rgba(45, 120, 200, 0.08);
 }
 
 .btn-primary:hover,
 .btn-cart:hover {
-  box-shadow: 0 20px 38px rgba(45, 120, 200, 0.3);
+  box-shadow: 0 3px 10px rgba(45, 120, 200, 0.1);
 }
 
 .btn-secondary,

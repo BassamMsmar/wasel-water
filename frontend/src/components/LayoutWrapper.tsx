@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { BottomNav } from "./BottomNav";
+import { FloatingWhatsApp } from "./FloatingWhatsApp";
 
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -20,6 +21,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
         {children}
       </div>
       <Footer />
+      <FloatingWhatsApp />
       {/* We keep BottomNav hidden or adapted for Mobile in the redesign */}
       <div className="md:hidden">
         <BottomNav />

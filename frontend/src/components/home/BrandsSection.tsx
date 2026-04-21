@@ -17,20 +17,20 @@ export function BrandsSection({ brands }: { brands: Brand[] }) {
           </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7">
           {brands.map((brand) => (
             <Link
               key={brand.id}
               href={`/brands/${brand.slug}`}
               className="group flex flex-col items-center gap-3 text-center"
             >
-              <div className="relative aspect-square w-full overflow-hidden rounded-full border border-[#dce8f2] bg-white shadow-[0_14px_30px_rgba(10,34,56,0.06)] transition duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_18px_40px_rgba(10,34,56,0.09)]">
+              <div className="relative aspect-square w-full overflow-hidden rounded-full border border-[#dce8f2] bg-white shadow-[0_2px_10px_rgba(10,34,56,0.02)] transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-[0_4px_14px_rgba(10,34,56,0.03)]">
                 <Image
                   src={absoluteMediaUrl(brand.logo || brand.image, fallbackBrandImage)}
                   alt={brand.name}
                   fill
                   unoptimized
-                  className="object-contain p-5"
+                  className="object-cover"
                 />
               </div>
               <span className="text-sm font-black text-[#15324b]">{brand.name}</span>

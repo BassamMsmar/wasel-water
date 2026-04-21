@@ -350,7 +350,7 @@ function ProductEditor({
 
   return (
     <div className="grid gap-5">
-      <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_18px_42px_rgba(10,34,56,0.06)]">
+      <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_2px_10px_rgba(10,34,56,0.015)]">
         <div className="mb-6 flex flex-col gap-4 border-b border-[#edf3f8] pb-5 xl:flex-row xl:items-center xl:justify-between">
           <div>
             <span className="eyebrow mb-3">إدارة المنتجات</span>
@@ -633,7 +633,7 @@ function ReadonlyPanel({
   fields: Array<{ label: string; value: string }>;
 }) {
   return (
-    <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_18px_42px_rgba(10,34,56,0.06)]">
+    <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_2px_10px_rgba(10,34,56,0.015)]">
       <div className="mb-6 border-b border-[#edf3f8] pb-5">
         <span className="eyebrow mb-3">لوحة الإدارة</span>
         <h2 className="text-[1.8rem] font-black text-[#102231]">{title}</h2>
@@ -665,7 +665,7 @@ function CustomerDashboard({
   const totalSpent = orders.reduce((sum, order) => sum + Number(order.total_price), 0);
 
   return (
-    <section className="site-container py-6" dir="rtl">
+    <section className="dashboard-font dashboard-shell" dir="rtl">
       <div className="dash-header-card">
         <div className="dash-user-info">
           <div className="dash-avatar">
@@ -1311,7 +1311,7 @@ export default function DashboardPage() {
     if (activeModule === "categories") {
       return (
         <div className="grid gap-5">
-          <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_18px_42px_rgba(10,34,56,0.06)]">
+          <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_2px_10px_rgba(10,34,56,0.015)]">
             <div className="mb-6 flex flex-col gap-4 border-b border-[#edf3f8] pb-5 xl:flex-row xl:items-center xl:justify-between">
               <div>
                 <span className="eyebrow mb-3">إدارة الأصناف</span>
@@ -1369,7 +1369,7 @@ export default function DashboardPage() {
     if (activeModule === "brands") {
       return (
         <div className="grid gap-5">
-          <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_18px_42px_rgba(10,34,56,0.06)]">
+          <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_2px_10px_rgba(10,34,56,0.015)]">
             <div className="mb-6 flex flex-col gap-4 border-b border-[#edf3f8] pb-5 xl:flex-row xl:items-center xl:justify-between">
               <div>
                 <span className="eyebrow mb-3">إدارة البراندات</span>
@@ -1411,7 +1411,7 @@ export default function DashboardPage() {
     if (activeModule === "flags") {
       return (
         <div className="grid gap-5">
-          <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_18px_42px_rgba(10,34,56,0.06)]">
+          <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_2px_10px_rgba(10,34,56,0.015)]">
             <div className="mb-6 flex flex-col gap-4 border-b border-[#edf3f8] pb-5 xl:flex-row xl:items-center xl:justify-between">
               <div>
                 <span className="eyebrow mb-3">إدارة الأوسمة</span>
@@ -1447,7 +1447,7 @@ export default function DashboardPage() {
     if (activeModule === "offers") {
       return (
         <div className="grid gap-5">
-          <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_18px_42px_rgba(10,34,56,0.06)]">
+          <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_2px_10px_rgba(10,34,56,0.015)]">
             <div className="mb-6 flex flex-col gap-4 border-b border-[#edf3f8] pb-5 xl:flex-row xl:items-center xl:justify-between">
               <div>
                 <span className="eyebrow mb-3">إدارة العروض</span>
@@ -1490,7 +1490,7 @@ export default function DashboardPage() {
 
     if (activeModule === "banners") {
       return (
-        <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_18px_42px_rgba(10,34,56,0.06)]">
+        <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_2px_10px_rgba(10,34,56,0.015)]">
           <div className="mb-6 flex flex-col gap-4 border-b border-[#edf3f8] pb-5 xl:flex-row xl:items-center xl:justify-between">
             <div>
               <span className="eyebrow mb-3">إدارة البنرات</span>
@@ -1529,7 +1529,7 @@ export default function DashboardPage() {
 
     if (activeModule === "branches") {
       return (
-        <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_18px_42px_rgba(10,34,56,0.06)]">
+        <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-6 shadow-[0_2px_10px_rgba(10,34,56,0.015)]">
           <div className="mb-6 flex flex-col gap-4 border-b border-[#edf3f8] pb-5 xl:flex-row xl:items-center xl:justify-between">
             <div>
               <span className="eyebrow mb-3">إدارة الفروع</span>
@@ -1605,8 +1605,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <section className="site-container py-6" dir="rtl">
-      <div className="sticky top-4 z-20 mb-5 rounded-[30px] border border-[#dfeaf4] bg-white/95 p-4 shadow-[0_18px_42px_rgba(10,34,56,0.08)] backdrop-blur">
+    <section className="dashboard-font dashboard-shell" dir="rtl">
+      <div className="sticky top-4 z-20 mb-5 rounded-[24px] border border-[#dfeaf4] bg-white/95 p-4 shadow-[0_2px_10px_rgba(10,34,56,0.02)] backdrop-blur">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex items-center gap-4">
             <div className="dash-avatar">
@@ -1654,7 +1654,7 @@ export default function DashboardPage() {
 
       <div className="mb-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {primaryStats.map((stat) => (
-          <div key={stat.label} className="rounded-[22px] border border-[#dfeaf4] bg-white p-4 shadow-[0_12px_28px_rgba(10,34,56,0.05)]">
+          <div key={stat.label} className="rounded-[18px] border border-[#dfeaf4] bg-white p-4 shadow-[0_1px_6px_rgba(10,34,56,0.015)]">
             <div className="text-sm font-bold text-[#6d8092]">{stat.label}</div>
             <div className="mt-2 text-[1.7rem] font-black text-[#102231]">{stat.value}</div>
           </div>
@@ -1663,7 +1663,7 @@ export default function DashboardPage() {
 
       <div className="flex flex-col gap-5 xl:flex-row-reverse xl:items-start">
         <aside className="xl:sticky xl:top-[8.8rem] xl:w-[250px] xl:shrink-0">
-          <div className="rounded-[28px] border border-[#dfeaf4] bg-white p-4 shadow-[0_18px_42px_rgba(10,34,56,0.06)]">
+          <div className="rounded-[24px] border border-[#dfeaf4] bg-white p-4 shadow-[0_2px_10px_rgba(10,34,56,0.015)]">
             <div className="border-b border-[#edf3f8] px-2 pb-4">
               <p className="text-xs font-black tracking-[0.24em] text-[#8da0b2]">WASEL ADMIN</p>
               <h2 className="mt-2 text-xl font-black text-[#102231]">موديلات الإدارة</h2>
@@ -1679,7 +1679,7 @@ export default function DashboardPage() {
                     onClick={() => setActiveModuleState(module.key)}
                     className={`flex items-center gap-3 rounded-[20px] px-4 py-3 text-right text-sm font-black transition ${
                       active
-                        ? "bg-[#102231] text-white shadow-[0_12px_26px_rgba(16,34,49,0.2)]"
+                        ? "bg-[#102231] text-white shadow-[0_1px_6px_rgba(16,34,49,0.04)]"
                         : "text-[#516577] hover:bg-[#f3f8fc] hover:text-[#102231]"
                     }`}
                   >
@@ -1693,7 +1693,7 @@ export default function DashboardPage() {
         </aside>
 
         <aside className="xl:sticky xl:top-[8.8rem] xl:w-[330px] xl:shrink-0">
-          <div className="rounded-[28px] border border-[#dfeaf4] bg-white p-4 shadow-[0_18px_42px_rgba(10,34,56,0.06)]">
+          <div className="rounded-[24px] border border-[#dfeaf4] bg-white p-4 shadow-[0_2px_10px_rgba(10,34,56,0.015)]">
             <div className="flex items-center justify-between gap-3 border-b border-[#edf3f8] px-2 pb-4">
               <div>
                 <h2 className="text-lg font-black text-[#102231]">{adminModules.find((item) => item.key === activeModule)?.label}</h2>

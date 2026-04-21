@@ -86,6 +86,9 @@ export function ProductCard({
         </p>
 
         <div className="mt-3 flex items-end justify-between gap-3 text-right">
+          <strong className="text-base font-black leading-none text-[#2d78c8]">
+            {money(price)}
+          </strong>
           {oldPrice ? (
             <del className="text-xs font-bold text-[#97a7b7]">
               {money(oldPrice)}
@@ -93,9 +96,6 @@ export function ProductCard({
           ) : (
             <span />
           )}
-          <strong className="text-base font-black leading-none text-[#2d78c8]">
-            {money(price)}
-          </strong>
         </div>
 
         <div className="mt-auto pt-3">
