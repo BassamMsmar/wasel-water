@@ -1,0 +1,60 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{% if object %}تعديل{% else %}إضافة{% endif %} علامة تجارية{% endblock %}
+{% block page_title %}{% if object %}تعديل: {{ object.name }}{% else %}إضافة علامة تجارية{% endif %}{% endblock %}
+
+{% block admin_content %}
+<div class="row justify-content-center pt-5">
+    <div class="col-md-6">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-header bg-dark text-white p-4">
+                <h5 class="mb-0 fw-bold">بيانات العلامة التجارية</h5>
+            </div>
+            <div class="card-body p-5">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">اسم العلامة</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">شعار العلامة</label>
+                        {{ form.image }}
+                        {% if object.image %}
+                        <div class="mt-3 text-center border p-3 rounded bg-light">
+                            <span class="d-block mb-2 small text-muted">الشعار الحالي</span>
+                            <img src="{{ brand.image.url }}" class="img-fluid rounded" style="max-height: 80px;">
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">صورة الغلاف</label>
+                        {{ form.cover_image }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">وصف العلامة</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="seo-panel mb-4">
+                        <div class="seo-panel-title"><i class="bi bi-search"></i> تحسين محركات البحث SEO</div>
+                        <div class="seo-panel-sub">بيانات مخصصة لصفحة العلامة التجارية في نتائج البحث والمشاركة.</div>
+                        <div class="row g-3">
+                            <div class="col-md-6"><label class="form-label">عنوان SEO</label>{{ form.seo_title }}</div>
+                            <div class="col-md-6"><label class="form-label">الكلمات المفتاحية</label>{{ form.seo_keywords }}</div>
+                            <div class="col-12"><label class="form-label">وصف SEO</label>{{ form.seo_description }}</div>
+                            <div class="col-md-6"><label class="form-label">الرابط الأساسي Canonical</label>{{ form.seo_canonical_url }}</div>
+                            <div class="col-md-6"><label class="form-label">صورة المشاركة</label>{{ form.seo_image }}</div>
+                        </div>
+                    </div>
+                    <div class="mt-5 text-center">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
+                            <i class="bi bi-check-circle me-2"></i> حفظ
+                        </button>
+                        <a href="{% url 'settings:admin_brands' %}" class="btn btn-outline-secondary btn-lg rounded-pill px-4 ms-2">إلغاء</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

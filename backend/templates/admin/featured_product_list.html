@@ -1,0 +1,92 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}المنتجات المميزة{% endblock %}
+{% block page_title %}المنتجات المميزة{% endblock %}
+
+{% block admin_content %}
+<div class="adm-pg-hd">
+  <div>
+    <h1 class="adm-pg-ttl">إدارة المنتجات المميزة</h1>
+    <p class="adm-pg-sub">تحكم في المنتجات التي تظهر في الصفحة الرئيسية.</p>
+  </div>
+  {% if request.user.is_superuser or perms.products.add_featuredproduct %}
+  <a href="{% url 'settings:admin_featured_product_create' %}" class="adm-btn adm-btn-k">
+    <i class="bi bi-plus-lg"></i> إضافة منتج مميز
+  </a>
+  {% endif %}
+</div>
+
+<div class="adm-card mt-3">
+  <div class="adm-card-hd">
+    <div class="adm-card-ttl"><i class="bi bi-star"></i> قائمة المنتجات المميزة</div>
+  </div>
+  <div class="adm-card-body p-0">
+    <div class="adm-twrap">
+      <table class="adm-tbl">
+        <thead>
+          <tr>
+            <th>الترتيب</th>
+            <th>المنتج</th>
+            <th>الحالة</th>
+            <th style="width:140px; text-align:left;">الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for fp in featured_products %}
+          <tr>
+            <td><span class="adm-badge adm-badge-n">{{ fp.order }}</span></td>
+            <td>
+              <div style="display:flex; align-items:center; gap:10px;">
+                {% if fp.product.image %}
+                  <img src="{{ fp.product.image.url }}" alt="{{ fp.product.name }}" style="width:36px; height:36px; border-radius:8px; object-fit:cover; border:1px solid var(--brs);">
+                {% else %}
+                  <div style="width:36px; height:36px; border-radius:8px; background:var(--sf2); display:flex; align-items:center; justify-content:center;">
+                    <i class="bi bi-image" style="color:var(--txt3);"></i>
+                  </div>
+                {% endif %}
+                <div>
+                  <div style="font-weight:600; font-size:.85rem; color:var(--txt);">{{ fp.product.name }}</div>
+                  <div style="font-size:.7rem; color:var(--txt3);">{{ fp.product.sku|default:"-" }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              {% if fp.active %}
+                <span class="adm-badge adm-badge-g"><i class="bi bi-check-circle-fill" style="font-size:10px;"></i> نشط</span>
+              {% else %}
+                <span class="adm-badge adm-badge-r"><i class="bi bi-x-circle-fill" style="font-size:10px;"></i> غير نشط</span>
+              {% endif %}
+            </td>
+            <td style="text-align:left;">
+              <div style="display:flex; gap:6px; justify-content:flex-end;">
+                {% if request.user.is_superuser or perms.products.change_featuredproduct %}
+                <a href="{% url 'settings:admin_featured_product_update' fp.id %}" class="adm-btn adm-btn-w adm-btn-sm" title="تعديل">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                {% endif %}
+                {% if request.user.is_superuser or perms.products.delete_featuredproduct %}
+                <form action="{% url 'settings:admin_featured_product_delete' fp.id %}" method="post" style="display:inline-block;" onsubmit="return confirm('هل أنت متأكد من حذف هذا المنتج المميز؟');">
+                  {% csrf_token %}
+                  <button type="submit" class="adm-btn adm-btn-w adm-btn-sm" style="color:var(--danger);" title="حذف">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </form>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" style="text-align:center; padding:40px 20px;">
+              <i class="bi bi-star" style="font-size:2rem; color:var(--txt3); margin-bottom:10px; display:block;"></i>
+              <div style="color:var(--txt2); font-weight:600;">لا توجد منتجات مميزة بعد</div>
+              <div style="font-size:.8rem; color:var(--txt3); margin-top:5px;">قم بإضافة منتجات لعرضها في الصفحة الرئيسية</div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

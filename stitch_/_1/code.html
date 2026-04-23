@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+            color: #191c1e;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-background": "#191c1e",
+                      "surface": "#f7f9fb",
+                      "secondary-fixed": "#d3e4fe",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "primary-fixed-dim": "#9bccf6",
+                      "surface-bright": "#f7f9fb",
+                      "on-primary-container": "#a5d5ff",
+                      "on-surface-variant": "#424752",
+                      "on-tertiary-fixed": "#001e2f",
+                      "primary-fixed": "#cbe6ff",
+                      "on-secondary-fixed": "#0b1c30",
+                      "inverse-on-surface": "#eff1f3",
+                      "on-surface": "#191c1e",
+                      "error-container": "#ffdad6",
+                      "surface-container-high": "#e6e8ea",
+                      "secondary": "#505f76",
+                      "tertiary": "#004666",
+                      "secondary-container": "#d0e1fb",
+                      "tertiary-container": "#005f89",
+                      "on-tertiary": "#ffffff",
+                      "inverse-surface": "#2d3133",
+                      "on-tertiary-fixed-variant": "#004c6e",
+                      "on-tertiary-container": "#a0d7ff",
+                      "on-secondary-container": "#54647a",
+                      "outline": "#727784",
+                      "primary": "#024569",
+                      "surface-container-low": "#f2f4f6",
+                      "error": "#ba1a1a",
+                      "on-primary": "#ffffff",
+                      "surface-dim": "#d8dadc",
+                      "on-secondary": "#ffffff",
+                      "surface-container": "#eceef0",
+                      "tertiary-fixed-dim": "#89ceff",
+                      "surface-variant": "#e0e3e5",
+                      "inverse-primary": "#9bccf6",
+                      "on-primary-fixed-variant": "#0e4b6f",
+                      "surface-tint": "#2f6388",
+                      "on-error": "#ffffff",
+                      "primary-container": "#285d82",
+                      "on-error-container": "#93000a",
+                      "outline-variant": "#c2c6d4",
+                      "on-primary-fixed": "#001e30",
+                      "surface-container-highest": "#e0e3e5",
+                      "background": "#f7f9fb",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "tertiary-fixed": "#c9e6ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "fontFamily": {
+                      "headline": ["Plus Jakarta Sans"],
+                      "body": ["Inter"],
+                      "label": ["Inter"]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-72 fixed left-0 top-0 overflow-y-auto bg-slate-50 dark:bg-slate-950 flex flex-col gap-2 p-6 border-r border-slate-100 dark:border-slate-800 z-40">
+<div class="mb-10 px-2">
+<h1 class="text-lg font-extrabold text-sky-950 dark:text-white">Wasel Admin</h1>
+<p class="text-xs text-slate-500 font-medium tracking-wide">Premium Fleet Management</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1.5">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-100/50 dark:hover:bg-slate-900/50 hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Inventory is Active for Product Management -->
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-sky-900/20 text-sky-900 dark:text-sky-100 rounded-xl shadow-sm font-bold hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="water_drop">water_drop</span>
+<span>Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-100/50 dark:hover:bg-slate-900/50 hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+<span>Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-100/50 dark:hover:bg-slate-900/50 hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+<span>Fleet Logistics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-100/50 dark:hover:bg-slate-900/50 hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-100/50 dark:hover:bg-slate-900/50 hover:translate-x-1 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-1.5">
+<button class="w-full bg-primary text-on-primary py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg shadow-primary/10 active:scale-95 transition-all mb-4">
+<span class="material-symbols-outlined" data-icon="add" style="font-variation-settings: 'FILL' 0;">add</span>
+                Add New Batch
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-sky-900 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="text-sm">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-error transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="text-sm">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-72 min-h-screen flex flex-col">
+<!-- Top App Bar / Breadcrumbs -->
+<header class="px-10 py-8 flex justify-between items-center">
+<div class="flex flex-col gap-1">
+<nav class="flex items-center gap-2 text-xs font-medium text-slate-400 uppercase tracking-widest">
+<span>Inventory</span>
+<span class="material-symbols-outlined text-[10px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-sky-900">Add New Product</span>
+</nav>
+<h2 class="text-3xl font-extrabold text-sky-950 tracking-tight">Product Details</h2>
+</div>
+<div class="flex gap-4">
+<button class="px-6 py-2.5 text-sm font-semibold text-secondary hover:text-primary transition-colors">Discard Draft</button>
+<button class="px-8 py-2.5 bg-primary text-on-primary rounded-xl font-bold shadow-xl shadow-primary/20 hover:opacity-90 active:scale-95 transition-all">Publish Product</button>
+</div>
+</header>
+<!-- Form Layout: Bento Grid Style -->
+<section class="px-10 pb-20 flex flex-col gap-8">
+<div class="grid grid-cols-12 gap-8 items-start">
+<!-- Left Column: Primary Content -->
+<div class="col-span-8 flex flex-col gap-8">
+<!-- Basic Information Card -->
+<div class="bg-surface-container-lowest p-8 rounded-full shadow-[0_20px_50px_rgba(2,69,105,0.04)]">
+<h3 class="text-lg font-bold text-sky-900 mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sky-600" data-icon="info">info</span>
+                            Core Information
+                        </h3>
+<div class="grid grid-cols-2 gap-6">
+<div class="col-span-2 flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 ml-1">Product Display Name</label>
+<input class="w-full bg-surface-container border-none rounded-xl px-4 py-3.5 focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all placeholder:text-slate-400" placeholder="e.g. Al-Wasel Mineral 500ml Pack of 24" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 ml-1">Category</label>
+<select class="w-full bg-surface-container border-none rounded-xl px-4 py-3.5 focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all">
+<option>Spring Water</option>
+<option>Sparkling Water</option>
+<option>Bulk/Gallon</option>
+<option>Purified Water</option>
+</select>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 ml-1">SKU Identification</label>
+<input class="w-full bg-surface-container border-none rounded-xl px-4 py-3.5 focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all" placeholder="WSL-SPR-500-24" type="text"/>
+</div>
+<div class="col-span-2 flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 ml-1">Product Description</label>
+<textarea class="w-full bg-surface-container border-none rounded-xl px-4 py-3.5 focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all" placeholder="Describe the source purity, mineral content, and packaging features..." rows="4"></textarea>
+</div>
+</div>
+</div>
+<!-- SEO & Visibility Card -->
+<div class="bg-surface-container-lowest p-8 rounded-full shadow-[0_20px_50px_rgba(2,69,105,0.04)]">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-lg font-bold text-sky-900 flex items-center gap-2">
+<span class="material-symbols-outlined text-sky-600" data-icon="search">search</span>
+                                SEO Settings
+                            </h3>
+<span class="text-[10px] bg-sky-100 text-sky-700 px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">Search Engine Optimized</span>
+</div>
+<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 ml-1">Meta Title</label>
+<input class="w-full bg-surface-container border-none rounded-xl px-4 py-3.5 focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all" placeholder="Pure Mineral Water | Wasel Distribution" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 ml-1">Meta Description</label>
+<textarea class="w-full bg-surface-container border-none rounded-xl px-4 py-3.5 focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all" placeholder="Wasel Water provides the highest purity standards in regional distribution..." rows="2"></textarea>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 ml-1">URL Handle (Slug)</label>
+<div class="flex items-center bg-surface-container rounded-xl overflow-hidden">
+<span class="px-4 text-slate-400 text-sm">waselwater.com/catalog/</span>
+<input class="flex-1 bg-transparent border-none py-3.5 focus:ring-0" placeholder="spring-water-500ml" type="text"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Secondary Data -->
+<div class="col-span-4 flex flex-col gap-8">
+<!-- Media / Imagery -->
+<div class="bg-surface-container-lowest p-6 rounded-full shadow-[0_20px_50px_rgba(2,69,105,0.04)]">
+<h3 class="text-md font-bold text-sky-900 mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sky-600" data-icon="image">image</span>
+                            Product Media
+                        </h3>
+<div class="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-3 group hover:border-primary/40 transition-colors cursor-pointer mb-4 overflow-hidden relative">
+<img class="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-105 transition-transform duration-500" data-alt="professional clean studio photography of a clear plastic water bottle with condensation on a light blue background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPtquVK1JEdH25ou4flaPEVjEIzGvLL2UfgyS38dDjUccLoA4fmsazf-DAnSEzejpeeNIVoIKvYpoKVKUmRKkQWkrZyawcMt1UvFmPrEssAAsKpfCZMSuPSQ4DurJJnC44nzlsFVmhwk9DlaEC2z9n_mVSV3OeG1TtsC2VdOYxYoyt-CvywFz5bNd7DCkENlAzhl_JWx3JKdy5dfWsDa6Mt7HDgQr7OvJ5bNGAqMKgNPUtCUyAYx9LxDUzikQxdbd8naMh9GsyNKve"/>
+<div class="relative z-10 flex flex-col items-center">
+<span class="material-symbols-outlined text-slate-400 text-4xl group-hover:text-primary transition-colors" data-icon="cloud_upload">cloud_upload</span>
+<p class="text-xs font-bold text-slate-500 mt-2">Drop your image here</p>
+<p class="text-[10px] text-slate-400 uppercase tracking-tighter">PNG, JPG up to 10MB</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="aspect-square bg-surface-container-high rounded-lg"></div>
+<div class="aspect-square bg-surface-container-high rounded-lg"></div>
+<div class="aspect-square bg-surface-container-high rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-400" data-icon="add">add</span>
+</div>
+</div>
+</div>
+<!-- Inventory & Pricing -->
+<div class="bg-surface-container-lowest p-6 rounded-full shadow-[0_20px_50px_rgba(2,69,105,0.04)] flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 ml-1">Base Price (AED)</label>
+<input class="w-full bg-surface-container border-none rounded-xl px-4 py-3.5 focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all font-bold text-sky-900 text-lg" placeholder="0.00" type="number"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 ml-1">Stock Quantity</label>
+<input class="w-full bg-surface-container border-none rounded-xl px-4 py-3.5 focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all" placeholder="5000" type="number"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-600 ml-1">Inventory Status</label>
+<div class="flex items-center gap-2 p-1 bg-surface-container rounded-xl">
+<button class="flex-1 py-2 px-3 bg-white shadow-sm rounded-lg text-xs font-bold text-sky-900">In Stock</button>
+<button class="flex-1 py-2 px-3 text-slate-400 text-xs font-bold">On Hold</button>
+<button class="flex-1 py-2 px-3 text-slate-400 text-xs font-bold">Sold Out</button>
+</div>
+</div>
+</div>
+<!-- Shipping Weights -->
+<div class="bg-surface-container-lowest p-6 rounded-full shadow-[0_20px_50px_rgba(2,69,105,0.04)]">
+<h3 class="text-md font-bold text-sky-900 mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sky-600" data-icon="inventory_2">inventory_2</span>
+                            Logistics
+                        </h3>
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-center text-sm">
+<span class="text-slate-500 font-medium">Unit Weight</span>
+<span class="font-bold text-sky-900">500ml / 0.5kg</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-slate-500 font-medium">Pallet Capacity</span>
+<span class="font-bold text-sky-900">48 Units</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="w-full py-16 px-12 mt-auto bg-slate-50 dark:bg-slate-950 flex flex-col md:flex-row justify-between items-start gap-8 border-t border-slate-200/50 dark:border-slate-800/50">
+<div class="flex flex-col gap-4">
+<div class="text-xl font-black text-sky-950 dark:text-white">Wasel Water</div>
+<p class="font-['Inter'] text-xs uppercase tracking-widest text-slate-400 max-w-sm">© 2024 Wasel Water Distribution Platform. The Hydro-Architect Editorial.</p>
+</div>
+<div class="flex flex-wrap gap-8">
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-400 hover:text-sky-600 dark:hover:text-sky-300 transition-colors duration-500" href="#">Privacy Policy</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-400 hover:text-sky-600 dark:hover:text-sky-300 transition-colors duration-500" href="#">Terms of Service</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-400 hover:text-sky-600 dark:hover:text-sky-300 transition-colors duration-500" href="#">Sustainability Report</a>
+<a class="font-['Inter'] text-xs uppercase tracking-widest text-slate-400 hover:text-sky-600 dark:hover:text-sky-300 transition-colors duration-500" href="#">Press Kit</a>
+</div>
+</footer>
+</main>
+</body></html>

@@ -1,0 +1,80 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}{% if object %}تعديل منتج مميز{% else %}إضافة منتج مميز{% endif %} 🌟{% endblock %}
+{% block page_title %}{% if object %}تعديل منتج مميز{% else %}إضافة منتج مميز{% endif %}{% endblock %}
+
+{% block admin_content %}
+<div class="adm-pg-hd">
+  <div>
+    <h1 class="adm-pg-ttl">{% if object %}تعديل المنتج المميز{% else %}إضافة منتج مميز جديد{% endif %}</h1>
+    <p class="adm-pg-sub">{% if object %}قم بتحديث بيانات المنتج المميز المختار.{% else %}اختر منتجاً ليظهر في الصفحة الرئيسية مع تحديد ترتيبه.{% endif %}</p>
+  </div>
+  <a href="{% url 'settings:admin_featured_products' %}" class="adm-btn adm-btn-w">
+    <i class="bi bi-arrow-right"></i> عودة للقائمة
+  </a>
+</div>
+
+<div class="row">
+  <div class="col-lg-8 col-xl-6">
+    <div class="adm-card mt-3">
+      <div class="adm-card-hd">
+        <div class="adm-card-ttl"><i class="bi bi-star"></i> بيانات المنتج المميز</div>
+      </div>
+      <div class="adm-card-body">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          
+          {% if form.non_field_errors %}
+          <div class="adm-alert adm-alert-r mb-4">
+            <i class="bi bi-exclamation-circle"></i>
+            <div>
+              {% for error in form.non_field_errors %}
+                <div style="font-weight:600;">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="mb-4">
+            <label for="{{ form.product.id_for_label }}" class="adm-label">المنتج *</label>
+            {{ form.product }}
+            {% if form.product.errors %}
+              <div class="form-text text-danger mt-2" style="font-weight:bold;"><i class="bi bi-exclamation-triangle"></i> {{ form.product.errors.0 }}</div>
+            {% else %}
+              <div class="form-text mt-2"><i class="bi bi-info-circle"></i> اختر المنتج الذي تود تمييزه.</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-4" style="max-width:200px;">
+            <label for="{{ form.order.id_for_label }}" class="adm-label">الترتيب</label>
+            {{ form.order }}
+            {% if form.order.errors %}
+              <div class="form-text text-danger mt-2" style="font-weight:bold;"><i class="bi bi-exclamation-triangle"></i> {{ form.order.errors.0 }}</div>
+            {% else %}
+              <div class="form-text mt-2">رقم الترتيب، الأقل يظهر أولاً.</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-4">
+            <div class="form-check form-switch" style="padding-right: 2.5em; padding-left: 0;">
+              {{ form.active }}
+              <label class="form-check-label fw-bold ms-2" for="{{ form.active.id_for_label }}">
+                نشط (يظهر في الموقع)
+              </label>
+            </div>
+            {% if form.active.errors %}
+              <div class="form-text text-danger mt-2" style="font-weight:bold;"><i class="bi bi-exclamation-triangle"></i> {{ form.active.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <hr class="my-4" style="border-color:var(--brs);">
+            
+          <button type="submit" class="adm-btn adm-btn-k w-100 justify-content-center py-2" style="font-size:.9rem;">
+            <i class="bi bi-check-lg"></i> حفظ البيانات
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
