@@ -123,7 +123,14 @@ class FlagViewSet(viewsets.ModelViewSet):
 
 
 class FeaturedProductViewSet(viewsets.ModelViewSet):
-    queryset = FeaturedProduct.objects.select_related('product').filter(active=True).order_by('order', '-id')
+    # select_related على brand و flag للمنتج المرتبط لتجنب N+1
+    queryset = (
+        FeaturedProduct.objects
+        .filter(active=True)
+        .select_related('product', 'product__brand', 'product__flag')
+        .prefetch_related('product__category', 'product__product_image')
+        .order_by('order', '-id')
+    )
     serializer_class = FeaturedProductSerializer
 
 

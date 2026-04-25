@@ -1,24 +1,20 @@
 # settings/context_processors.py
 from django.conf import settings
 from .models import Company
-from products.models import Category
 
 def company(request):
     """
-    يقوم بجلب بيانات الشركة والأقسام من قاعدة البيانات
-    ويجعلها متاحة في جميع القوالب.
+    يقوم بجلب بيانات الشركة من قاعدة البيانات ويجعلها متاحة في جميع القوالب.
+    ملاحظة: الأقسام (categories) والعلامات التجارية (brands) يتم جلبها من
+    products/context_processors.py لتجنب الاستعلام المزدوج.
     """
     try:
-        # نفترض أن لديك شركة واحدة فقط في الجدول
         company = Company.objects.first()
     except Company.DoesNotExist:
         company = None
 
-    categories = Category.objects.all()
-
     context = {
         'company': company,
-        'categories': categories,
     }
 
     if company:
