@@ -150,8 +150,10 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # ─── Media ──────────────────────────────────────────────────────────────────────
+# media/ خارج backend/ — أفضل ممارسة لبيئات الإنتاج
+# الهيكل: wasel-water/media/ (وليس wasel-water/backend/media/)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR.parent / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

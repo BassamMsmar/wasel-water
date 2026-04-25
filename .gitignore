@@ -1,12 +1,75 @@
+# ============================================================
+# Wasel Water — Root .gitignore
+# ============================================================
+
+# ─── Environment Files (NEVER commit) ───────────────────────
 .env
+.env.local
 .env.production
+.env.*.local
+backend/.env
 backend/.env.production
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+
+# ─── Python / Django ────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*$py.class
+*.so
+
+# Virtual Environment
 venv/
-media/
-backend/media/
+.venv/
+ENV/
+env/
+backend/venv/
+
+# Django generated
 backend/staticfiles/
-staticfiles/
-node_modules/
-.next/
-stitch_/
+backend/db.sqlite3
 db.sqlite3
+*.log
+
+# ─── Media Uploads (user files — server-only) ───────────────
+# media/ lives at project root (wasel-water/media/) NOT inside backend/
+media/
+!media/.gitkeep
+
+# ─── Next.js / Node ─────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+out/
+frontend/out/
+
+# ─── Build Artifacts ────────────────────────────────────────
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# ─── Testing / Coverage ─────────────────────────────────────
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+
+# ─── IDEs ───────────────────────────────────────────────────
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ─── OS ─────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
