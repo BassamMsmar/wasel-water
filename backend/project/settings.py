@@ -213,7 +213,14 @@ else:
 
 # ─── Production Security ─────────────────────────────────────────────────────────
 if not DEBUG:
-    SECURE_SSL_REDIRECT = True
+    # Nginx يتولى HTTP→HTTPS redirect — Django يجب ألا يُعيد التوجيه داخلياً
+    # إذا أردت تفعيله، اضبط SECURE_SSL_REDIRECT=True في .env
+    SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'False').lower() == 'true'
+
+    # هذا يخبر Django أن الطلب وصل عبر HTTPS من Nginx
+    # يجب أن يكون Nginx يُرسل هذا الـ header: proxy_set_header X-Forwarded-Proto https;
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     CSRF_COOKIE_HTTPONLY = True
