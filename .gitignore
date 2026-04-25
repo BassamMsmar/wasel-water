@@ -1,0 +1,12 @@
+.env
+.env.production
+backend/.env.production
+venv/
+media/
+backend/media/
+backend/staticfiles/
+staticfiles/
+node_modules/
+.next/
+stitch_/
+db.sqlite3
