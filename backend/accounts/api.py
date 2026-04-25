@@ -1,6 +1,9 @@
 from datetime import timedelta
 from decimal import Decimal
 from django.contrib.auth import authenticate
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import viewsets, permissions, generics, status
 from rest_framework.views import APIView
@@ -8,7 +11,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
 from django.utils import timezone
 from .models import Customer, Address
-from .otp_utils import generate_otp, normalize_phone, send_otp, validate_phone_sa
+from .otp_utils import generate_otp, normalize_phone, send_email_otp, send_otp, validate_phone_sa
 from drf_spectacular.utils import extend_schema
 from .serializers import (
     CustomerSerializer,
@@ -25,6 +28,85 @@ def build_tokens(user):
         "access": str(refresh.access_token),
         "refresh": str(refresh),
     }
+
+
+def is_email(value):
+    try:
+        validate_email(value)
+    except ValidationError:
+        return False
+    return True
+
+
+def unique_username_from_email(email):
+    base = email.split("@")[0].strip().lower() or "customer"
+    username = base[:120]
+    if not User.objects.filter(username__iexact=username).exists():
+        return username
+
+    from django.utils.crypto import get_random_string
+
+    while True:
+        candidate = f"{base[:112]}_{get_random_string(6).lower()}"
+        if not User.objects.filter(username__iexact=candidate).exists():
+            return candidate
+
+
+def resolve_login_identifier(raw_identifier):
+    identifier = (raw_identifier or "").strip()
+    if not identifier:
+        return None, None, None
+
+    if is_email(identifier):
+        return identifier.lower(), "email", User.objects.filter(email__iexact=identifier).first()
+
+    if validate_phone_sa(identifier):
+        normalized_phone = normalize_phone(identifier)
+        customer = Customer.objects.filter(phone_number=normalized_phone).select_related("user").first()
+        user = customer.user if customer else User.objects.filter(username=normalized_phone).first()
+        return normalized_phone, "phone", user
+
+    user = User.objects.filter(
+        Q(username__iexact=identifier)
+        | Q(email__iexact=identifier)
+        | Q(customer__phone_number__iexact=identifier)
+    ).select_related("customer").first()
+
+    if not user:
+        return identifier, "unknown", None
+
+    customer = getattr(user, "customer", None)
+    if customer and customer.phone_number and validate_phone_sa(customer.phone_number):
+        return normalize_phone(customer.phone_number), "phone", user
+    if user.email and is_email(user.email):
+        return user.email.lower(), "email", user
+    return identifier, "unreachable", user
+
+
+def user_for_verified_identifier(raw_identifier, normalized_identifier, channel, resolved_user=None):
+    if resolved_user:
+        return resolved_user
+
+    if channel == "email":
+        user = User.objects.filter(email__iexact=normalized_identifier).first()
+        if user:
+            return user
+        return User.objects.create_user(
+            username=unique_username_from_email(normalized_identifier),
+            email=normalized_identifier,
+            password=None,
+        )
+
+    if channel == "phone":
+        customer = Customer.objects.filter(phone_number=normalized_identifier).select_related("user").first()
+        if customer:
+            return customer.user
+        user = User.objects.filter(username=normalized_identifier).first()
+        if user:
+            return user
+        return User.objects.create_user(username=normalized_identifier, password=None)
+
+    return None
 
 
 class RegisterView(generics.CreateAPIView):
@@ -151,7 +233,14 @@ class OTPRequestView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        phone = (request.data.get("phone") or "").strip()
+        raw_identifier = (
+            request.data.get("identifier")
+            or request.data.get("phone")
+            or request.data.get("email")
+            or request.data.get("username")
+            or ""
+        ).strip()
+        normalized_identifier, channel, _user = resolve_login_identifier(raw_identifier)
         if not phone:
             return Response({"detail": "رقم الجوال مطلوب"}, status=status.HTTP_400_BAD_REQUEST)
 

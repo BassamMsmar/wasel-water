@@ -62,24 +62,24 @@ export async function loginWithIdentifier(identifier: string, password: string) 
   return data;
 }
 
-export async function requestOtp(phone: string) {
+export async function requestOtp(identifier: string) {
   const res = await fetch(`${API_BASE}/auth/otp/request/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone }),
+    body: JSON.stringify({ identifier }),
   });
   const data = await res.json().catch(() => null);
   if (!res.ok) {
     throw new Error(data?.detail || "تعذر إرسال الرمز");
   }
-  return data as { success: boolean; phone: string; message: string; debug_code?: string };
+  return data as { success: boolean; identifier: string; message: string; debug_code?: string };
 }
 
-export async function verifyOtp(phone: string, code: string) {
+export async function verifyOtp(identifier: string, code: string) {
   const res = await fetch(`${API_BASE}/auth/otp/verify/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone, code }),
+    body: JSON.stringify({ identifier, code }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => null);

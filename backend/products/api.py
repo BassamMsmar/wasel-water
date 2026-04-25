@@ -12,7 +12,6 @@ from .serializers import (
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    # annotate مع prefetch يمنع N+1 في rating وreviews_count لكل منتج
     queryset = (
         Product.objects.filter(active=True)
         .select_related('brand', 'flag')
@@ -69,7 +68,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-
 class BrandViewSet(viewsets.ModelViewSet):
     queryset = Brand.objects.annotate(products_count=Count('product_brand'))
     serializer_class = BrandSerializer
@@ -123,7 +121,6 @@ class FlagViewSet(viewsets.ModelViewSet):
 
 
 class FeaturedProductViewSet(viewsets.ModelViewSet):
-    # select_related على brand و flag للمنتج المرتبط لتجنب N+1
     queryset = (
         FeaturedProduct.objects
         .filter(active=True)

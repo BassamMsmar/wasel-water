@@ -114,6 +114,10 @@ export function Header() {
     localStorage.setItem("wasel-theme", nextDark ? "dark" : "light");
   }
 
+  function openAuthModal() {
+    window.dispatchEvent(new Event("auth:open"));
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-[#e6eef5] bg-white/92 backdrop-blur">
       <div className="site-container flex min-h-[76px] items-center justify-between gap-4 py-3">
@@ -219,9 +223,9 @@ export function Header() {
                 ) : null}
               </>
             ) : (
-              <Link href="/login" className="flex h-10 w-10 items-center justify-center rounded-full text-[#476074] transition hover:bg-[#f3f8fc] hover:text-[#123e67]" aria-label="الدخول">
+              <button type="button" onClick={openAuthModal} className="flex h-10 w-10 items-center justify-center rounded-full text-[#476074] transition hover:bg-[#f3f8fc] hover:text-[#123e67]" aria-label="تسجيل الدخول">
                 <UserIcon />
-              </Link>
+              </button>
             )}
           </div>
 

@@ -2,6 +2,7 @@ import random
 import string
 import re
 from django.conf import settings
+from django.core.mail import send_mail
 
 def generate_otp(length=4):
     """Generate a random numeric OTP."""
@@ -29,6 +30,32 @@ def send_otp(phone_number, code):
     logger = logging.getLogger(__name__)
     logger.warning(msg)
     
+    return True
+
+def send_email_otp(email, code):
+    """
+    Send an OTP to an email address. In development this uses Django's email
+    backend when configured and also prints the code to the console.
+    """
+    subject = "رمز الدخول إلى واصل للمياه"
+    message = f"رمز الدخول الخاص بك هو: {code}\nينتهي الرمز خلال 5 دقائق."
+
+    try:
+        send_mail(
+            subject,
+            message,
+            getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@wasel-water.local"),
+            [email],
+            fail_silently=False,
+        )
+    except Exception:
+        # Keep local login usable even before SMTP is configured.
+        pass
+
+    msg = f"\n\n{'*'*50}\n[EMAIL OTP - TEST MODE]\nYOUR LOGIN CODE IS: [ {code} ]\nSent to: {email}\n{'*'*50}\n\n"
+    print(msg, flush=True)
+    import logging
+    logging.getLogger(__name__).warning(msg)
     return True
 
 def normalize_phone(phone):

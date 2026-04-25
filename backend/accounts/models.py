@@ -49,7 +49,7 @@ class Address(models.Model):
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='addresses')
     full_name = models.CharField(_("Full Name"), max_length=100)
-    phone_number = models.CharField(_("Phone Number"), max_length=20)
+    phone_number = models.CharField(_("Phone Number"), max_length=254)
     city = models.CharField(_("City"), max_length=100, choices=CITY_CHOICES, default='jeddah - جدة')
     neighborhood = models.CharField(_("Neighborhood"), max_length=255, blank=True, null=True)
     street = models.CharField(_("Street"), max_length=255, blank=True, null=True)
