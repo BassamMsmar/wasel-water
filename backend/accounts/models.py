@@ -86,7 +86,7 @@ class Address(models.Model):
         super().save(*args, **kwargs)
 
 class OTPToken(models.Model):
-    phone_number = models.CharField(_("Phone Number"), max_length=20)
+    phone_number = models.CharField(_("Phone Number"), max_length=254)
     code = models.CharField(_("OTP Code"), max_length=4)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()

@@ -140,19 +140,17 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-# ─── Internationalization ────────────────────────────────────────────────────────
-LANGUAGE_CODE = 'ar'
+# ─── Internationalization ─────────────────────────────────────────────────────
+LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Riyadh'
 USE_I18N = True
 USE_TZ = True
 
-# ─── Static (Django Admin فقط) ──────────────────────────────────────────────────
+# ─── Static ───────────────────────────────────────────────────────────────────
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# ─── Media ──────────────────────────────────────────────────────────────────────
-# media/ خارج backend/ — أفضل ممارسة لبيئات الإنتاج
-# الهيكل: wasel-water/media/ (وليس wasel-water/backend/media/)
+# ─── Media ─────────────────────────────────────────────────────────────────────
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR.parent / 'media'
 

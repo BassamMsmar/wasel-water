@@ -69,7 +69,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 class BrandViewSet(viewsets.ModelViewSet):
-    queryset = Brand.objects.annotate(products_count=Count('product_brand'))
+    queryset = Brand.objects.annotate(products_count=Count('product_brand')).order_by('name')
     serializer_class = BrandSerializer
     lookup_field = 'slug'
 
@@ -90,7 +90,7 @@ class BrandViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
+    queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer
     lookup_field = 'slug'
 

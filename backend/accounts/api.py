@@ -241,29 +241,37 @@ class OTPRequestView(APIView):
             or ""
         ).strip()
         normalized_identifier, channel, _user = resolve_login_identifier(raw_identifier)
-        if not phone:
-            return Response({"detail": "رقم الجوال مطلوب"}, status=status.HTTP_400_BAD_REQUEST)
+        if not raw_identifier:
+            return Response({"detail": "البريد الإلكتروني أو رقم الجوال مطلوب"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if not validate_phone_sa(phone):
-            return Response({"detail": "رقم الجوال غير صحيح"}, status=status.HTTP_400_BAD_REQUEST)
+        if channel == "unknown":
+            return Response({"detail": "اكتب بريداً إلكترونياً صحيحاً أو رقم جوال سعودي صحيح"}, status=status.HTTP_400_BAD_REQUEST)
 
-        normalized_phone = normalize_phone(phone)
+        if channel == "unreachable":
+            return Response({"detail": "هذا الحساب لا يحتوي على بريد أو جوال لإرسال رمز التحقق"}, status=status.HTTP_400_BAD_REQUEST)
+
         code = generate_otp(4)
 
         from .models import OTPToken
 
-        OTPToken.objects.filter(phone_number=normalized_phone, is_used=False).update(is_used=True)
+        OTPToken.objects.filter(phone_number=normalized_identifier, is_used=False).update(is_used=True)
         OTPToken.objects.create(
-            phone_number=normalized_phone,
+            phone_number=normalized_identifier,
             code=code,
             expires_at=timezone.now() + timedelta(minutes=5),
         )
-        send_otp(normalized_phone, code)
+        if channel == "email":
+            send_email_otp(normalized_identifier, code)
+            message = "تم إرسال رمز التحقق إلى بريدك الإلكتروني"
+        else:
+            send_otp(normalized_identifier, code)
+            message = "تم إرسال رمز التحقق إلى جوالك"
 
         response = {
             "success": True,
-            "phone": normalized_phone,
-            "message": "تم إرسال رمز التحقق بنجاح",
+            "identifier": normalized_identifier,
+            "channel": channel,
+            "message": message,
         }
         from django.conf import settings
         if settings.DEBUG:
@@ -275,18 +283,26 @@ class OTPVerifyView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        phone = (request.data.get("phone") or "").strip()
+        raw_identifier = (
+            request.data.get("identifier")
+            or request.data.get("phone")
+            or request.data.get("email")
+            or request.data.get("username")
+            or ""
+        ).strip()
         code = (request.data.get("code") or "").strip()
 
-        if not phone or not code:
-            return Response({"detail": "رقم الجوال والرمز مطلوبان"}, status=status.HTTP_400_BAD_REQUEST)
+        if not raw_identifier or not code:
+            return Response({"detail": "البريد أو الجوال والرمز مطلوبان"}, status=status.HTTP_400_BAD_REQUEST)
 
-        normalized_phone = normalize_phone(phone)
+        normalized_identifier, channel, resolved_user = resolve_login_identifier(raw_identifier)
+        if channel in ("unknown", "unreachable"):
+            return Response({"detail": "لا يمكن التحقق من هذا الحساب"}, status=status.HTTP_400_BAD_REQUEST)
 
         from .models import OTPToken
 
         token = OTPToken.objects.filter(
-            phone_number=normalized_phone,
+            phone_number=normalized_identifier,
             code=code,
             is_used=False,
         ).order_by("-created_at").first()
@@ -300,20 +316,17 @@ class OTPVerifyView(APIView):
         token.is_used = True
         token.save(update_fields=["is_used"])
 
-        customer = Customer.objects.filter(phone_number=normalized_phone).select_related("user").first()
-        user = customer.user if customer else User.objects.filter(username=normalized_phone).first()
-
+        user = user_for_verified_identifier(raw_identifier, normalized_identifier, channel, resolved_user)
         if user is None:
-            from django.utils.crypto import get_random_string
-            user = User.objects.create_user(username=normalized_phone, password=get_random_string(16))
+            return Response({"detail": "تعذر فتح الجلسة لهذا الحساب"}, status=status.HTTP_400_BAD_REQUEST)
 
-        customer, created = Customer.objects.get_or_create(
-            user=user,
-            defaults={"phone_number": normalized_phone},
-        )
-        if not created and not customer.phone_number:
-            customer.phone_number = normalized_phone
+        customer, _created = Customer.objects.get_or_create(user=user)
+        if channel == "phone" and customer.phone_number != normalized_identifier:
+            customer.phone_number = normalized_identifier
             customer.save(update_fields=["phone_number"])
+        if channel == "email" and user.email != normalized_identifier:
+            user.email = normalized_identifier
+            user.save(update_fields=["email"])
 
         payload = build_tokens(user)
         payload["user"] = UserSerializer(user).data
