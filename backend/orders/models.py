@@ -69,6 +69,10 @@ class Order(models.Model):
         verbose_name = _("الطلب")
         verbose_name_plural = _("الطلبات")
         ordering = ('-created_at',)
+        indexes = [
+            models.Index(fields=['user', '-created_at'], name='order_user_date_idx'),
+            models.Index(fields=['status'],              name='order_status_idx'),
+        ]
 
     def __str__(self):
         return f"Order {self.id} - {self.user.username}"

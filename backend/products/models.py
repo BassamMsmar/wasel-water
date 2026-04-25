@@ -69,6 +69,13 @@ class Product(models.Model):
     class Meta:
         verbose_name = _("المنتج")
         verbose_name_plural = _("المنتجات")
+        indexes = [
+            models.Index(fields=['slug'],        name='product_slug_idx'),
+            models.Index(fields=['active'],       name='product_active_idx'),
+            models.Index(fields=['brand'],        name='product_brand_idx'),
+            models.Index(fields=['-create_at'],   name='product_create_at_idx'),
+            models.Index(fields=['product_type'], name='product_type_idx'),
+        ]
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -150,6 +157,9 @@ class Brand(models.Model):
     class Meta:
         verbose_name = _("العلامة التجارية")
         verbose_name_plural = _("العلامات التجارية")
+        indexes = [
+            models.Index(fields=['slug'], name='brand_slug_idx'),
+        ]
 
     def __str__(self) -> str:
             return self.name
@@ -173,6 +183,9 @@ class Category(models.Model):
     class Meta:
         verbose_name = _("التصنيف")
         verbose_name_plural = _("التصنيفات")
+        indexes = [
+            models.Index(fields=['slug'], name='category_slug_idx'),
+        ]
 
     def __str__(self) -> str:
             return self.name
