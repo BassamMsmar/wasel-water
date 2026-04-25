@@ -49,7 +49,9 @@ export default async function ProductDetailsPage({ params }: Props) {
     new Map(
       related
         .map((item) => item.brand_data)
-        .filter((item): item is NonNullable<typeof item> => Boolean(item) && item.slug !== product.brand_data?.slug)
+        .filter((item): item is NonNullable<typeof item> & { slug: string } =>
+          item != null && typeof item.slug === "string" && item.slug !== product.brand_data?.slug
+        )
         .map((item) => [item.slug, item]),
     ).values(),
   ).slice(0, 6);
