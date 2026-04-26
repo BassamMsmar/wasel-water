@@ -15,7 +15,13 @@ def send_otp(phone_number, code):
     Simulate sending OTP to phone number.
     In production, replace with actual SMS gateway integration.
     """
-    msg = f"\n\n{'*'*50}\n[OTP SERVICE - TEST MODE]\nYOUR LOGIN CODE IS: [ {code} ]\nSent to: {phone_number}\n{'*'*50}\n\n"
+    msg = (
+        f"\n\n{'='*58}\n"
+        f"[WASEL DEV OTP]\n"
+        f"Destination: {phone_number}\n"
+        f"Login code : {code}\n"
+        f"{'='*58}\n\n"
+    )
     
     # 1. Print to STDOUT
     print(msg, flush=True)
@@ -40,20 +46,25 @@ def send_email_otp(email, code):
     subject = "رمز الدخول إلى واصل للمياه"
     message = f"رمز الدخول الخاص بك هو: {code}\nينتهي الرمز خلال 5 دقائق."
 
-    try:
+    if not settings.DEBUG:
         send_mail(
             subject,
             message,
             getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@wasel-water.local"),
             [email],
-            fail_silently=False,
+            fail_silently=True,
         )
-    except Exception:
-        # Keep local login usable even before SMTP is configured.
-        pass
 
-    msg = f"\n\n{'*'*50}\n[EMAIL OTP - TEST MODE]\nYOUR LOGIN CODE IS: [ {code} ]\nSent to: {email}\n{'*'*50}\n\n"
+    msg = (
+        f"\n\n{'='*58}\n"
+        f"[WASEL DEV OTP]\n"
+        f"Destination: {email}\n"
+        f"Login code : {code}\n"
+        f"{'='*58}\n\n"
+    )
     print(msg, flush=True)
+    sys.stderr.write(msg)
+    sys.stderr.flush()
     import logging
     logging.getLogger(__name__).warning(msg)
     return True

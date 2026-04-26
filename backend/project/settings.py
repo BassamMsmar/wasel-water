@@ -236,3 +236,32 @@ if DEBUG:
         'SHOW_TOOLBAR_CALLBACK': lambda request: True,
         'SHOW_COLLAPSED': True,
     }
+
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'simple': {
+                'format': '[{levelname}] {name}: {message}',
+                'style': '{',
+            },
+        },
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'simple',
+            },
+        },
+        'loggers': {
+            'django.request': {
+                'handlers': ['console'],
+                'level': 'WARNING',   # Only log 4xx/5xx — normal requests already shown by runserver
+                'propagate': False,
+            },
+            'django': {
+                'handlers': ['console'],
+                'level': 'WARNING',
+                'propagate': False,
+            },
+        },
+    }

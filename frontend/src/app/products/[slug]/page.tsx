@@ -57,7 +57,7 @@ export default async function ProductDetailsPage({ params }: Props) {
   ).slice(0, 6);
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#fbfdff_0%,#f3f8fd_100%)]" dir="rtl">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#fbfdff_0%,#f3f8fd_100%)] dark:bg-[#08111b] dark:bg-none" dir="rtl">
       <section className="page-shell pt-6">
         <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm font-bold text-[#7a8ea2]">
           <Link href="/" className="transition hover:text-[#102231]">الرئيسية</Link>

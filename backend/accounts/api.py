@@ -11,12 +11,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
 from django.utils import timezone
 from .models import Customer, Address
-from .otp_utils import generate_otp, normalize_phone, send_email_otp, send_otp, validate_phone_sa
+from .otp_utils import generate_otp, normalize_phone, send_otp, send_email_otp, validate_phone_sa
 from drf_spectacular.utils import extend_schema
 from .serializers import (
     CustomerSerializer,
     AddressSerializer,
     UserSerializer,
+    ProfileSerializer,
     RegisterSerializer,
     ProfileUpdateSerializer,
 )
@@ -38,83 +39,12 @@ def is_email(value):
     return True
 
 
-def unique_username_from_email(email):
-    base = email.split("@")[0].strip().lower() or "customer"
-    username = base[:120]
-    if not User.objects.filter(username__iexact=username).exists():
-        return username
-
-    from django.utils.crypto import get_random_string
-
-    while True:
-        candidate = f"{base[:112]}_{get_random_string(6).lower()}"
-        if not User.objects.filter(username__iexact=candidate).exists():
-            return candidate
-
-
-def resolve_login_identifier(raw_identifier):
-    identifier = (raw_identifier or "").strip()
-    if not identifier:
-        return None, None, None
-
-    if is_email(identifier):
-        return identifier.lower(), "email", User.objects.filter(email__iexact=identifier).first()
-
-    if validate_phone_sa(identifier):
-        normalized_phone = normalize_phone(identifier)
-        customer = Customer.objects.filter(phone_number=normalized_phone).select_related("user").first()
-        user = customer.user if customer else User.objects.filter(username=normalized_phone).first()
-        return normalized_phone, "phone", user
-
-    user = User.objects.filter(
-        Q(username__iexact=identifier)
-        | Q(email__iexact=identifier)
-        | Q(customer__phone_number__iexact=identifier)
-    ).select_related("customer").first()
-
-    if not user:
-        return identifier, "unknown", None
-
-    customer = getattr(user, "customer", None)
-    if customer and customer.phone_number and validate_phone_sa(customer.phone_number):
-        return normalize_phone(customer.phone_number), "phone", user
-    if user.email and is_email(user.email):
-        return user.email.lower(), "email", user
-    return identifier, "unreachable", user
-
-
-def user_for_verified_identifier(raw_identifier, normalized_identifier, channel, resolved_user=None):
-    if resolved_user:
-        return resolved_user
-
-    if channel == "email":
-        user = User.objects.filter(email__iexact=normalized_identifier).first()
-        if user:
-            return user
-        return User.objects.create_user(
-            username=unique_username_from_email(normalized_identifier),
-            email=normalized_identifier,
-            password=None,
-        )
-
-    if channel == "phone":
-        customer = Customer.objects.filter(phone_number=normalized_identifier).select_related("user").first()
-        if customer:
-            return customer.user
-        user = User.objects.filter(username=normalized_identifier).first()
-        if user:
-            return user
-        return User.objects.create_user(username=normalized_identifier, password=None)
-
-    return None
-
-
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
 
-    @extend_schema(responses=UserSerializer)
+    @extend_schema(responses=ProfileSerializer)
     def create(self, request, *args, **kwargs):
         data = request.data
         username = data.get('username') or data.get('email', '').split('@')[0]
@@ -125,13 +55,13 @@ class RegisterView(generics.CreateAPIView):
 
         if not email or not password:
             return Response(
-                {'detail': 'البريد الإلكتروني وكلمة المرور مطلوبان'},
+                {'detail': 'Email and password are required'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         if User.objects.filter(email=email).exists():
             return Response(
-                {'detail': 'البريد الإلكتروني مستخدم بالفعل'},
+                {'detail': 'Email already in use'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -147,19 +77,18 @@ class RegisterView(generics.CreateAPIView):
             last_name=last_name,
         )
         Customer.objects.get_or_create(user=user)
-        return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
+        return Response(ProfileSerializer(user).data, status=status.HTTP_201_CREATED)
 
 
 class ProfileView(generics.GenericAPIView):
     serializer_class = ProfileUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    @extend_schema(responses=UserSerializer)
+    @extend_schema(responses=ProfileSerializer)
     def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
+        return Response(ProfileSerializer(request.user).data)
 
-    @extend_schema(request=ProfileUpdateSerializer, responses=UserSerializer)
+    @extend_schema(request=ProfileUpdateSerializer, responses=ProfileSerializer)
     def patch(self, request):
         user = request.user
         data = request.data
@@ -173,7 +102,7 @@ class ProfileView(generics.GenericAPIView):
                 if field in data:
                     setattr(customer, field, data[field])
             customer.save()
-        return Response(UserSerializer(user).data)
+        return Response(ProfileSerializer(user).data)
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -218,14 +147,14 @@ class IdentifierLoginView(APIView):
         password = (request.data.get("password") or "").strip()
 
         if not identifier or not password:
-            return Response({"detail": "الهوية وكلمة المرور مطلوبتان"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Identifier and password are required"}, status=status.HTTP_400_BAD_REQUEST)
 
         user = authenticate(request, username=identifier, password=password)
         if user is None:
-            return Response({"detail": "بيانات الدخول غير صحيحة"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
         payload = build_tokens(user)
-        payload["user"] = UserSerializer(user).data
+        payload["user"] = ProfileSerializer(user).data
         return Response(payload)
 
 
@@ -233,43 +162,44 @@ class OTPRequestView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        raw_identifier = (
-            request.data.get("identifier")
-            or request.data.get("phone")
-            or request.data.get("email")
-            or request.data.get("username")
-            or ""
-        ).strip()
-        normalized_identifier, channel, _user = resolve_login_identifier(raw_identifier)
-        if not raw_identifier:
-            return Response({"detail": "البريد الإلكتروني أو رقم الجوال مطلوب"}, status=status.HTTP_400_BAD_REQUEST)
+        raw = (request.data.get("phone") or request.data.get("identifier") or "").strip()
+        if not raw:
+            return Response({"detail": "Phone or email is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if channel == "unknown":
-            return Response({"detail": "اكتب بريداً إلكترونياً صحيحاً أو رقم جوال سعودي صحيح"}, status=status.HTTP_400_BAD_REQUEST)
+        from django.core.validators import validate_email
+        from django.core.exceptions import ValidationError as DjVE
 
-        if channel == "unreachable":
-            return Response({"detail": "هذا الحساب لا يحتوي على بريد أو جوال لإرسال رمز التحقق"}, status=status.HTTP_400_BAD_REQUEST)
+        # Detect channel
+        try:
+            validate_email(raw)
+            channel = "email"
+            normalized = raw.lower()
+        except DjVE:
+            if not validate_phone_sa(raw):
+                return Response({"detail": "Invalid Saudi phone number or email"}, status=status.HTTP_400_BAD_REQUEST)
+            channel = "phone"
+            normalized = normalize_phone(raw)
 
         code = generate_otp(4)
 
         from .models import OTPToken
-
-        OTPToken.objects.filter(phone_number=normalized_identifier, is_used=False).update(is_used=True)
+        OTPToken.objects.filter(phone_number=normalized, is_used=False).update(is_used=True)
         OTPToken.objects.create(
-            phone_number=normalized_identifier,
+            phone_number=normalized,
             code=code,
             expires_at=timezone.now() + timedelta(minutes=5),
         )
+
         if channel == "email":
-            send_email_otp(normalized_identifier, code)
-            message = "تم إرسال رمز التحقق إلى بريدك الإلكتروني"
+            send_email_otp(normalized, code)
+            message = "OTP sent to your email"
         else:
-            send_otp(normalized_identifier, code)
-            message = "تم إرسال رمز التحقق إلى جوالك"
+            send_otp(normalized, code)
+            message = "OTP sent to your phone"
 
         response = {
             "success": True,
-            "identifier": normalized_identifier,
+            "phone": normalized,
             "channel": channel,
             "message": message,
         }
@@ -283,26 +213,25 @@ class OTPVerifyView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        raw_identifier = (
-            request.data.get("identifier")
-            or request.data.get("phone")
-            or request.data.get("email")
-            or request.data.get("username")
-            or ""
-        ).strip()
+        raw = (request.data.get("phone") or request.data.get("identifier") or "").strip()
         code = (request.data.get("code") or "").strip()
 
-        if not raw_identifier or not code:
-            return Response({"detail": "البريد أو الجوال والرمز مطلوبان"}, status=status.HTTP_400_BAD_REQUEST)
+        if not raw or not code:
+            return Response({"detail": "Phone/email and code are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        normalized_identifier, channel, resolved_user = resolve_login_identifier(raw_identifier)
-        if channel in ("unknown", "unreachable"):
-            return Response({"detail": "لا يمكن التحقق من هذا الحساب"}, status=status.HTTP_400_BAD_REQUEST)
+        from django.core.validators import validate_email
+        from django.core.exceptions import ValidationError as DjVE
+        try:
+            validate_email(raw)
+            normalized = raw.lower()
+            channel = "email"
+        except DjVE:
+            normalized = normalize_phone(raw)
+            channel = "phone"
 
         from .models import OTPToken
-
         token = OTPToken.objects.filter(
-            phone_number=normalized_identifier,
+            phone_number=normalized,
             code=code,
             is_used=False,
         ).order_by("-created_at").first()
@@ -311,25 +240,34 @@ class OTPVerifyView(APIView):
             if token:
                 token.attempts += 1
                 token.save(update_fields=["attempts"])
-            return Response({"detail": "رمز التحقق غير صحيح أو منتهي الصلاحية"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Invalid or expired OTP"}, status=status.HTTP_400_BAD_REQUEST)
 
         token.is_used = True
         token.save(update_fields=["is_used"])
 
-        user = user_for_verified_identifier(raw_identifier, normalized_identifier, channel, resolved_user)
-        if user is None:
-            return Response({"detail": "تعذر فتح الجلسة لهذا الحساب"}, status=status.HTTP_400_BAD_REQUEST)
+        # Find or create user
+        if channel == "email":
+            user = User.objects.filter(email__iexact=normalized).first()
+            if user is None:
+                from django.utils.crypto import get_random_string
+                username = normalized.split("@")[0][:120]
+                if User.objects.filter(username__iexact=username).exists():
+                    username = f"{username}_{get_random_string(5).lower()}"
+                user = User.objects.create_user(username=username, email=normalized, password=get_random_string(16))
+        else:
+            customer = Customer.objects.filter(phone_number=normalized).select_related("user").first()
+            user = customer.user if customer else User.objects.filter(username=normalized).first()
+            if user is None:
+                from django.utils.crypto import get_random_string
+                user = User.objects.create_user(username=normalized, password=get_random_string(16))
 
-        customer, _created = Customer.objects.get_or_create(user=user)
-        if channel == "phone" and customer.phone_number != normalized_identifier:
-            customer.phone_number = normalized_identifier
+        customer, created = Customer.objects.get_or_create(user=user)
+        if channel == "phone" and not customer.phone_number:
+            customer.phone_number = normalized
             customer.save(update_fields=["phone_number"])
-        if channel == "email" and user.email != normalized_identifier:
-            user.email = normalized_identifier
-            user.save(update_fields=["email"])
 
         payload = build_tokens(user)
-        payload["user"] = UserSerializer(user).data
+        payload["user"] = ProfileSerializer(user).data
         return Response(payload)
 
 
@@ -350,7 +288,7 @@ class LocationSyncView(APIView):
         phone_number = (data.get("phone_number") or "").strip()
 
         if not maps_url and (not latitude or not longitude):
-            return Response({"detail": "بيانات الموقع غير مكتملة"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Incomplete location data"}, status=status.HTTP_400_BAD_REQUEST)
 
         location_qs = Address.objects.filter(user=request.user)
         if maps_url:
@@ -378,7 +316,7 @@ class LocationSyncView(APIView):
             user=request.user,
             full_name=full_name[:100],
             phone_number=safe_phone[:20],
-            city=(city or "jeddah - جدة")[:100],
+            city=(city or "jeddah")[:100],
             country=country[:100] or None,
             neighborhood=neighborhood[:255] or readable_address[:255] or None,
             street=street[:255] or None,

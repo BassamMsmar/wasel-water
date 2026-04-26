@@ -8,19 +8,21 @@ export function CategoriesSection({ categories }: { categories: Category[] }) {
 
   return (
     <section className="site-container relative z-10 -mb-10 pt-4 md:-mb-16">
-      <div className="mb-5 text-right">
-        <span className="eyebrow mb-3">الأقسام والعروض</span>
-        <h2 className="section-title">تصفح العروض والأقسام</h2>
+      <div className="section-head border-b border-[#e4edf5] pb-4 text-right">
+        <div>
+          <span className="eyebrow mb-3">الأقسام والعروض</span>
+          <h2 className="section-title">تصفح العروض والأقسام</h2>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8">
         {categories.map((category) => (
-          <div key={category.id} className="text-center">
+          <div key={category.id} className="text-center w-[150px] sm:w-[190px] md:w-[230px] max-w-[44vw]">
             <Link
               href={`/categories/${category.slug}`}
-              className="group block overflow-hidden rounded-[24px] border border-[#dce8f2] bg-white shadow-[0_2px_10px_rgba(10,34,56,0.02)] transition duration-300 hover:-translate-y-0.5 hover:border-[#c4dced] hover:shadow-[0_4px_14px_rgba(10,34,56,0.03)]"
+              className="group block overflow-hidden rounded-[24px] border border-[#dce8f2] bg-white shadow-[0_2px_10px_rgba(10,34,56,0.02)] transition duration-300 hover:-translate-y-0.5 hover:border-[#c4dced] hover:shadow-[0_4px_14px_rgba(10,34,56,0.03)] dark:border-[#1e344a] dark:bg-[#0b1a27] dark:shadow-none"
             >
-              <div className="relative aspect-square w-full bg-[linear-gradient(180deg,#ffffff_0%,#eef6ff_100%)]">
+              <div className="relative aspect-square w-full bg-[linear-gradient(180deg,#ffffff_0%,#eef6ff_100%)] dark:bg-transparent">
                 <SafeImage
                   src={absoluteMediaUrl(category.image, fallbackProductImage)}
                   fallback={fallbackProductImage}
@@ -30,7 +32,7 @@ export function CategoriesSection({ categories }: { categories: Category[] }) {
                 />
               </div>
             </Link>
-            <h3 className="mt-3 text-sm font-black text-[#102231]">{category.name}</h3>
+            <h3 className="mt-3 text-sm font-black text-[#102231] dark:text-[#eef5fb]">{category.name}</h3>
           </div>
         ))}
       </div>

@@ -26,9 +26,11 @@ export default async function HomePage() {
   const featuredBrands = brands.slice(0, 7);
 
   return (
-    <div className="min-h-screen bg-[#f7fbff]">
-      <HeroSection />
-      <FeaturedProducts products={featuredProducts} />
+    <div className="min-h-screen bg-[#f7fbff] dark:bg-[#08111b]">
+      <section className="border-b border-[#e9f1f7] bg-[linear-gradient(180deg,#ffffff_0%,#eef6ff_100%)] pb-10 dark:border-[#1e344a] dark:bg-transparent sm:pb-16 lg:pb-20">
+        <HeroSection />
+        <FeaturedProducts products={featuredProducts} />
+      </section>
       <CategoriesSection categories={featuredCategories} />
       <BrandsSection brands={featuredBrands} />
       <BestSellersSection products={bestSellers} />

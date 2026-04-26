@@ -17,7 +17,9 @@ export function FloatingWhatsApp() {
   useEffect(() => {
     getCompanies()
       .then((companies) => {
-        const raw = companies[0]?.whatsapp?.replace(/[^\d]/g, "") || "";
+        const company = companies[0];
+        if (!company) return;
+        const raw = (company.whatsapp || company.phone || "").replace(/[^\d+]/g, "");
         if (!raw) return;
         setWhatsAppLink(`https://wa.me/${raw}`);
       })

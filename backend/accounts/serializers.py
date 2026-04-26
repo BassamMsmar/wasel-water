@@ -3,10 +3,19 @@ from django.contrib.auth.models import User
 from .models import Customer, Address
 
 class UserSerializer(serializers.ModelSerializer):
+    """Nested serializer — safe for embedding in other responses. No privilege fields."""
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name']
         read_only_fields = ['id']
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    """Used only for /auth/profile/ — includes is_staff so the frontend can route correctly."""
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser']
+        read_only_fields = ['id', 'is_staff', 'is_superuser']
 
 
 class RegisterSerializer(serializers.Serializer):

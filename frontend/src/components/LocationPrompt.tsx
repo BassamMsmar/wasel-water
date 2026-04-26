@@ -26,12 +26,21 @@ export function LocationPrompt() {
   }, []);
 
   const mapFrame = useMemo(() => {
-    if (!previewUrl) return "";
-    const match = previewUrl.match(/q=([-\d.]+),([-\d.]+)/);
-    if (!match) return "";
-    const lat = Number(match[1]);
-    const lng = Number(match[2]);
-    return `https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.01}%2C${lat - 0.01}%2C${lng + 0.01}%2C${lat + 0.01}&layer=mapnik&marker=${lat}%2C${lng}`;
+    let lat = 21.5433; // Default Jeddah latitude
+    let lng = 39.1728; // Default Jeddah longitude
+
+    if (previewUrl) {
+      const match = previewUrl.match(/q=([-\d.]+),([-\d.]+)/);
+      if (match) {
+        lat = Number(match[1]);
+        lng = Number(match[2]);
+      }
+    }
+    
+    const zoomOffset = 0.01;
+    const markerParam = `&marker=${lat}%2C${lng}`;
+    
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${lng - zoomOffset}%2C${lat - zoomOffset}%2C${lng + zoomOffset}%2C${lat + zoomOffset}&layer=mapnik${markerParam}`;
   }, [previewUrl]);
 
   async function useCurrentLocation() {
@@ -75,15 +84,9 @@ export function LocationPrompt() {
           </p>
         </div>
 
-        {mapFrame ? (
-          <div className="mb-4 overflow-hidden rounded-[22px] border border-[#dce8f2]">
-            <iframe title="خريطة الموقع" src={mapFrame} className="h-[220px] w-full border-0" loading="lazy" />
-          </div>
-        ) : (
-          <div className="mb-4 rounded-[22px] border border-dashed border-[#d6e4ef] bg-[#f8fbff] px-4 py-8 text-center text-sm font-bold text-[#8aa0b4]">
-            سيظهر هنا معاينة للموقع بعد استخدام زر تحديد موقعي الحالي.
-          </div>
-        )}
+        <div className="mb-4 overflow-hidden rounded-[22px] border border-[#dce8f2] bg-[#f8fbff]">
+          <iframe title="خريطة الموقع" src={mapFrame} className="h-[220px] w-full border-0" loading="lazy" />
+        </div>
 
         {address ? (
           <div className="mb-4 rounded-[18px] border border-[#dce8f2] bg-[#f5faff] px-4 py-3 text-sm font-bold text-[#2d78c8]">

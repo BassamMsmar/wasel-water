@@ -323,12 +323,14 @@ function ProductEditor({
   mode,
   form,
   product,
+  imageFile,
   categories,
   brands,
   flags,
   featured,
   saving,
   onChange,
+  onImageChange,
   onSave,
   onPreview,
 }: {
@@ -341,6 +343,8 @@ function ProductEditor({
   featured: FeaturedProduct[];
   saving: boolean;
   onChange: <K extends keyof ProductFormState>(key: K, value: ProductFormState[K]) => void;
+  onImageChange: (file: File | null) => void;
+  imageFile: File | null;
   onSave: () => Promise<void>;
   onPreview: () => void;
 }) {
@@ -445,8 +449,10 @@ function ProductEditor({
               <div className="grid gap-4 lg:grid-cols-[220px,minmax(0,1fr),minmax(0,1fr)]">
                 <section className="rounded-[20px] border border-[#d7e5f1] bg-white p-4 lg:row-span-2">
                   <h4 className="mb-3 text-sm font-black text-[#102231]">صورة المنتج</h4>
-                  <div className="relative min-h-[220px] overflow-hidden rounded-[18px] border border-dashed border-[#c8d9ea] bg-[#f8fbff]">
-                    {product?.image ? (
+                  <div className="relative min-h-[220px] overflow-hidden rounded-[18px] border border-dashed border-[#c8d9ea] bg-[#f8fbff] mb-4">
+                    {imageFile ? (
+                      <img src={URL.createObjectURL(imageFile)} alt="preview" className="object-contain p-3 w-full h-full absolute inset-0" />
+                    ) : product?.image ? (
                       <Image src={absoluteMediaUrl(product.image)} alt={product.name} fill unoptimized className="object-contain p-3" />
                     ) : (
                       <div className="flex h-full min-h-[220px] items-center justify-center text-sm font-bold text-[#8da0b3]">
@@ -454,6 +460,7 @@ function ProductEditor({
                       </div>
                     )}
                   </div>
+                  <input className="form-input text-xs w-full" type="file" accept="image/*" onChange={(event) => onImageChange(event.target.files?.[0] ?? null)} />
                 </section>
 
                 <label className="form-group">
@@ -538,6 +545,13 @@ function ProductEditor({
           <div className="grid gap-5">
             <GooglePreview title={previewTitle} description={previewDescription} slug={previewSlug} />
           </div>
+        </div>
+
+        <div className="mt-8 flex justify-end border-t border-[#edf3f8] pt-6">
+          <button type="button" className="btn btn-primary" onClick={onSave} disabled={saving}>
+            <Save className="h-4 w-4" />
+            {saving ? "جارٍ الحفظ..." : "حفظ المنتج"}
+          </button>
         </div>
       </div>
     </div>
@@ -762,6 +776,7 @@ export default function DashboardPage() {
   const [bannerForm, setBannerForm] = useState<BannerFormState>(bannerToForm(null));
   const [flagForm, setFlagForm] = useState<FlagFormState>(flagToForm(null));
   const [branchForm, setBranchForm] = useState<BranchFormState>(branchToForm(null));
+  const [productImageFile, setProductImageFile] = useState<File | null>(null);
   const [categoryImageFile, setCategoryImageFile] = useState<File | null>(null);
   const [brandImageFile, setBrandImageFile] = useState<File | null>(null);
   const [offerImageFile, setOfferImageFile] = useState<File | null>(null);
@@ -956,7 +971,10 @@ export default function DashboardPage() {
     : [];
 
   useEffect(() => {
-    if (activeModule === "products") setProductForm(productToForm(mode === "edit" ? currentProduct : null));
+    if (activeModule === "products") {
+      setProductForm(productToForm(mode === "edit" ? currentProduct : null));
+      setProductImageFile(null);
+    }
   }, [activeModule, mode, currentProduct]);
 
   useEffect(() => {
@@ -1073,27 +1091,29 @@ export default function DashboardPage() {
     setError(null);
     setNotice(null);
     try {
-      const payload = {
-        name: productForm.name,
-        slug: productForm.slug || slugifyText(productForm.name),
-        subtitle: productForm.subtitle,
-        descriptions: productForm.descriptions,
-        old_price: Number(productForm.old_price || 0),
-        new_price: Number(productForm.new_price || 0),
-        quantity: Number(productForm.quantity || 0),
-        brand: productForm.brand ? Number(productForm.brand) : null,
-        flag: productForm.flag ? Number(productForm.flag) : null,
-        product_type: productForm.product_type,
-        sku: productForm.sku,
-        linkVideo: productForm.linkVideo,
-        active: productForm.active,
-        category: productForm.category,
-        tags: [],
-        seo_title: productForm.seo_title,
-        seo_description: productForm.seo_description,
-        seo_keywords: productForm.seo_keywords,
-        seo_canonical_url: productForm.seo_canonical_url,
-      };
+      const payload = new FormData();
+      payload.append("name", productForm.name);
+      payload.append("slug", productForm.slug || slugifyText(productForm.name));
+      payload.append("subtitle", productForm.subtitle);
+      payload.append("descriptions", productForm.descriptions);
+      payload.append("old_price", String(Number(productForm.old_price || 0)));
+      payload.append("new_price", String(Number(productForm.new_price || 0)));
+      payload.append("quantity", String(Number(productForm.quantity || 0)));
+      if (productForm.brand) payload.append("brand", productForm.brand);
+      if (productForm.flag) payload.append("flag", productForm.flag);
+      payload.append("product_type", productForm.product_type);
+      payload.append("sku", productForm.sku);
+      payload.append("linkVideo", productForm.linkVideo);
+      payload.append("active", String(productForm.active));
+      
+      productForm.category.forEach((catId) => payload.append("category", String(catId)));
+      
+      payload.append("seo_title", productForm.seo_title);
+      payload.append("seo_description", productForm.seo_description);
+      payload.append("seo_keywords", productForm.seo_keywords);
+      payload.append("seo_canonical_url", productForm.seo_canonical_url);
+
+      if (productImageFile) payload.append("image", productImageFile);
 
       const saved = mode === "create"
         ? await authRequest<Product>("/products/", { method: "POST", body: payload })
@@ -1303,12 +1323,14 @@ export default function DashboardPage() {
           mode={mode}
           form={productForm}
           product={currentProduct}
+          imageFile={productImageFile}
           categories={categories}
           brands={brands}
           flags={flags}
           featured={featuredProducts}
           saving={saving}
           onChange={(key, value) => setProductForm((current) => ({ ...current, [key]: value }))}
+          onImageChange={(file) => setProductImageFile(file)}
           onSave={saveProduct}
           onPreview={openProductPreview}
         />
