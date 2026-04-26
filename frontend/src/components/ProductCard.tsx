@@ -50,7 +50,7 @@ export function ProductCard({
     <article className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-[#d9e6f2] bg-white shadow-[0_2px_10px_rgba(10,34,56,0.015)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_14px_rgba(10,34,56,0.02)] dark:border-[#1e344a] dark:bg-[#0b1a27] dark:shadow-none">
       <Link
         href={`/products/${product.slug}`}
-        className={`relative block overflow-hidden bg-[linear-gradient(180deg,#fafdff_0%,#eaf4ff_100%)] dark:bg-none ${imageHeight}`}
+        className={`relative block overflow-hidden bg-[linear-gradient(180deg,#fafdff_0%,#eaf4ff_100%)] dark:bg-[#081521] dark:bg-none ${imageHeight}`}
       >
         <div className="absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-2 p-3">
           <span className="rounded-full border border-[#cfe0f2] bg-white/92 px-2.5 py-1 text-[10px] font-black text-[#1d639f] dark:border-[#2a4d70] dark:bg-[#0b1a27]/92 dark:text-[#64a9e5]">

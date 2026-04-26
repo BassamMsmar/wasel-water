@@ -17,12 +17,14 @@ import {
   LayoutDashboard,
   LogOut,
   MapPinned,
+  Moon,
   Package,
   PackagePlus,
   Plus,
   Save,
   Search,
   ShoppingBag,
+  Sun,
   Tags,
   Trash2,
   Users,
@@ -682,6 +684,8 @@ function CustomerDashboard({
   profile: UserAccount | null;
   orders: Order[];
   onLogout: () => Promise<void>;
+  darkMode: boolean;
+  toggleTheme: () => void;
 }) {
   const paid = orders.filter((order) => order.is_paid).length;
   const pending = orders.filter((order) => !order.is_paid).length;
@@ -700,6 +704,9 @@ function CustomerDashboard({
           </div>
         </div>
         <div className="dash-actions">
+          <button type="button" onClick={toggleTheme} className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d6e4f0] bg-white text-[#476074] transition hover:bg-[#f3f8fc] hover:text-[#123e67] dark:border-[#1e344a] dark:bg-[#0b1a27] dark:text-[#9db3c7] dark:hover:bg-[#0f2133] dark:hover:text-[#eef5fb]" aria-label="تبديل المظهر">
+            {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
           <button className="dash-btn-logout" onClick={onLogout}>تسجيل الخروج</button>
         </div>
       </div>
@@ -757,6 +764,7 @@ function CustomerDashboard({
 
 export default function DashboardPage() {
   const router = useRouter();
+  const [darkMode, setDarkMode] = useState(false);
   const [profile, setProfile] = useState<UserAccount | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -790,6 +798,23 @@ export default function DashboardPage() {
   const [offerImageFile, setOfferImageFile] = useState<File | null>(null);
   const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
   const [cropSourceUrl, setCropSourceUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("wasel-theme");
+    if (savedTheme === "dark" || savedTheme === "light") {
+      document.documentElement.dataset.theme = savedTheme;
+      setDarkMode(savedTheme === "dark");
+    } else {
+      setDarkMode(document.documentElement.dataset.theme === "dark");
+    }
+  }, []);
+
+  function toggleTheme() {
+    const nextDark = !darkMode;
+    setDarkMode(nextDark);
+    document.documentElement.dataset.theme = nextDark ? "dark" : "light";
+    localStorage.setItem("wasel-theme", nextDark ? "dark" : "light");
+  }
 
   useEffect(() => {
     if (!isLoggedIn()) {
@@ -1702,7 +1727,7 @@ export default function DashboardPage() {
   }
 
   if (!profile?.is_staff) {
-    return <CustomerDashboard profile={profile} orders={orders} onLogout={handleLogout} />;
+    return <CustomerDashboard profile={profile} orders={orders} onLogout={handleLogout} darkMode={darkMode} toggleTheme={toggleTheme} />;
   }
 
   return (
@@ -1717,7 +1742,7 @@ export default function DashboardPage() {
           onCancel={() => setCropSourceUrl(null)}
         />
       )}
-      <div className="sticky top-2 z-20 mb-4 rounded-[22px] border border-[#dfeaf4] bg-white/95 px-4 py-3 shadow-[0_1px_8px_rgba(10,34,56,0.02)] backdrop-blur">
+      <div className="sticky top-2 z-20 mb-4 rounded-[22px] border border-[#dfeaf4] bg-white/95 px-4 py-3 shadow-[0_1px_8px_rgba(10,34,56,0.02)] backdrop-blur dark:border-[#1e344a] dark:bg-[#0b1a27]/95 dark:shadow-none">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex items-center gap-4">
             <div className="dash-avatar">
@@ -1733,6 +1758,9 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={toggleTheme} className="flex h-10 w-10 items-center justify-center rounded-[12px] border border-[#d6e4f0] bg-white text-[#476074] transition hover:bg-[#f3f8fc] hover:text-[#123e67] dark:border-[#1e344a] dark:bg-[#0b1a27] dark:text-[#9db3c7] dark:hover:bg-[#0f2133] dark:hover:text-[#eef5fb]" aria-label="تبديل المظهر">
+              {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
             <Link href="/" target="_blank" className="btn btn-secondary">
               <ShoppingBag className="h-4 w-4" />
               زيارة المتجر
