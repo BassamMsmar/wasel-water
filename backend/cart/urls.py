@@ -1,6 +1,11 @@
-"""
-cart/urls.py
-Session Cart URLs محذوفة.
-كل الـ API endpoints مسجلة في project/api_urls.py
-"""
-urlpatterns = []
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
+from .api import CartViewSet
+
+router = DefaultRouter()
+router.register(r'cart', CartViewSet)
+
+urlpatterns = [
+    path('', include(router.urls)),
+]

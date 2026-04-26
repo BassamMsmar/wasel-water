@@ -10,6 +10,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+
+
+
 urlpatterns = [
     # Django Admin
     path('admin/', admin.site.urls),

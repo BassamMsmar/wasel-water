@@ -192,6 +192,7 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'REST API لمنصة واصل للمياه — Next.js Frontend',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'SCHEMA_PATH_PREFIX': r'/api/v[0-9]+/',
     'SWAGGER_UI_SETTINGS': {
         'deepLinking': True,
         'persistAuthorization': True,

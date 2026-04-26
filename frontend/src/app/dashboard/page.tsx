@@ -680,6 +680,8 @@ function CustomerDashboard({
   profile,
   orders,
   onLogout,
+  darkMode,
+  toggleTheme,
 }: {
   profile: UserAccount | null;
   orders: Order[];
