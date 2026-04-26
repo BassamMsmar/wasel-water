@@ -30,6 +30,7 @@ import {
 import { authFetchList, authRequest, getMyOrders, getProfile, isLoggedIn, logout } from "@/lib/auth";
 import { getBanners, getBrands, getCategories, getOffers, getProducts } from "@/lib/api";
 import { absoluteMediaUrl, money } from "@/lib/media";
+import { ImageCropper } from "@/components/ImageCropper";
 import type {
   Banner,
   Brand,
@@ -331,6 +332,7 @@ function ProductEditor({
   saving,
   onChange,
   onImageChange,
+  onEditImage,
   onSave,
   onPreview,
 }: {
@@ -344,6 +346,7 @@ function ProductEditor({
   saving: boolean;
   onChange: <K extends keyof ProductFormState>(key: K, value: ProductFormState[K]) => void;
   onImageChange: (file: File | null) => void;
+  onEditImage: () => void;
   imageFile: File | null;
   onSave: () => Promise<void>;
   onPreview: () => void;
@@ -460,7 +463,12 @@ function ProductEditor({
                       </div>
                     )}
                   </div>
-                  <input className="form-input text-xs w-full" type="file" accept="image/*" onChange={(event) => onImageChange(event.target.files?.[0] ?? null)} />
+                  <div className="flex flex-col gap-2">
+                    <input className="form-input text-xs w-full" type="file" accept="image/*" onChange={(event) => onImageChange(event.target.files?.[0] ?? null)} />
+                    <button type="button" onClick={onEditImage} className="btn btn-secondary btn-sm w-full" disabled={!imageFile && !product?.image}>
+                      تعديل وضبط الصورة
+                    </button>
+                  </div>
                 </section>
 
                 <label className="form-group">
@@ -781,6 +789,7 @@ export default function DashboardPage() {
   const [brandImageFile, setBrandImageFile] = useState<File | null>(null);
   const [offerImageFile, setOfferImageFile] = useState<File | null>(null);
   const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
+  const [cropSourceUrl, setCropSourceUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoggedIn()) {
@@ -1330,7 +1339,20 @@ export default function DashboardPage() {
           featured={featuredProducts}
           saving={saving}
           onChange={(key, value) => setProductForm((current) => ({ ...current, [key]: value }))}
-          onImageChange={(file) => setProductImageFile(file)}
+          onImageChange={(file) => {
+            if (file) {
+              setCropSourceUrl(URL.createObjectURL(file));
+            } else {
+              setProductImageFile(null);
+            }
+          }}
+          onEditImage={() => {
+            if (productImageFile) {
+              setCropSourceUrl(URL.createObjectURL(productImageFile));
+            } else if (currentProduct?.image) {
+              setCropSourceUrl(absoluteMediaUrl(currentProduct.image));
+            }
+          }}
           onSave={saveProduct}
           onPreview={openProductPreview}
         />
@@ -1685,6 +1707,16 @@ export default function DashboardPage() {
 
   return (
     <section className="dashboard-font dashboard-shell" dir="rtl">
+      {cropSourceUrl && (
+        <ImageCropper
+          imageSrc={cropSourceUrl}
+          onCropComplete={(croppedFile) => {
+            setProductImageFile(croppedFile);
+            setCropSourceUrl(null);
+          }}
+          onCancel={() => setCropSourceUrl(null)}
+        />
+      )}
       <div className="sticky top-2 z-20 mb-4 rounded-[22px] border border-[#dfeaf4] bg-white/95 px-4 py-3 shadow-[0_1px_8px_rgba(10,34,56,0.02)] backdrop-blur">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex items-center gap-4">

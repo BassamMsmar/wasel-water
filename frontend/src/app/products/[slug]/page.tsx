@@ -71,8 +71,8 @@ export default async function ProductDetailsPage({ params }: Props) {
           <div className="min-w-0 flex-1 xl:max-w-[calc(100%-320px)]">
             <div className="rounded-[30px] border border-[#dfeaf4] bg-white p-5 shadow-[0_2px_12px_rgba(10,34,56,0.02)] md:p-6">
               <div className="grid gap-6 lg:grid-cols-[minmax(320px,0.95fr),minmax(0,1fr)] lg:items-start">
-                <div className="rounded-[28px] border border-[#e2ebf4] bg-[linear-gradient(180deg,#ffffff_0%,#eef6ff_100%)] p-4">
-                  <div className="relative min-h-[360px] overflow-hidden rounded-[22px] bg-white">
+                <div className="rounded-[28px] border border-[#e2ebf4] bg-[linear-gradient(180deg,#ffffff_0%,#eef6ff_100%)] p-4 dark:border-[#1e344a] dark:bg-none dark:bg-[#0b1a27]">
+                  <div className="relative min-h-[360px] overflow-hidden rounded-[22px] bg-white dark:bg-[#0f2133]">
                     <SafeImage
                       src={absoluteMediaUrl(product.image)}
                       fallback={fallbackProductImage}
@@ -85,7 +85,7 @@ export default async function ProductDetailsPage({ params }: Props) {
                   {gallery.length > 1 ? (
                     <div className="mt-4 grid grid-cols-4 gap-3">
                       {gallery.slice(0, 4).map((image, index) => (
-                        <div key={`${String(image)}-${index}`} className="relative aspect-square overflow-hidden rounded-[18px] border border-[#e4edf5] bg-[#f8fbff]">
+                        <div key={`${String(image)}-${index}`} className="relative aspect-square overflow-hidden rounded-[18px] border border-[#e4edf5] bg-[#f8fbff] dark:border-[#2a4d70] dark:bg-[#0f2133]">
                           <SafeImage
                             src={absoluteMediaUrl(image)}
                             fallback={fallbackProductImage}

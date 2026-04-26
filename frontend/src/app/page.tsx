@@ -27,7 +27,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#f7fbff] dark:bg-[#08111b]">
-      <section className="border-b border-[#e9f1f7] bg-[linear-gradient(180deg,#ffffff_0%,#eef6ff_100%)] pb-10 dark:border-[#1e344a] dark:bg-transparent sm:pb-16 lg:pb-20">
+      <section className="border-b border-[#e9f1f7] bg-[linear-gradient(180deg,#ffffff_0%,#eef6ff_100%)] pb-10 dark:border-[#1e344a] dark:bg-none sm:pb-16 lg:pb-20">
         <HeroSection />
         <FeaturedProducts products={featuredProducts} />
       </section>

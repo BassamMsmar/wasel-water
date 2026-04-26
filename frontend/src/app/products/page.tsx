@@ -35,7 +35,7 @@ export default async function ProductsPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#fbfdff_0%,#f3f8fd_100%)] dark:bg-[#08111b] dark:bg-none" dir="rtl">
-      <section className="border-b border-[#e9f1f7] bg-[linear-gradient(180deg,#ffffff_0%,#eef6ff_100%)] dark:border-[#1e344a] dark:bg-transparent">
+      <section className="border-b border-[#e9f1f7] bg-[linear-gradient(180deg,#ffffff_0%,#eef6ff_100%)] dark:border-[#1e344a] dark:bg-none">
         <div className="site-container py-12 text-center md:py-14">
           <span className="eyebrow mb-4">المنتجات</span>
           <h1 className="text-[2.2rem] font-black leading-[1.1] text-[#0b1d2d] md:text-[3.1rem]">
@@ -72,13 +72,13 @@ export default async function ProductsPage({ searchParams }: Props) {
 
           <aside className="xl:sticky xl:top-24 xl:w-[280px] xl:shrink-0">
             <form
-              className="grid gap-3 rounded-[24px] border border-[#dfeaf4] bg-white p-4 shadow-[0_2px_12px_rgba(10,34,56,0.02)]"
+              className="grid gap-3 rounded-[24px] border border-[#dfeaf4] bg-white p-4 shadow-[0_2px_12px_rgba(10,34,56,0.02)] dark:border-[#1e344a] dark:bg-[#0b1a27] dark:shadow-none"
               role="search"
               aria-label="فلترة المنتجات"
             >
               <div>
-                <h2 className="text-lg font-black text-[#102231]">تصفية المنتجات</h2>
-                <p className="mt-1 text-xs font-semibold leading-6 text-[#7c90a3]">
+                <h2 className="text-lg font-black text-[#102231] dark:text-[#eef5fb]">تصفية المنتجات</h2>
+                <p className="mt-1 text-xs font-semibold leading-6 text-[#7c90a3] dark:text-[#9db3c7]">
                   ترتيب، تصنيف، براند، ونطاق سعري.
                 </p>
               </div>

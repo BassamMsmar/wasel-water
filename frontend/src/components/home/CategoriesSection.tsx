@@ -22,7 +22,7 @@ export function CategoriesSection({ categories }: { categories: Category[] }) {
               href={`/categories/${category.slug}`}
               className="group block overflow-hidden rounded-[24px] border border-[#dce8f2] bg-white shadow-[0_2px_10px_rgba(10,34,56,0.02)] transition duration-300 hover:-translate-y-0.5 hover:border-[#c4dced] hover:shadow-[0_4px_14px_rgba(10,34,56,0.03)] dark:border-[#1e344a] dark:bg-[#0b1a27] dark:shadow-none"
             >
-              <div className="relative aspect-square w-full bg-[linear-gradient(180deg,#ffffff_0%,#eef6ff_100%)] dark:bg-transparent">
+              <div className="relative aspect-square w-full bg-[linear-gradient(180deg,#ffffff_0%,#eef6ff_100%)] dark:bg-none">
                 <SafeImage
                   src={absoluteMediaUrl(category.image, fallbackProductImage)}
                   fallback={fallbackProductImage}
