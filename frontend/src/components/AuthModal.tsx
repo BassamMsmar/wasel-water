@@ -2,10 +2,18 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, Mail, UserRound, X } from "lucide-react";
-import { getGoogleLoginUrl, requestOtp, verifyOtp } from "@/lib/auth";
+import { Check, Loader2, LockKeyhole, Mail, Phone, UserPlus, X } from "lucide-react";
+import {
+  getGoogleLoginUrl,
+  loginWithIdentifier,
+  registerCustomer,
+  requestOtp,
+  requestPasswordReset,
+  verifyOtp,
+} from "@/lib/auth";
 
 type AuthMode = "phone" | "email";
+type AuthStep = "login" | "otp" | "register";
 
 type AuthModalProps = {
   open: boolean;
@@ -20,8 +28,8 @@ function normalizePhone(value: string) {
   return value.trim();
 }
 
-function normalizeIdentifier(value: string, mode: AuthMode) {
-  return mode === "email" ? value.trim().toLowerCase() : normalizePhone(value);
+function normalizeEmail(value: string) {
+  return value.trim().toLowerCase();
 }
 
 function GoogleIcon() {
@@ -36,9 +44,16 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [mode, setMode] = useState<AuthMode>("phone");
+  const [step, setStep] = useState<AuthStep>("login");
   const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
-  const [step, setStep] = useState<"identifier" | "otp">("identifier");
+  const [registerForm, setRegisterForm] = useState({
+    first_name: "",
+    last_name: "",
+    phone_number: "",
+    email: "",
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -48,16 +63,12 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
       return {
         label: "البريد الإلكتروني",
         placeholder: "name@email.com",
-        sent: "تم إرسال رمز التحقق إلى بريدك الإلكتروني",
-        switchText: "تسجيل الدخول برقم الجوال",
       };
     }
 
     return {
       label: "رقم الجوال",
       placeholder: "051 234 5678",
-      sent: "تم إرسال رمز التحقق إلى رقم جوالك",
-      switchText: "تسجيل الدخول بالبريد الإلكتروني",
     };
   }, [mode]);
 
@@ -72,27 +83,37 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
       window.clearTimeout(focusTimer);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [onOpenChange, open]);
+  }, [onOpenChange, open, step]);
 
-  useEffect(() => {
-    if (!open) {
-      setError("");
-      setNotice("");
-      setOtp("");
-      setIdentifier("");
-      setStep("identifier");
-      setMode("phone");
-    }
-  }, [open]);
-
-  function switchMode() {
-    setMode((current) => (current === "phone" ? "email" : "phone"));
+  function selectMode(nextMode: AuthMode) {
+    setMode(nextMode);
     setIdentifier("");
+    setPassword("");
+    setOtp("");
     setError("");
     setNotice("");
+    setStep("login");
   }
 
-  async function submitIdentifier(event: FormEvent<HTMLFormElement>) {
+  function finishLogin() {
+    closeModal();
+    router.push("/dashboard");
+    router.refresh();
+  }
+
+  function closeModal() {
+    setError("");
+    setNotice("");
+    setOtp("");
+    setPassword("");
+    setIdentifier("");
+    setStep("login");
+    setMode("phone");
+    setRegisterForm({ first_name: "", last_name: "", phone_number: "", email: "" });
+    onOpenChange(false);
+  }
+
+  async function submitLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setNotice("");
@@ -105,11 +126,22 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
     setLoading(true);
     try {
-      const response = await requestOtp(normalizeIdentifier(value, mode));
-      setStep("otp");
-      setNotice(response.message || modeCopy.sent);
+      if (mode === "phone") {
+        const response = await requestOtp(normalizePhone(value));
+        setStep("otp");
+        setNotice(response.message || "تم إرسال رمز التحقق إلى رقم جوالك");
+        return;
+      }
+
+      if (!password.trim()) {
+        setError("اكتب كلمة المرور للمتابعة.");
+        return;
+      }
+
+      await loginWithIdentifier(normalizeEmail(value), password);
+      finishLogin();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "تعذر إرسال رمز التحقق.");
+      setError(err instanceof Error ? err.message : "تعذر تسجيل الدخول.");
     } finally {
       setLoading(false);
     }
@@ -120,10 +152,8 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     setError("");
     setLoading(true);
     try {
-      await verifyOtp(normalizeIdentifier(identifier, mode), otp.trim());
-      onOpenChange(false);
-      router.push("/dashboard");
-      router.refresh();
+      await verifyOtp(normalizePhone(identifier), otp.trim());
+      finishLogin();
     } catch (err) {
       setError(err instanceof Error ? err.message : "رمز التحقق غير صحيح.");
     } finally {
@@ -131,36 +161,157 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     }
   }
 
+  async function submitForgotPassword() {
+    setError("");
+    setNotice("");
+    const email = normalizeEmail(identifier);
+    if (!email) {
+      setError("اكتب البريد الإلكتروني أولًا.");
+      return;
+    }
+    setLoading(true);
+    try {
+      await requestPasswordReset(email);
+      setNotice("إذا كان البريد مسجلًا، سيصلك رابط إعادة تعيين كلمة المرور.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "تعذر إرسال رابط إعادة التعيين.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function submitRegister(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setNotice("");
+    setLoading(true);
+    try {
+      await registerCustomer({
+        ...registerForm,
+        email: normalizeEmail(registerForm.email),
+        phone_number: normalizePhone(registerForm.phone_number),
+      });
+      finishLogin();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "تعذر إنشاء الحساب.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   if (!open) return null;
+
+  const title = step === "register" ? "إنشاء حساب جديد" : "تسجيل الدخول";
+  const subtitle =
+    step === "register"
+      ? "أدخل بياناتك الأساسية للمتابعة."
+      : mode === "phone"
+        ? "أدخل رقم الجوال وسيصلك رمز تحقق لتسجيل الدخول."
+        : "أدخل بريدك الإلكتروني وكلمة المرور لتسجيل الدخول.";
 
   return (
     <div className="auth-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" dir="rtl">
-      <button type="button" className="auth-modal-scrim" aria-label="إغلاق تسجيل الدخول" onClick={() => onOpenChange(false)} />
+      <button type="button" className="auth-modal-scrim" aria-label="إغلاق تسجيل الدخول" onClick={closeModal} />
 
       <div className="auth-modal-panel">
-        <button type="button" className="auth-modal-close" onClick={() => onOpenChange(false)} aria-label="إغلاق">
+        <button type="button" className="auth-modal-close" onClick={closeModal} aria-label="إغلاق">
           <X size={19} aria-hidden="true" />
         </button>
 
-        <div className="auth-modal-avatar" aria-hidden="true">
-          <UserRound size={28} />
+        <div className="auth-brand-lockup" aria-hidden="true">
+          <span>واصل</span>
+          <small>مياه توصل لبابك</small>
         </div>
 
         <div className="auth-modal-copy">
-          <h2 id="auth-modal-title">تسجيل الدخول</h2>
-          <p>
-            {step === "identifier"
-              ? "ادخل رقم الجوال أو البريد الإلكتروني وسيتم إرسال رمز تحقق للدخول أو إنشاء حساب جديد."
-              : "أدخل رمز التحقق المرسل لإكمال الدخول."}
-          </p>
+          <h2 id="auth-modal-title">{title}</h2>
+          <p>{subtitle}</p>
         </div>
 
-        {step === "identifier" ? (
-          <form className="auth-modal-form" onSubmit={submitIdentifier}>
+        {step === "login" ? (
+          <div className="auth-mode-tabs" role="tablist" aria-label="طريقة تسجيل الدخول">
+            <button type="button" className={mode === "phone" ? "is-active" : ""} onClick={() => selectMode("phone")}>
+              <Phone size={16} />
+              الجوال
+            </button>
+            <button type="button" className={mode === "email" ? "is-active" : ""} onClick={() => selectMode("email")}>
+              <Mail size={16} />
+              البريد
+            </button>
+          </div>
+        ) : null}
+
+        {step === "register" ? (
+          <form className="auth-modal-form" onSubmit={submitRegister}>
+            <div className="auth-two-col">
+              <label className="auth-field">
+                <span>الاسم الأول</span>
+                <input
+                  ref={inputRef}
+                  className="auth-plain-input"
+                  value={registerForm.first_name}
+                  onChange={(event) => setRegisterForm((current) => ({ ...current, first_name: event.target.value }))}
+                  required
+                />
+              </label>
+              <label className="auth-field">
+                <span>الاسم الأخير</span>
+                <input
+                  className="auth-plain-input"
+                  value={registerForm.last_name}
+                  onChange={(event) => setRegisterForm((current) => ({ ...current, last_name: event.target.value }))}
+                  required
+                />
+              </label>
+            </div>
+            <label className="auth-field">
+              <span>رقم الهاتف</span>
+              <div className="auth-combo-input is-phone">
+                <div className="auth-country-code">+966</div>
+                <input
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  value={registerForm.phone_number}
+                  onChange={(event) => setRegisterForm((current) => ({ ...current, phone_number: event.target.value }))}
+                  placeholder="051 234 5678"
+                  required
+                />
+              </div>
+            </label>
+            <label className="auth-field">
+              <span>البريد الإلكتروني</span>
+              <div className="auth-combo-input">
+                <span className="auth-input-icon"><Mail size={17} /></span>
+                <input
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  value={registerForm.email}
+                  onChange={(event) => setRegisterForm((current) => ({ ...current, email: event.target.value }))}
+                  placeholder="name@email.com"
+                  required
+                />
+              </div>
+            </label>
+
+            {error ? <div className="auth-error">{error}</div> : null}
+
+            <button type="submit" className="auth-primary-action" disabled={loading}>
+              {loading ? <Loader2 className="auth-spin" size={18} /> : <Check size={18} />}
+              {loading ? "جاري إنشاء الحساب..." : "إنشاء الحساب"}
+            </button>
+
+            <button type="button" className="auth-outline-action" onClick={() => setStep("login")}>
+              لدي حساب بالفعل
+            </button>
+          </form>
+        ) : step === "login" ? (
+          <form className="auth-modal-form" onSubmit={submitLogin}>
             <label className="auth-field">
               <span>{modeCopy.label}</span>
               <div className={`auth-combo-input ${mode === "phone" ? "is-phone" : ""}`}>
-                {mode === "phone" ? <div className="auth-country-code">+966</div> : <Mail className="auth-input-icon" size={18} />}
+                {mode === "phone" ? <div className="auth-country-code">+966</div> : <span className="auth-input-icon"><Mail size={17} /></span>}
                 <input
                   ref={inputRef}
                   name="identifier"
@@ -175,22 +326,46 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               </div>
             </label>
 
+            {mode === "email" ? (
+              <>
+                <label className="auth-field">
+                  <span>كلمة المرور</span>
+                  <div className="auth-combo-input">
+                    <span className="auth-input-icon"><LockKeyhole size={17} /></span>
+                    <input
+                      name="password"
+                      type="password"
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      required
+                    />
+                  </div>
+                </label>
+                <div className="auth-link-row">
+                  <button type="button" onClick={submitForgotPassword} disabled={loading}>
+                    نسيت كلمة المرور؟
+                  </button>
+                  <button type="button" onClick={() => setStep("register")}>
+                    مستخدم جديد
+                  </button>
+                </div>
+              </>
+            ) : null}
+
+            {notice ? <div className="auth-sent-note">{notice}</div> : null}
             {error ? <div className="auth-error">{error}</div> : null}
 
             <button type="submit" className="auth-primary-action" disabled={loading}>
               {loading ? <Loader2 className="auth-spin" size={18} /> : null}
-              {loading ? "جاري الإرسال..." : "دخول"}
-            </button>
-
-            <button type="button" className="auth-outline-action" onClick={switchMode}>
-              {modeCopy.switchText}
+              {loading ? "جاري التحقق..." : "دخول"}
             </button>
           </form>
         ) : (
           <form className="auth-modal-form" onSubmit={submitOtp}>
             <div className="auth-sent-note">
               <Check size={18} aria-hidden="true" />
-              <span>{notice || modeCopy.sent}</span>
+              <span>{notice || "تم إرسال رمز التحقق إلى رقم جوالك"}</span>
             </div>
 
             <label className="auth-field">
@@ -215,33 +390,44 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               {loading ? "جاري التحقق..." : "تأكيد الدخول"}
             </button>
 
-            <button type="button" className="auth-outline-action" onClick={() => setStep("identifier")}>
-              تغيير البريد أو الجوال
+            <button type="button" className="auth-outline-action" onClick={() => setStep("login")}>
+              تغيير رقم الجوال
             </button>
           </form>
         )}
 
-        <div className="auth-divider">
-          <span />
-          <p>أو سجل دخولك من خلال</p>
-          <span />
-        </div>
+        {step !== "register" ? (
+          <>
+            <div className="auth-divider">
+              <span />
+              <p>أو سجل دخولك من خلال</p>
+              <span />
+            </div>
 
-        <div className="auth-social-row">
-          <a href={getGoogleLoginUrl()} className="auth-social-button" aria-label="المتابعة عبر Google">
-            <GoogleIcon />
-          </a>
-          <button type="button" className="auth-social-button" aria-label="المتابعة عبر Apple" disabled>
-            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="currentColor">
-              <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.42c1.39.07 2.35.74 3.15.8 1.2-.24 2.35-.93 3.62-.84 1.54.12 2.7.72 3.47 1.84-3.16 1.9-2.41 5.73.48 6.82-.57 1.5-1.3 2.98-2.72 4.24M12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25" />
-            </svg>
+            <div className="auth-social-row">
+              <a href={getGoogleLoginUrl()} className="auth-social-button" aria-label="المتابعة عبر Google">
+                <GoogleIcon />
+              </a>
+              <button type="button" className="auth-social-button" aria-label="المتابعة عبر Apple" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="currentColor">
+                  <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.42c1.39.07 2.35.74 3.15.8 1.2-.24 2.35-.93 3.62-.84 1.54.12 2.7.72 3.47 1.84-3.16 1.9-2.41 5.73.48 6.82-.57 1.5-1.3 2.98-2.72 4.24M12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25" />
+                </svg>
+              </button>
+              <button type="button" className="auth-social-button auth-social-button--fb" aria-label="المتابعة عبر Facebook" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="#1877f2">
+                  <path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.5c-1.5 0-1.96.93-1.96 1.89v2.26h3.32l-.53 3.49h-2.8V24C19.62 23.1 24 18.1 24 12.07" />
+                </svg>
+              </button>
+            </div>
+          </>
+        ) : null}
+
+        {step === "login" && mode === "phone" ? (
+          <button type="button" className="auth-register-shortcut" onClick={() => setStep("register")}>
+            <UserPlus size={16} />
+            إنشاء حساب جديد
           </button>
-          <button type="button" className="auth-social-button auth-social-button--fb" aria-label="المتابعة عبر Facebook" disabled>
-            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="#1877f2">
-              <path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.04V9.41c0-3.02 1.8-4.7 4.54-4.7 1.31 0 2.68.24 2.68.24v2.97h-1.5c-1.5 0-1.96.93-1.96 1.89v2.26h3.32l-.53 3.49h-2.8V24C19.62 23.1 24 18.1 24 12.07" />
-            </svg>
-          </button>
-        </div>
+        ) : null}
       </div>
     </div>
   );

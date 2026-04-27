@@ -62,6 +62,55 @@ export async function loginWithIdentifier(identifier: string, password: string) 
   return data;
 }
 
+export type RegisterCustomerInput = {
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  email: string;
+};
+
+export async function registerCustomer(payload: RegisterCustomerInput) {
+  const res = await fetch(`${API_BASE}/auth/register/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(data?.detail || "تعذر إنشاء الحساب");
+  }
+  if (data?.access && data?.refresh) {
+    saveTokens(data.access, data.refresh);
+  }
+  return data;
+}
+
+export async function requestPasswordReset(email: string) {
+  const res = await fetch(`${API_BASE}/auth/password-reset/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(data?.detail || "تعذر إرسال رابط إعادة التعيين");
+  }
+  return data as { success: boolean; message: string };
+}
+
+export async function confirmPasswordReset(uid: string, token: string, password: string) {
+  const res = await fetch(`${API_BASE}/auth/password-reset/confirm/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ uid, token, password }),
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(data?.detail || "تعذر تحديث كلمة المرور");
+  }
+  return data as { success: boolean; message: string };
+}
+
 export async function requestOtp(identifier: string) {
   const res = await fetch(`${API_BASE}/auth/otp/request/`, {
     method: "POST",

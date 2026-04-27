@@ -1,9 +1,13 @@
 from datetime import timedelta
 from decimal import Decimal
 from django.contrib.auth import authenticate
+from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 from django.core.validators import validate_email
-from django.db.models import Q
+from django.conf import settings
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework.response import Response
 from rest_framework import viewsets, permissions, generics, status
 from rest_framework.views import APIView
@@ -19,6 +23,8 @@ from .serializers import (
     UserSerializer,
     ProfileSerializer,
     RegisterSerializer,
+    PasswordResetConfirmSerializer,
+    PasswordResetRequestSerializer,
     ProfileUpdateSerializer,
 )
 
@@ -52,10 +58,11 @@ class RegisterView(generics.CreateAPIView):
         password = data.get('password', '')
         first_name = data.get('first_name', '')
         last_name = data.get('last_name', '')
+        phone_number = (data.get('phone_number') or data.get('phone') or '').strip()
 
-        if not email or not password:
+        if not email:
             return Response(
-                {'detail': 'Email and password are required'},
+                {'detail': 'Email is required'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -69,15 +76,83 @@ class RegisterView(generics.CreateAPIView):
             import uuid
             username = f"{username}_{str(uuid.uuid4())[:6]}"
 
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-        )
-        Customer.objects.get_or_create(user=user)
-        return Response(ProfileSerializer(user).data, status=status.HTTP_201_CREATED)
+        user = User(username=username, email=email, first_name=first_name, last_name=last_name)
+        if password:
+            user.set_password(password)
+        else:
+            user.set_unusable_password()
+        user.save()
+
+        customer, _ = Customer.objects.get_or_create(user=user)
+        if phone_number:
+            customer.phone_number = normalize_phone(phone_number)
+            customer.save(update_fields=["phone_number"])
+
+        payload = build_tokens(user)
+        payload["user"] = ProfileSerializer(user).data
+        return Response(payload, status=status.HTTP_201_CREATED)
+
+
+class PasswordResetRequestView(APIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PasswordResetRequestSerializer
+
+    @extend_schema(request=PasswordResetRequestSerializer)
+    def post(self, request):
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data["email"].lower()
+        user = User.objects.filter(email__iexact=email, is_active=True).first()
+
+        if user:
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:3000").rstrip("/")
+            reset_link = f"{frontend_url}/reset-password?uid={uid}&token={token}"
+            subject = "Reset your Wasel Water password"
+            message = (
+                "Use the link below to reset your Wasel Water password:\n\n"
+                f"{reset_link}\n\n"
+                "If you did not request this, you can ignore this message."
+            )
+            send_mail(
+                subject,
+                message,
+                getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@wasel-water.local"),
+                [email],
+                fail_silently=True,
+            )
+            if settings.DEBUG:
+                print(f"[WASEL DEV PASSWORD RESET] {email}: {reset_link}", flush=True)
+
+        return Response({
+            "success": True,
+            "message": "If this email exists, a password reset link has been sent.",
+        })
+
+
+class PasswordResetConfirmView(APIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PasswordResetConfirmSerializer
+
+    @extend_schema(request=PasswordResetConfirmSerializer)
+    def post(self, request):
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            uid = force_str(urlsafe_base64_decode(serializer.validated_data["uid"]))
+            user = User.objects.get(pk=uid, is_active=True)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return Response({"detail": "Invalid password reset link"}, status=status.HTTP_400_BAD_REQUEST)
+
+        token = serializer.validated_data["token"]
+        if not default_token_generator.check_token(user, token):
+            return Response({"detail": "Invalid or expired password reset link"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(serializer.validated_data["password"])
+        user.save(update_fields=["password"])
+        return Response({"success": True, "message": "Password has been reset."})
 
 
 class ProfileView(generics.GenericAPIView):

@@ -13,6 +13,8 @@ from .api import (
     LocationSyncView,
     OTPRequestView,
     OTPVerifyView,
+    PasswordResetConfirmView,
+    PasswordResetRequestView,
     ProfileView,
     RegisterView,
     UserViewSet,
@@ -32,6 +34,8 @@ urlpatterns = [
     path('auth/location/', LocationSyncView.as_view(), name='auth_location_sync'),
     path('auth/otp/request/', OTPRequestView.as_view(), name='auth_otp_request'),
     path('auth/otp/verify/', OTPVerifyView.as_view(), name='auth_otp_verify'),
+    path('auth/password-reset/', PasswordResetRequestView.as_view(), name='auth_password_reset'),
+    path('auth/password-reset/confirm/', PasswordResetConfirmView.as_view(), name='auth_password_reset_confirm'),
     path('auth/register/', RegisterView.as_view(), name='auth_register'),
     path('auth/profile/', ProfileView.as_view(), name='auth_profile'),
 ]
