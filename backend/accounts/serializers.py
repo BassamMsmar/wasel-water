@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Customer, Address
+from .permissions import has_dashboard_access
 
 class UserSerializer(serializers.ModelSerializer):
     """Nested serializer — safe for embedding in other responses. No privilege fields."""
@@ -12,16 +13,22 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     """Used only for /auth/profile/ — includes is_staff so the frontend can route correctly."""
+    can_access_dashboard = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser']
-        read_only_fields = ['id', 'is_staff', 'is_superuser']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser', 'can_access_dashboard']
+        read_only_fields = ['id', 'is_staff', 'is_superuser', 'can_access_dashboard']
+
+    def get_can_access_dashboard(self, user):
+        return has_dashboard_access(user)
 
 
 class RegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150, required=False, allow_blank=True)
     email = serializers.EmailField()
-    password = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    password = serializers.CharField(write_only=True, min_length=8)
+    password_confirm = serializers.CharField(write_only=True, min_length=8)
     first_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
     last_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
     phone_number = serializers.CharField(max_length=30, required=False, allow_blank=True)

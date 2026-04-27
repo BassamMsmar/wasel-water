@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from .models import Customer, Address
 from .otp_utils import generate_otp, normalize_phone, send_otp, send_email_otp, validate_phone_sa
+from .permissions import has_dashboard_access
 from drf_spectacular.utils import extend_schema
 from .serializers import (
     CustomerSerializer,
@@ -56,13 +57,20 @@ class RegisterView(generics.CreateAPIView):
         username = data.get('username') or data.get('email', '').split('@')[0]
         email = data.get('email', '')
         password = data.get('password', '')
+        password_confirm = data.get('password_confirm', '')
         first_name = data.get('first_name', '')
         last_name = data.get('last_name', '')
         phone_number = (data.get('phone_number') or data.get('phone') or '').strip()
 
-        if not email:
+        if not email or not password or not password_confirm:
             return Response(
-                {'detail': 'Email is required'},
+                {'detail': 'Email, password, and password confirmation are required'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if password != password_confirm:
+            return Response(
+                {'detail': 'Password confirmation does not match'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -76,11 +84,8 @@ class RegisterView(generics.CreateAPIView):
             import uuid
             username = f"{username}_{str(uuid.uuid4())[:6]}"
 
-        user = User(username=username, email=email, first_name=first_name, last_name=last_name)
-        if password:
-            user.set_password(password)
-        else:
-            user.set_unusable_password()
+        user = User(username=username, email=email, first_name=first_name, last_name=last_name, is_active=False)
+        user.set_password(password)
         user.save()
 
         customer, _ = Customer.objects.get_or_create(user=user)
@@ -88,9 +93,27 @@ class RegisterView(generics.CreateAPIView):
             customer.phone_number = normalize_phone(phone_number)
             customer.save(update_fields=["phone_number"])
 
-        payload = build_tokens(user)
-        payload["user"] = ProfileSerializer(user).data
-        return Response(payload, status=status.HTTP_201_CREATED)
+        code = generate_otp(4)
+        from .models import OTPToken
+        normalized_email = email.lower()
+        OTPToken.objects.filter(phone_number=normalized_email, is_used=False).update(is_used=True)
+        OTPToken.objects.create(
+            phone_number=normalized_email,
+            code=code,
+            expires_at=timezone.now() + timedelta(minutes=5),
+        )
+        send_email_otp(normalized_email, code)
+
+        response = {
+            "success": True,
+            "activation_required": True,
+            "channel": "email",
+            "identifier": normalized_email,
+            "message": "Activation code sent to your email",
+        }
+        if settings.DEBUG:
+            response["debug_code"] = code
+        return Response(response, status=status.HTTP_201_CREATED)
 
 
 class PasswordResetRequestView(APIView):
@@ -186,7 +209,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.is_staff:
+        if has_dashboard_access(self.request.user):
             return Customer.objects.select_related('user').all()
         return Customer.objects.filter(user=self.request.user)
 
@@ -197,7 +220,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.is_staff:
+        if has_dashboard_access(self.request.user):
             return User.objects.all().order_by('-date_joined')
         return User.objects.filter(id=self.request.user.id)
 
@@ -329,6 +352,9 @@ class OTPVerifyView(APIView):
                 if User.objects.filter(username__iexact=username).exists():
                     username = f"{username}_{get_random_string(5).lower()}"
                 user = User.objects.create_user(username=username, email=normalized, password=get_random_string(16))
+            elif not user.is_active:
+                user.is_active = True
+                user.save(update_fields=["is_active"])
         else:
             customer = Customer.objects.filter(phone_number=normalized).select_related("user").first()
             user = customer.user if customer else User.objects.filter(username=normalized).first()

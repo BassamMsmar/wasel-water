@@ -29,7 +29,7 @@ import {
   Trash2,
   Users,
 } from "lucide-react";
-import { authFetchList, authRequest, getMyOrders, getProfile, isLoggedIn, logout } from "@/lib/auth";
+import { authFetchList, authRequest, canAccessDashboard, getProfile, isLoggedIn, logout } from "@/lib/auth";
 import { getBanners, getBrands, getCategories, getOffers, getProducts } from "@/lib/api";
 import { absoluteMediaUrl, money } from "@/lib/media";
 import { ImageCropper } from "@/components/ImageCropper";
@@ -832,9 +832,14 @@ export default function DashboardPage() {
           return;
         }
 
+        if (!canAccessDashboard(profileResponse)) {
+          router.replace("/");
+          return;
+        }
+
         setProfile(profileResponse);
 
-        if (profileResponse.is_staff) {
+        if (canAccessDashboard(profileResponse)) {
           const [
             productItems,
             categoryItems,
@@ -872,8 +877,6 @@ export default function DashboardPage() {
           setCustomers(customerItems);
           setFlags(flagItems);
           setFeaturedProducts(featuredItems);
-        } else {
-          setOrders(await getMyOrders());
         }
       } finally {
         setLoading(false);
@@ -890,14 +893,14 @@ export default function DashboardPage() {
   }
 
   const primaryStats = useMemo(() => {
-    if (!profile?.is_staff) return [];
+    if (!canAccessDashboard(profile)) return [];
     return [
       { label: "المنتجات", value: String(products.length) },
       { label: "العروض", value: String(offers.length) },
       { label: "الطلبات", value: String(orders.length) },
       { label: "المستخدمون", value: String(users.length || customers.length) },
     ];
-  }, [profile?.is_staff, products.length, offers.length, orders.length, users.length, customers.length]);
+  }, [profile, products.length, offers.length, orders.length, users.length, customers.length]);
 
   const sidebarItems = useMemo<SidebarItem[]>(() => {
     switch (activeModule) {
@@ -1719,17 +1722,13 @@ export default function DashboardPage() {
     );
   }
 
-  if (loading) {
+  if (loading || !profile) {
     return (
       <section className="dash-loading" dir="rtl">
         <div className="spinner" />
         <p>جارٍ تجهيز بيانات لوحة التحكم...</p>
       </section>
     );
-  }
-
-  if (!profile?.is_staff) {
-    return <CustomerDashboard profile={profile} orders={orders} onLogout={handleLogout} darkMode={darkMode} toggleTheme={toggleTheme} />;
   }
 
   return (

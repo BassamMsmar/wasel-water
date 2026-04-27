@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { getProfile, isLoggedIn, logout } from "@/lib/auth";
+import { canAccessDashboard, getProfile, isLoggedIn, logout } from "@/lib/auth";
 import { readCart } from "@/lib/cart";
 import { absoluteMediaUrl } from "@/lib/media";
 import { getCompanies } from "@/lib/api";
@@ -101,6 +101,7 @@ export function Header() {
   }, []);
 
   const initial = (user?.first_name?.[0] || user?.username?.[0] || "و").toUpperCase();
+  const showDashboard = canAccessDashboard(user);
 
   async function handleLogout() {
     await logout();
@@ -204,13 +205,10 @@ export function Header() {
                     </div>
 
                     <div className="grid gap-1 px-1 py-2">
-                      <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="rounded-2xl px-3 py-2.5 text-sm font-bold text-[#41596d] transition hover:bg-[#f3f8fc] hover:text-[#102231] dark:text-[#9db3c7] dark:hover:bg-[#0f2133] dark:hover:text-[#eef5fb]">
-                        لوحة التحكم
-                      </Link>
                       <Link href="/cart" onClick={() => setMenuOpen(false)} className="rounded-2xl px-3 py-2.5 text-sm font-bold text-[#41596d] transition hover:bg-[#f3f8fc] hover:text-[#102231] dark:text-[#9db3c7] dark:hover:bg-[#0f2133] dark:hover:text-[#eef5fb]">
                         السلة
                       </Link>
-                      {user?.is_staff ? (
+                      {showDashboard ? (
                         <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="rounded-2xl bg-[#eef6ff] px-3 py-2.5 text-sm font-black text-[#1f69b1] transition hover:bg-[#e4f0ff] dark:bg-[#123e67] dark:text-[#eef5fb] dark:hover:bg-[#1d639f]">
                           إدارة المتجر
                         </Link>

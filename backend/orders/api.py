@@ -2,6 +2,7 @@ from rest_framework import status, viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from drf_spectacular.utils import extend_schema
+from accounts.permissions import has_dashboard_access
 from .models import Order, OrderItem, Branch, OrderStatus
 from .serializers import (
     CheckoutSerializer,
@@ -22,7 +23,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             Order.objects.select_related('status', 'user')
             .prefetch_related('items__product', 'items__bundle')
         )
-        if self.request.user.is_staff:
+        if has_dashboard_access(self.request.user):
             return base
         return base.filter(user=self.request.user)
 

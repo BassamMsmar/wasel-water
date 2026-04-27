@@ -46,6 +46,8 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [mode, setMode] = useState<AuthMode>("phone");
   const [step, setStep] = useState<AuthStep>("login");
   const [identifier, setIdentifier] = useState("");
+  const [otpIdentifier, setOtpIdentifier] = useState("");
+  const [otpChannel, setOtpChannel] = useState<AuthMode>("phone");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [registerForm, setRegisterForm] = useState({
@@ -53,6 +55,8 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     last_name: "",
     phone_number: "",
     email: "",
+    password: "",
+    password_confirm: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -90,6 +94,8 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     setIdentifier("");
     setPassword("");
     setOtp("");
+    setOtpIdentifier("");
+    setOtpChannel("phone");
     setError("");
     setNotice("");
     setStep("login");
@@ -97,7 +103,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
   function finishLogin() {
     closeModal();
-    router.push("/dashboard");
+    router.push("/");
     router.refresh();
   }
 
@@ -105,11 +111,13 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     setError("");
     setNotice("");
     setOtp("");
+    setOtpIdentifier("");
+    setOtpChannel("phone");
     setPassword("");
     setIdentifier("");
     setStep("login");
     setMode("phone");
-    setRegisterForm({ first_name: "", last_name: "", phone_number: "", email: "" });
+    setRegisterForm({ first_name: "", last_name: "", phone_number: "", email: "", password: "", password_confirm: "" });
     onOpenChange(false);
   }
 
@@ -127,7 +135,10 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     setLoading(true);
     try {
       if (mode === "phone") {
-        const response = await requestOtp(normalizePhone(value));
+        const normalizedPhone = normalizePhone(value);
+        const response = await requestOtp(normalizedPhone);
+        setOtpIdentifier(normalizedPhone);
+        setOtpChannel("phone");
         setStep("otp");
         setNotice(response.message || "تم إرسال رمز التحقق إلى رقم جوالك");
         return;
@@ -152,7 +163,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     setError("");
     setLoading(true);
     try {
-      await verifyOtp(normalizePhone(identifier), otp.trim());
+      await verifyOtp(otpIdentifier, otp.trim());
       finishLogin();
     } catch (err) {
       setError(err instanceof Error ? err.message : "رمز التحقق غير صحيح.");
@@ -186,12 +197,26 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     setNotice("");
     setLoading(true);
     try {
-      await registerCustomer({
+      if (registerForm.password.length < 8) {
+        setError("كلمة المرور يجب أن تكون 8 أحرف على الأقل.");
+        return;
+      }
+      if (registerForm.password !== registerForm.password_confirm) {
+        setError("تأكيد كلمة المرور غير مطابق.");
+        return;
+      }
+      const response = await registerCustomer({
         ...registerForm,
         email: normalizeEmail(registerForm.email),
         phone_number: normalizePhone(registerForm.phone_number),
       });
-      finishLogin();
+      const activationIdentifier = response?.identifier || normalizeEmail(registerForm.email);
+      setIdentifier(activationIdentifier);
+      setOtpIdentifier(activationIdentifier);
+      setOtpChannel("email");
+      setOtp("");
+      setNotice(response?.message || "تم إرسال رمز التنشيط إلى بريدك الإلكتروني");
+      setStep("otp");
     } catch (err) {
       setError(err instanceof Error ? err.message : "تعذر إنشاء الحساب.");
     } finally {
@@ -205,7 +230,9 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const subtitle =
     step === "register"
       ? "أدخل بياناتك الأساسية للمتابعة."
-      : mode === "phone"
+      : step === "otp" && otpChannel === "email"
+        ? "أدخل رمز التنشيط المرسل إلى بريدك الإلكتروني."
+        : mode === "phone"
         ? "أدخل رقم الجوال وسيصلك رمز تحقق لتسجيل الدخول."
         : "أدخل بريدك الإلكتروني وكلمة المرور لتسجيل الدخول.";
 
@@ -294,6 +321,32 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 />
               </div>
             </label>
+            <label className="auth-field">
+              <span>كلمة المرور</span>
+              <div className="auth-combo-input">
+                <span className="auth-input-icon"><LockKeyhole size={17} /></span>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  value={registerForm.password}
+                  onChange={(event) => setRegisterForm((current) => ({ ...current, password: event.target.value }))}
+                  required
+                />
+              </div>
+            </label>
+            <label className="auth-field">
+              <span>تأكيد كلمة المرور</span>
+              <div className="auth-combo-input">
+                <span className="auth-input-icon"><LockKeyhole size={17} /></span>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  value={registerForm.password_confirm}
+                  onChange={(event) => setRegisterForm((current) => ({ ...current, password_confirm: event.target.value }))}
+                  required
+                />
+              </div>
+            </label>
 
             {error ? <div className="auth-error">{error}</div> : null}
 
@@ -365,11 +418,11 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
           <form className="auth-modal-form" onSubmit={submitOtp}>
             <div className="auth-sent-note">
               <Check size={18} aria-hidden="true" />
-              <span>{notice || "تم إرسال رمز التحقق إلى رقم جوالك"}</span>
+              <span>{notice || (otpChannel === "email" ? "تم إرسال رمز التنشيط إلى بريدك الإلكتروني" : "تم إرسال رمز التحقق إلى رقم جوالك")}</span>
             </div>
 
             <label className="auth-field">
-              <span>رمز التحقق</span>
+              <span>{otpChannel === "email" ? "رمز التنشيط" : "رمز التحقق"}</span>
               <input
                 ref={inputRef}
                 name="otp"
@@ -390,8 +443,8 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               {loading ? "جاري التحقق..." : "تأكيد الدخول"}
             </button>
 
-            <button type="button" className="auth-outline-action" onClick={() => setStep("login")}>
-              تغيير رقم الجوال
+            <button type="button" className="auth-outline-action" onClick={() => setStep(otpChannel === "email" ? "register" : "login")}>
+              {otpChannel === "email" ? "تعديل بيانات التسجيل" : "تغيير رقم الجوال"}
             </button>
           </form>
         )}

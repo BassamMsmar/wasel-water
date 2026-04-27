@@ -120,6 +120,7 @@ export type UserAccount = {
   last_name?: string | null;
   is_staff?: boolean;
   is_superuser?: boolean;
+  can_access_dashboard?: boolean;
 };
 
 export type Customer = {

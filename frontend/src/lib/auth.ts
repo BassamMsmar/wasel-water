@@ -30,6 +30,10 @@ export function isLoggedIn(): boolean {
   return !!getAccessToken();
 }
 
+export function canAccessDashboard(user?: { is_staff?: boolean; is_superuser?: boolean; can_access_dashboard?: boolean } | null): boolean {
+  return Boolean(user?.can_access_dashboard || user?.is_staff || user?.is_superuser);
+}
+
 // ─── API Calls ────────────────────────────────────────────────────────────────
 
 export async function login(username: string, password: string) {
@@ -67,6 +71,8 @@ export type RegisterCustomerInput = {
   last_name: string;
   phone_number: string;
   email: string;
+  password: string;
+  password_confirm: string;
 };
 
 export async function registerCustomer(payload: RegisterCustomerInput) {

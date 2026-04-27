@@ -32,6 +32,9 @@ class Customer(models.Model):
     class Meta:
         verbose_name = _("العميل")
         verbose_name_plural = _("العملاء")
+        permissions = [
+            ("access_dashboard", _("Can access dashboard")),
+        ]
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
