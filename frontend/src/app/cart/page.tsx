@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { SafeImage } from "@/components/SafeImage";
 import { cartTotal, readCart, updateCartQuantity } from "@/lib/cart";
-import { absoluteMediaUrl, money } from "@/lib/media";
+import { absoluteMediaUrl, fallbackProductImage, money } from "@/lib/media";
 import type { CartItem } from "@/lib/types";
 
 export default function CartPage() {
@@ -51,8 +51,9 @@ export default function CartPage() {
             <div className="cart-items-list">
               {items.map(item => (
                 <article key={item.product.id} className="cart-item-card">
-                  <Image
+                  <SafeImage
                     src={absoluteMediaUrl(item.product.image)}
+                    fallback={fallbackProductImage}
                     alt={item.product.name}
                     width={100} height={100}
                     className="cart-item-image"

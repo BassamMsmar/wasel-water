@@ -23,7 +23,7 @@ class PhoneOrEmailBackend(ModelBackend):
                 Q(customer__phone_number__iexact=username)
             ).distinct().first()
             
-            if user and user.check_password(password):
+            if user and user.check_password(password) and self.user_can_authenticate(user):
                 return user
         except User.DoesNotExist:
             return None

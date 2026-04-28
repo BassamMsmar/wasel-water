@@ -49,6 +49,11 @@ class CheckoutSerializer(serializers.Serializer):
     postal_code = serializers.CharField(max_length=20, required=False, allow_blank=True)
     location_link = serializers.URLField(max_length=500, required=False, allow_blank=True)
     note = serializers.CharField(required=False, allow_blank=True)
+    payment_method = serializers.ChoiceField(choices=['cod', 'bank_transfer', 'card'], required=False, default='cod')
+    transfer_reference = serializers.CharField(required=False, allow_blank=True)
+    transfer_date = serializers.CharField(required=False, allow_blank=True)
+    transfer_amount = serializers.CharField(required=False, allow_blank=True)
+    transfer_receipt = serializers.CharField(required=False, allow_blank=True)
     items = CheckoutItemSerializer(many=True)
 
     def validate_items(self, items):
@@ -105,8 +110,19 @@ class CheckoutSerializer(serializers.Serializer):
             or OrderStatus.objects.first()
         )
         address = validated_data['address']
+        payment_method = validated_data.get('payment_method', 'cod')
         if note:
             address = f"{address} - ملاحظات: {note}"
+        if payment_method == 'bank_transfer':
+            address = (
+                f"{address} - تحويل بنكي:"
+                f" المرجع {validated_data.get('transfer_reference', '-')}"
+                f" | التاريخ {validated_data.get('transfer_date', '-')}"
+                f" | المبلغ {validated_data.get('transfer_amount', '-')}"
+                f" | الإيصال {validated_data.get('transfer_receipt', '-')}"
+            )
+        elif payment_method == 'card':
+            address = f"{address} - البطاقة البنكية: قريبًا"
 
         order = Order.objects.create(
             user=self._checkout_user(validated_data),

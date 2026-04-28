@@ -1,13 +1,15 @@
-from django.urls import path
-from .views import OrderListView, PendingOrderListView, OrderDetailView, PaymentSelectionView, CompletePaymentView, OrderTrackingView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
-app_name = 'orders'
+from .api import CheckoutAPIView, OrderViewSet, OrderItemViewSet, BranchViewSet, OrderStatusViewSet
+
+router = DefaultRouter()
+router.register(r'orders', OrderViewSet)
+router.register(r'order-items', OrderItemViewSet)
+router.register(r'branches', BranchViewSet)
+router.register(r'order-statuses', OrderStatusViewSet)
 
 urlpatterns = [
-    path('', OrderListView.as_view(), name='order_list'),
-    path('pending/', PendingOrderListView.as_view(), name='pending_list'),
-    path('<int:pk>/', OrderDetailView.as_view(), name='detail'),
-    path('<int:pk>/payment/', PaymentSelectionView.as_view(), name='payment_selection'),
-    path('<int:pk>/complete-payment/', CompletePaymentView.as_view(), name='complete_payment'),
-    path('track/', OrderTrackingView.as_view(), name='track'),
+    path('', include(router.urls)),
+    path('checkout/', CheckoutAPIView.as_view(), name='api_checkout'),
 ]

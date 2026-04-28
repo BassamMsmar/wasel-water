@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
+import { SafeImage } from "@/components/SafeImage";
 import { getBrands } from "@/lib/api";
 import { absoluteMediaUrl, fallbackBrandImage } from "@/lib/media";
 
@@ -21,16 +21,17 @@ export default async function BrandsPage() {
       </div>
 
       <section className="page-shell">
-        <div className="brand-grid">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {brands.map((brand) => (
             <Link key={brand.id} href={`/brands/${brand.slug}`} className="brand-card" id={brand.slug}>
               <div className="brand-card-image">
-                <Image
+                <SafeImage
                   src={absoluteMediaUrl(brand.logo || brand.image, fallbackBrandImage)}
+                  fallback={fallbackBrandImage}
                   alt={brand.name}
                   width={120}
                   height={80}
-                  style={{ width:"100%", height:"100%", objectFit:"contain" }}
+                  className="h-full w-full object-cover"
                 />
               </div>
               <div className="brand-card-name">{brand.name}</div>

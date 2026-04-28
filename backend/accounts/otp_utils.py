@@ -2,6 +2,7 @@ import random
 import string
 import re
 from django.conf import settings
+from django.core.mail import send_mail
 
 def generate_otp(length=4):
     """Generate a random numeric OTP."""
@@ -14,7 +15,13 @@ def send_otp(phone_number, code):
     Simulate sending OTP to phone number.
     In production, replace with actual SMS gateway integration.
     """
-    msg = f"\n\n{'*'*50}\n[OTP SERVICE - TEST MODE]\nYOUR LOGIN CODE IS: [ {code} ]\nSent to: {phone_number}\n{'*'*50}\n\n"
+    msg = (
+        f"\n\n{'='*58}\n"
+        f"[WASEL DEV OTP]\n"
+        f"Destination: {phone_number}\n"
+        f"Login code : {code}\n"
+        f"{'='*58}\n\n"
+    )
     
     # 1. Print to STDOUT
     print(msg, flush=True)
@@ -29,6 +36,37 @@ def send_otp(phone_number, code):
     logger = logging.getLogger(__name__)
     logger.warning(msg)
     
+    return True
+
+def send_email_otp(email, code):
+    """
+    Send an OTP to an email address. In development this uses Django's email
+    backend when configured and also prints the code to the console.
+    """
+    subject = "رمز الدخول إلى واصل للمياه"
+    message = f"رمز الدخول الخاص بك هو: {code}\nينتهي الرمز خلال 5 دقائق."
+
+    if not settings.DEBUG:
+        send_mail(
+            subject,
+            message,
+            getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@wasel-water.local"),
+            [email],
+            fail_silently=True,
+        )
+
+    msg = (
+        f"\n\n{'='*58}\n"
+        f"[WASEL DEV OTP]\n"
+        f"Destination: {email}\n"
+        f"Login code : {code}\n"
+        f"{'='*58}\n\n"
+    )
+    print(msg, flush=True)
+    sys.stderr.write(msg)
+    sys.stderr.flush()
+    import logging
+    logging.getLogger(__name__).warning(msg)
     return True
 
 def normalize_phone(phone):

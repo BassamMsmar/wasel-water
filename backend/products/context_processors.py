@@ -1,12 +1,5 @@
-from .models import Brand, Category
-
-def brands(request):
-    """
-    Context processor to provide brands and categories to all templates.
-    """
-    brands = Brand.objects.all()
-    categories = Category.objects.all()
-    return {
-        'brands': brands,
-        'categories': categories
-    }
+"""
+products/context_processors.py
+غير مستخدم في وضع API-Only.
+"""
+# Not used in API-only mode.

@@ -12,7 +12,15 @@ from .serializers import (
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.filter(active=True).select_related('brand', 'flag').prefetch_related('category', 'product_image')
+    queryset = (
+        Product.objects.filter(active=True)
+        .select_related('brand', 'flag')
+        .prefetch_related('category', 'product_image')
+        .annotate(
+            avg_rating=Avg('review_product__rate'),
+            reviews_count_annotated=Count('review_product'),
+        )
+    )
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['brand', 'category', 'product_type']
@@ -60,29 +68,44 @@ class ProductViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-
 class BrandViewSet(viewsets.ModelViewSet):
-    queryset = Brand.objects.annotate(products_count=Count('product_brand'))
+    queryset = Brand.objects.annotate(products_count=Count('product_brand')).order_by('name')
     serializer_class = BrandSerializer
     lookup_field = 'slug'
 
     @action(detail=True, methods=['get'], url_path='products')
     def products(self, request, slug=None):
         brand = self.get_object()
-        qs = Product.objects.filter(brand=brand, active=True)
+        qs = (
+            Product.objects.filter(brand=brand, active=True)
+            .select_related('brand', 'flag')
+            .prefetch_related('category', 'product_image')
+            .annotate(
+                avg_rating=Avg('review_product__rate'),
+                reviews_count_annotated=Count('review_product'),
+            )
+        )
         serializer = ProductSerializer(qs, many=True, context={'request': request})
         return Response(serializer.data)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
+    queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer
     lookup_field = 'slug'
 
     @action(detail=True, methods=['get'], url_path='products')
     def products(self, request, slug=None):
         category = self.get_object()
-        qs = Product.objects.filter(category=category, active=True)
+        qs = (
+            Product.objects.filter(category=category, active=True)
+            .select_related('brand', 'flag')
+            .prefetch_related('category', 'product_image')
+            .annotate(
+                avg_rating=Avg('review_product__rate'),
+                reviews_count_annotated=Count('review_product'),
+            )
+        )
         serializer = ProductSerializer(qs, many=True, context={'request': request})
         return Response(serializer.data)
 
@@ -98,7 +121,13 @@ class FlagViewSet(viewsets.ModelViewSet):
 
 
 class FeaturedProductViewSet(viewsets.ModelViewSet):
-    queryset = FeaturedProduct.objects.select_related('product').filter(active=True).order_by('order', '-id')
+    queryset = (
+        FeaturedProduct.objects
+        .filter(active=True)
+        .select_related('product', 'product__brand', 'product__flag')
+        .prefetch_related('product__category', 'product__product_image')
+        .order_by('order', '-id')
+    )
     serializer_class = FeaturedProductSerializer
 
 

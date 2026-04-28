@@ -16,6 +16,12 @@ import type {
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000/api/v1").replace(/\/$/, "");
 
+const IS_DEV = process.env.NODE_ENV === "development";
+
+// في وضع التطوير: cache لمدة 5 ثوان (يمنع إعادة الجلب عند كل نقرة)
+// في الإنتاج: cache لمدة 60 ثانية
+const REVALIDATE_SECONDS = IS_DEV ? 5 : 60;
+
 type QueryValue = string | number | boolean | null | undefined;
 
 function buildUrl(path: string, query?: Record<string, QueryValue>) {
@@ -32,7 +38,7 @@ async function apiFetch<T>(path: string, query?: Record<string, QueryValue>, fal
   try {
     const response = await fetch(buildUrl(path, query), {
       headers: { Accept: "application/json" },
-      next: { revalidate: 60 }
+      next: { revalidate: REVALIDATE_SECONDS },
     });
 
     if (!response.ok) {

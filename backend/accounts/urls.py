@@ -1,27 +1,41 @@
-from django.urls import path
-from .views import (
-    DashboardView, SettingsView, AddressListView, ProfileView, PaymentMethodsView,
-    AddressCreateView, AddressUpdateView, AddressDeleteView, SignUpView,
-    save_temp_location, save_user_location,
-    otp_login_page_view, otp_request_view, otp_verify_view, traditional_login_view
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenBlacklistView,
 )
 
-app_name = 'accounts'
+from .api import (
+    AddressViewSet,
+    CustomerViewSet,
+    IdentifierLoginView,
+    LocationSyncView,
+    OTPRequestView,
+    OTPVerifyView,
+    PasswordResetConfirmView,
+    PasswordResetRequestView,
+    ProfileView,
+    RegisterView,
+    UserViewSet,
+)
+
+router = DefaultRouter()
+router.register(r'customers', CustomerViewSet)
+router.register(r'addresses', AddressViewSet)
+router.register(r'users', UserViewSet)
 
 urlpatterns = [
-    path('login/', otp_login_page_view, name='login'),
-    path('otp/request/', otp_request_view, name='otp_request'),
-    path('otp/verify/', otp_verify_view, name='otp_verify'),
-    path('traditional-login/', traditional_login_view, name='traditional_login'),
-    path('save-temp-location/', save_temp_location, name='save_temp_location'),
-    path('save-location/', save_user_location, name='save_user_location'),
-    path('signup/', SignUpView.as_view(), name='signup'),
-    path('dashboard/', DashboardView.as_view(), name='dashboard'),
-    path('profile/', ProfileView.as_view(), name='profile_detail'),
-    path('settings/', SettingsView.as_view(), name='settings'),
-    path('addresses/', AddressListView.as_view(), name='address_list'),
-    path('addresses/add/', AddressCreateView.as_view(), name='address_create'),
-    path('addresses/<int:pk>/edit/', AddressUpdateView.as_view(), name='address_update'),
-    path('addresses/<int:pk>/delete/', AddressDeleteView.as_view(), name='address_delete'),
-    path('payment-methods/', PaymentMethodsView.as_view(), name='payment_methods'),
+    path('', include(router.urls)),
+    path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('auth/token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),
+    path('auth/identifier-login/', IdentifierLoginView.as_view(), name='auth_identifier_login'),
+    path('auth/location/', LocationSyncView.as_view(), name='auth_location_sync'),
+    path('auth/otp/request/', OTPRequestView.as_view(), name='auth_otp_request'),
+    path('auth/otp/verify/', OTPVerifyView.as_view(), name='auth_otp_verify'),
+    path('auth/password-reset/', PasswordResetRequestView.as_view(), name='auth_password_reset'),
+    path('auth/password-reset/confirm/', PasswordResetConfirmView.as_view(), name='auth_password_reset_confirm'),
+    path('auth/register/', RegisterView.as_view(), name='auth_register'),
+    path('auth/profile/', ProfileView.as_view(), name='auth_profile'),
 ]

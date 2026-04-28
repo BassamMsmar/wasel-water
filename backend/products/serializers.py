@@ -1,16 +1,21 @@
 from rest_framework import serializers
 from taggit.serializers import TagListSerializerField, TaggitSerializer
-from django.db.models import Avg
+from django.db.models import Avg, Count
 from .models import Product, ProductImages, Brand, Category, Offer, Review, Bundle, BundleItem, Flag, FeaturedProduct
 
 
 class BrandSerializer(serializers.ModelSerializer):
+    """Full serializer — used in /api/v1/brands/ with annotate(products_count)."""
     products_count = serializers.SerializerMethodField()
     logo = serializers.SerializerMethodField()
 
     class Meta:
         model = Brand
-        fields = ['id', 'name', 'slug', 'image', 'logo', 'products_count']
+        fields = [
+            'id', 'name', 'slug', 'image', 'logo', 'products_count',
+            'cover_image', 'description',
+            'seo_title', 'seo_description', 'seo_keywords', 'seo_canonical_url',
+        ]
 
     def get_products_count(self, obj):
         if hasattr(obj, 'products_count'):
@@ -21,10 +26,20 @@ class BrandSerializer(serializers.ModelSerializer):
         return obj.image.url if obj.image else None
 
 
+class BrandNestedSerializer(serializers.ModelSerializer):
+    """Lightweight serializer — embedded inside ProductSerializer to avoid N+1."""
+    class Meta:
+        model = Brand
+        fields = ['id', 'name', 'slug', 'image']
+
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name', 'slug', 'image']
+        fields = [
+            'id', 'name', 'slug', 'image',
+            'seo_title', 'seo_description', 'seo_keywords', 'seo_canonical_url',
+        ]
 
 
 class ProductImagesSerializer(serializers.ModelSerializer):
@@ -36,7 +51,7 @@ class ProductImagesSerializer(serializers.ModelSerializer):
 class ProductSerializer(TaggitSerializer, serializers.ModelSerializer):
     tags = TagListSerializerField()
     product_image = ProductImagesSerializer(many=True, read_only=True)
-    brand_data = BrandSerializer(source='brand', read_only=True)
+    brand_data = BrandNestedSerializer(source='brand', read_only=True)
     category_data = CategorySerializer(source='category', many=True, read_only=True)
 
     price = serializers.SerializerMethodField()
@@ -59,11 +74,13 @@ class ProductSerializer(TaggitSerializer, serializers.ModelSerializer):
             'discount_percent', 'is_new',
             'rating', 'reviews_count',
             'description', 'subtitle', 'descriptions',
+            'active',
             'quantity', 'brand', 'brand_data',
             'category', 'category_data',
             'product_image', 'images',
             'tags', 'sales_count', 'product_type',
             'sku', 'linkVideo', 'create_at',
+            'seo_title', 'seo_description', 'seo_keywords', 'seo_canonical_url',
         ]
 
     def get_price(self, obj):
@@ -76,10 +93,14 @@ class ProductSerializer(TaggitSerializer, serializers.ModelSerializer):
         return obj.quantity > 0 and obj.active
 
     def get_rating(self, obj):
+        if hasattr(obj, 'avg_rating') and obj.avg_rating is not None:
+            return round(obj.avg_rating, 1)
         avg = obj.review_product.aggregate(avg=Avg('rate'))['avg']
         return round(avg, 1) if avg else 0.0
 
     def get_reviews_count(self, obj):
+        if hasattr(obj, 'reviews_count_annotated'):
+            return obj.reviews_count_annotated
         return obj.review_product.count()
 
     def get_discount_percent(self, obj):

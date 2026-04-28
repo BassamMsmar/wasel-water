@@ -27,11 +27,17 @@ export function ProductCard({
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
-  const price = product.new_price ?? product.price;
-  const brand = product.brand_data?.name ?? product.category_data?.name ?? "منتج مميز";
+  const price = product.new_price ?? product.price ?? product.old_price;
+  const oldPrice =
+    product.old_price && Number(product.old_price) > Number(price ?? 0)
+      ? product.old_price
+      : null;
+  const brand = product.brand_data?.name ?? "منتج مميز";
   const size = product.tags?.[0] ?? "330 مل";
   const pack = product.tags?.[1] ?? "40 عبوة";
   const disabled = product.is_available === false || product.stock === 0;
+  const imageHeight = variant === "featured" ? "min-h-[270px]" : "min-h-[220px]";
+  const compactCard = variant !== "featured";
 
   const handleAdd = () => {
     if (disabled) return;
@@ -41,28 +47,20 @@ export function ProductCard({
   };
 
   return (
-    <article
-      className={`group flex h-full flex-col overflow-hidden rounded-[26px] border bg-white transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_52px_rgba(10,34,56,0.1)] ${
-        variant === "featured"
-          ? "border-[#dce9f5] shadow-[0_18px_48px_rgba(10,34,56,0.08)]"
-          : "border-[#e4edf5] shadow-[0_12px_30px_rgba(10,34,56,0.05)]"
-      }`}
-    >
+    <article className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-[#d9e6f2] bg-white shadow-[0_2px_10px_rgba(10,34,56,0.015)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_14px_rgba(10,34,56,0.02)] dark:border-[#1e344a] dark:bg-[#0b1a27] dark:shadow-none">
       <Link
         href={`/products/${product.slug}`}
-        className={`relative block overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f5faff_100%)] ${
-          variant === "featured" ? "min-h-[270px]" : "min-h-[220px]"
-        }`}
+        className={`relative block overflow-hidden bg-[linear-gradient(180deg,#fafdff_0%,#eaf4ff_100%)] dark:bg-[#081521] dark:bg-none ${imageHeight}`}
       >
-        <div className="absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-2 p-4">
-          <span className="rounded-full border border-[#d0e2f3] bg-white/90 px-3 py-1 text-[11px] font-black text-[#1a5d98] shadow-[0_6px_16px_rgba(10,34,56,0.05)]">
+        <div className="absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-2 p-3">
+          <span className="rounded-full border border-[#cfe0f2] bg-white/92 px-2.5 py-1 text-[10px] font-black text-[#1d639f] dark:border-[#2a4d70] dark:bg-[#0b1a27]/92 dark:text-[#64a9e5]">
             {brand}
           </span>
-          <div className="flex flex-wrap justify-end gap-1.5">
-            <span className="rounded-full bg-[#2d78c8] px-2.5 py-1 text-[10px] font-black text-white">
+          <div className="flex flex-wrap justify-end gap-1">
+            <span className="rounded-full bg-[#2d78c8] px-2 py-1 text-[9px] font-black text-white">
               {size}
             </span>
-            <span className="rounded-full border border-[#d0e2f3] bg-white/92 px-2.5 py-1 text-[10px] font-black text-[#2d78c8]">
+            <span className="rounded-full border border-[#cfe0f2] bg-white/92 px-2 py-1 text-[9px] font-black text-[#2d78c8] dark:border-[#2a4d70] dark:bg-[#0b1a27]/92 dark:text-[#64a9e5]">
               {pack}
             </span>
           </div>
@@ -73,71 +71,72 @@ export function ProductCard({
           alt={product.name}
           fill
           unoptimized
-          className="object-contain p-8 pt-14 transition duration-500 group-hover:scale-[1.04]"
+          className="object-cover transition duration-500 group-hover:scale-[1.08]"
         />
       </Link>
 
-      <div className="flex flex-1 flex-col p-4 sm:p-5">
+      <div className="flex flex-1 flex-col px-4 pb-3 pt-3">
         <Link href={`/products/${product.slug}`} className="block">
-          <h3 className="line-clamp-2 min-h-[3.4rem] text-[1.02rem] font-black leading-7 text-[#102231] transition group-hover:text-[#1f69b1]">
+          <h3 className="line-clamp-2 text-[0.98rem] font-black leading-6 text-[#102231] transition group-hover:text-[#1f69b1] dark:text-[#eef5fb]">
             {product.name}
           </h3>
         </Link>
 
-        <p className="mt-2 line-clamp-2 min-h-[2.8rem] text-sm leading-7 text-[#748698]">
+        <p className="mt-1.5 line-clamp-2 text-xs leading-6 text-[#77889a] dark:text-[#9db3c7]">
           {product.description || product.subtitle || `توصيل سريع ومخزون جاهز من ${brand}.`}
         </p>
 
-        <div className="mt-auto pt-4">
-          <div className="flex items-end justify-between gap-3 border-t border-[#edf3f8] pt-4">
-            <div className="min-w-0">
-              <strong className="block text-xl font-black leading-none text-[#2d78c8]">
-                {money(price)}
-              </strong>
-              <span className="mt-1 block text-[11px] font-bold text-[#97a7b7]">
-                شامل الضريبة
-              </span>
-            </div>
+        <div className="mt-3 flex items-end gap-1.5 text-right">
+          <strong className="text-base font-black leading-none text-[#2d78c8] dark:text-[#64a9e5]">
+            {money(price)}
+          </strong>
+          {oldPrice ? (
+            <del className="text-xs font-bold leading-none text-[#97a7b7] dark:text-[#58738e]">
+              {money(oldPrice)}
+            </del>
+          ) : null}
+        </div>
 
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 rounded-full border border-[#dbe7f2] bg-[#fbfdff] p-1 shadow-[0_6px_16px_rgba(10,34,56,0.04)]">
-                <button
-                  type="button"
-                  className="flex h-7 w-7 items-center justify-center rounded-full text-[#607487] transition hover:bg-[#edf5fc] hover:text-[#102231]"
-                  onClick={() => setQty((current) => Math.max(1, current - 1))}
-                  aria-label="تقليل الكمية"
-                >
-                  -
-                </button>
-                <span className="min-w-[22px] text-center text-xs font-black text-[#102231]">
-                  {qty}
-                </span>
-                <button
-                  type="button"
-                  className="flex h-7 w-7 items-center justify-center rounded-full text-[#607487] transition hover:bg-[#edf5fc] hover:text-[#102231]"
-                  onClick={() => setQty((current) => current + 1)}
-                  aria-label="زيادة الكمية"
-                >
-                  +
-                </button>
-              </div>
-
+        <div className="mt-auto pt-3">
+          <div className={`flex border-t border-[#edf3f8] pt-3 dark:border-[#1e344a] ${compactCard ? "flex-row-reverse items-center justify-between gap-3" : "flex-row-reverse items-center justify-between gap-3"}`}>
+            <div className="flex items-center gap-1 rounded-full border border-[#dbe7f2] bg-[#fbfdff] p-1 dark:border-[#2a4d70] dark:bg-[#0d1b29]">
               <button
                 type="button"
-                onClick={handleAdd}
-                disabled={disabled}
-                aria-label="إضافة إلى السلة"
-                className={`flex h-10 w-10 items-center justify-center rounded-full text-white transition ${
-                  disabled
-                    ? "cursor-not-allowed bg-[#b8c5d2]"
-                    : added
-                      ? "bg-[#2d78c8]"
-                      : "bg-[#123e67] hover:bg-[#2d78c8]"
-                }`}
+                className="flex h-7 w-7 items-center justify-center rounded-full text-[#607487] transition hover:bg-[#edf5fc] hover:text-[#102231] dark:text-[#8ba2b8] dark:hover:bg-[#1a324b] dark:hover:text-white"
+                onClick={() => setQty((current) => Math.max(1, current - 1))}
+                aria-label="تقليل الكمية"
               >
-                <CartIcon />
+                -
+              </button>
+              <span className="min-w-[18px] text-center text-xs font-black text-[#102231] dark:text-[#eef5fb]">
+                {qty}
+              </span>
+              <button
+                type="button"
+                className="flex h-7 w-7 items-center justify-center rounded-full text-[#607487] transition hover:bg-[#edf5fc] hover:text-[#102231] dark:text-[#8ba2b8] dark:hover:bg-[#1a324b] dark:hover:text-white"
+                onClick={() => setQty((current) => current + 1)}
+                aria-label="زيادة الكمية"
+              >
+                +
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={handleAdd}
+              disabled={disabled}
+              aria-label="إضافة إلى السلة"
+              className={`flex shrink-0 items-center justify-center rounded-full text-white transition ${
+                disabled
+                  ? "cursor-not-allowed bg-[#b8c5d2]"
+                  : added
+                    ? "bg-[#2d78c8]"
+                    : "bg-[#123e67] hover:bg-[#2d78c8]"
+              } ${compactCard ? "h-10 w-10" : "min-h-[42px] gap-2 px-4 text-sm font-black"}`}
+            >
+              <CartIcon />
+              {!compactCard ? <span>{added ? "تمت الإضافة" : "أضف إلى السلة"}</span> : null}
+            </button>
           </div>
         </div>
       </div>

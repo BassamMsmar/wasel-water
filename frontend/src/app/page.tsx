@@ -21,14 +21,16 @@ export default async function HomePage() {
   const bestSellers = [...products]
     .sort((a, b) => Number(b.sales_count ?? 0) - Number(a.sales_count ?? 0))
     .slice(0, 5);
-  const allProducts = products.slice(0, 10);
+  const allProducts = products.slice(0, 8);
   const featuredCategories = categories.slice(0, 3);
   const featuredBrands = brands.slice(0, 7);
 
   return (
-    <div className="min-h-screen bg-[#f7fbff]">
-      <HeroSection />
-      <FeaturedProducts products={featuredProducts} />
+    <div className="min-h-screen bg-[#f7fbff] dark:bg-[#08111b]">
+      <section className="border-b border-[#e9f1f7] bg-[linear-gradient(180deg,#ffffff_0%,#eef6ff_100%)] pb-10 dark:border-[#1e344a] dark:bg-none sm:pb-16 lg:pb-20">
+        <HeroSection />
+        <FeaturedProducts products={featuredProducts} />
+      </section>
       <CategoriesSection categories={featuredCategories} />
       <BrandsSection brands={featuredBrands} />
       <BestSellersSection products={bestSellers} />

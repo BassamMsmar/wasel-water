@@ -32,6 +32,9 @@ class Customer(models.Model):
     class Meta:
         verbose_name = _("العميل")
         verbose_name_plural = _("العملاء")
+        permissions = [
+            ("access_dashboard", _("Can access dashboard")),
+        ]
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
@@ -49,7 +52,7 @@ class Address(models.Model):
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='addresses')
     full_name = models.CharField(_("Full Name"), max_length=100)
-    phone_number = models.CharField(_("Phone Number"), max_length=20)
+    phone_number = models.CharField(_("Phone Number"), max_length=254)
     city = models.CharField(_("City"), max_length=100, choices=CITY_CHOICES, default='jeddah - جدة')
     neighborhood = models.CharField(_("Neighborhood"), max_length=255, blank=True, null=True)
     street = models.CharField(_("Street"), max_length=255, blank=True, null=True)
@@ -86,7 +89,7 @@ class Address(models.Model):
         super().save(*args, **kwargs)
 
 class OTPToken(models.Model):
-    phone_number = models.CharField(_("Phone Number"), max_length=20)
+    phone_number = models.CharField(_("Phone Number"), max_length=254)
     code = models.CharField(_("OTP Code"), max_length=4)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()

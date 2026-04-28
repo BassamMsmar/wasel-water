@@ -135,3 +135,11 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+
+.env
+.env.production
+venv/
+media/
+staticfiles/
+backend/staticfiles/

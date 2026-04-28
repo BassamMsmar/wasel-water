@@ -1,31 +1,23 @@
-from django.urls import path
-from .views import (
-    ProductList, ProductDetail, BrandList, BrandDetail, 
-    CategoryList, CategoryDetail, OfferList, OfferDetail, BundleList,
-    export_products_excel, import_products_excel, download_product_template
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
+from .api import (
+    ProductViewSet, BrandViewSet, CategoryViewSet,
+    OfferViewSet, ReviewViewSet, BundleViewSet, BundleItemViewSet,
+    FlagViewSet, FeaturedProductViewSet
 )
 
-app_name = 'products'
+router = DefaultRouter()
+router.register(r'products', ProductViewSet)
+router.register(r'brands', BrandViewSet)
+router.register(r'categories', CategoryViewSet)
+router.register(r'offers', OfferViewSet)
+router.register(r'reviews', ReviewViewSet)
+router.register(r'bundles', BundleViewSet)
+router.register(r'bundle-items', BundleItemViewSet)
+router.register(r'flags', FlagViewSet)
+router.register(r'featured-products', FeaturedProductViewSet)
 
 urlpatterns = [
-    path('products/', ProductList.as_view(), name='product_list'),
-    
-    
-    path('bundles/', BundleList.as_view(), name='bundle_list'), 
-    path('brands/', BrandList.as_view(), name='brand_list'), 
-    path('brands/<str:slug>/', BrandDetail.as_view(), name='brand_detail'), 
-
-    path('categories/', CategoryList.as_view(), name='category_list'), 
-    path('categories/<str:slug>/', CategoryDetail.as_view(), name='category_detail'), 
-
-    path('offers/', OfferList.as_view(), name='offer_list'), 
-    path('offers/<int:pk>/', OfferDetail.as_view(), name='offer_detail'), 
-
-    path('<str:slug>/', ProductDetail.as_view(), name='product_detail'), 
-
-    # Excel Import/Export
-    path('excel/export/', export_products_excel, name='export_products_excel'),
-    path('excel/import/', import_products_excel, name='import_products_excel'),
-    path('excel/template/', download_product_template, name='download_product_template'),
-
+    path('', include(router.urls)),
 ]

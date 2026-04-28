@@ -70,8 +70,8 @@ class Cart:
                 # Default to product if no type or type is product
                 product_ids.append(item.get('id', key)) # Fallback for old keys
 
-        products = Product.objects.filter(id__in=product_ids)
-        bundles = Bundle.objects.filter(id__in=bundle_ids)
+        products = Product.objects.filter(id__in=product_ids).select_related('brand', 'flag')
+        bundles = Bundle.objects.filter(id__in=bundle_ids).prefetch_related('bundle_items__item')
         
         # Helper to find object
         def get_obj(obj_list, obj_id):

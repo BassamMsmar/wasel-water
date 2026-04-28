@@ -1,6 +1,9 @@
 "use client";
 
+import { clearCart } from "./cart";
+
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000/api/v1").replace(/\/$/, "");
+const API_ORIGIN = API_BASE.replace(/\/api\/v\d+\/?$/, "");
 const TOKEN_KEY = "wasel-access";
 const REFRESH_KEY = "wasel-refresh";
 
@@ -27,6 +30,10 @@ export function isLoggedIn(): boolean {
   return !!getAccessToken();
 }
 
+export function canAccessDashboard(user?: { is_staff?: boolean; is_superuser?: boolean; can_access_dashboard?: boolean } | null): boolean {
+  return Boolean(user?.can_access_dashboard || user?.is_staff || user?.is_superuser);
+}
+
 // ─── API Calls ────────────────────────────────────────────────────────────────
 
 export async function login(username: string, password: string) {
@@ -44,6 +51,104 @@ export async function login(username: string, password: string) {
   return data;
 }
 
+export async function loginWithIdentifier(identifier: string, password: string) {
+  const res = await fetch(`${API_BASE}/auth/identifier-login/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ identifier, password }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.detail || "بيانات الدخول غير صحيحة");
+  }
+  const data = await res.json();
+  saveTokens(data.access, data.refresh);
+  return data;
+}
+
+export type RegisterCustomerInput = {
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  email: string;
+  password: string;
+  password_confirm: string;
+};
+
+export async function registerCustomer(payload: RegisterCustomerInput) {
+  const res = await fetch(`${API_BASE}/auth/register/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(data?.detail || "تعذر إنشاء الحساب");
+  }
+  if (data?.access && data?.refresh) {
+    saveTokens(data.access, data.refresh);
+  }
+  return data;
+}
+
+export async function requestPasswordReset(email: string) {
+  const res = await fetch(`${API_BASE}/auth/password-reset/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(data?.detail || "تعذر إرسال رابط إعادة التعيين");
+  }
+  return data as { success: boolean; message: string };
+}
+
+export async function confirmPasswordReset(uid: string, token: string, password: string) {
+  const res = await fetch(`${API_BASE}/auth/password-reset/confirm/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ uid, token, password }),
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(data?.detail || "تعذر تحديث كلمة المرور");
+  }
+  return data as { success: boolean; message: string };
+}
+
+export async function requestOtp(identifier: string) {
+  const res = await fetch(`${API_BASE}/auth/otp/request/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ identifier }),
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new Error(data?.detail || "تعذر إرسال الرمز");
+  }
+  return data as { success: boolean; identifier: string; message: string; debug_code?: string };
+}
+
+export async function verifyOtp(identifier: string, code: string) {
+  const res = await fetch(`${API_BASE}/auth/otp/verify/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ identifier, code }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.detail || "رمز التحقق غير صحيح");
+  }
+  const data = await res.json();
+  saveTokens(data.access, data.refresh);
+  return data;
+}
+
+export function getGoogleLoginUrl() {
+  return `${API_ORIGIN}/accounts/google/login/`;
+}
+
 export async function logout() {
   const refresh = localStorage.getItem(REFRESH_KEY);
   if (refresh) {
@@ -53,6 +158,7 @@ export async function logout() {
       body: JSON.stringify({ refresh }),
     }).catch(() => {});
   }
+  clearCart();
   clearTokens();
 }
 
@@ -95,4 +201,49 @@ export async function authFetchList<T>(path: string): Promise<T[]> {
 
   const data = await res.json();
   return Array.isArray(data) ? data : data.results ?? [];
+}
+
+type AuthRequestOptions = {
+  method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
+  body?: unknown;
+};
+
+export async function authRequest<T>(path: string, options: AuthRequestOptions = {}): Promise<T> {
+  const token = getAccessToken();
+  if (!token) {
+    throw new Error("يجب تسجيل الدخول أولًا");
+  }
+
+  const { method = "GET", body } = options;
+  const headers: HeadersInit = {
+    Accept: "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+
+  const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
+
+  if (body !== undefined && !isFormData) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  const res = await fetch(`${API_BASE}${path.startsWith("/") ? path : `/${path}`}`, {
+    method,
+    headers,
+    body: body === undefined ? undefined : isFormData ? body : JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const errorBody = await res.json().catch(() => null);
+    const message =
+      errorBody?.detail ||
+      Object.values(errorBody ?? {})?.flat?.()?.[0] ||
+      "تعذر تنفيذ العملية";
+    throw new Error(String(message));
+  }
+
+  if (res.status === 204) {
+    return null as T;
+  }
+
+  return (await res.json()) as T;
 }
